@@ -1,33 +1,37 @@
 import { currentMembers } from "api/MemberAPI";
 import styles from "styles/Home/Team.module.css";
-import {Card} from "./Card";
+import CircularGallery from "../Elements/CircularGallery";
 import React from "react";
 import Link from "next/link";
+
+
 const Team = () => {
-  // Leader Card Map
-  let leadCard = currentMembers.leadList.map((lead) => {
-    return <Card key={lead.id} data={lead} />;
-  });
+  const allMembers = [
+    ...currentMembers.chapterLead,
+    ...currentMembers.leadList
+  ];
+
+  const galleryItems = allMembers.map(member => ({
+    image: `/images/Team/${member.img}`,
+    text: member.name
+  }));
 
   return (
-    <section id="Team">
-      <div>
-        {/* <h2 className="section-title"> Star Performer</h2> */} 
-        <div className={styles.container}>
-          {/* {<Card key={data2.chapterLead[0].id} data={data2.chapterLead[0]} />} */}
-        </div>
+    <section id="Team" style={{ height: '600px', position: 'relative' }}>
+      <h2 className="section-title">Our Team</h2>
+      <div style={{ width: '100%', height: '100%' }}>
+        <CircularGallery
+          items={galleryItems}
+          bend={3}
+          textColor="#ffffff"
+          borderRadius={0.05}
+        />
       </div>
-      <div>
-        <h2 className="section-title">Chapter Lead</h2>
-        <div className={styles.container}>
-          {<Card key={currentMembers.chapterLead[0].id} data={currentMembers.chapterLead[0]} />}
-        </div>
-        <h2 className="section-title">Team Leads</h2>
-        <div className={styles.container}>{leadCard}</div>
+      <div className={styles.container} style={{ marginTop: '20px', justifyContent: 'center', display: 'flex' }}>
+        <Link href="/Core-Team-22" style={{ textDecoration: "none" }}>
+          <button className={styles.container1}>Previous Members</button>
+        </Link>
       </div>
-      <Link href="/Core-Team-22" style={{ textDecoration: "none" }}>
-        <button className={styles.container1}>Previous Members</button>
-      </Link>
     </section>
   );
 };
