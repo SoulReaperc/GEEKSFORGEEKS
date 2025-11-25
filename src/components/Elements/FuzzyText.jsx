@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from 'react';
 
 const FuzzyText = ({
   children,
-  fontSize = 'clamp(1rem, 3vw, 5rem)',
-  fontWeight = 900,
+  fontSize = 'clamp(1rem, 4vw, 5rem)',
+  fontWeight = 800,
   fontFamily = 'inherit',
   color = '#fff',
   enableHover = true,
   baseIntensity = 0.18,
-  hoverIntensity = 0.5
+  hoverIntensity = 0.2
 }) => {
   const canvasRef = useRef(null);
 

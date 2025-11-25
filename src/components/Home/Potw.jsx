@@ -23,7 +23,12 @@ const Potw = () => {
       id="Potw"
       className={`${styles.potwSection} relative overflow-hidden`}
     >
-      {/* Sparkles Background */}
+      {/* Title - Outside the grid animation */}
+      <div className="relative z-20 pt-8">
+        <h2 className="section-title text-white text-center">Performer of the Week</h2>
+      </div>
+
+      {/* Animated Grid Background */}
       <div className="absolute inset-0 w-full h-full z-0">
         <Squares
           speed={0.5}
@@ -32,18 +37,13 @@ const Potw = () => {
           borderColor='#fff'
           hoverFillColor='#222'
         />
-
       </div>
 
-
-
-      {/* Content */}
+      {/* Centered Card Content */}
       <div className={`relative z-10 ${styles.contentWrapper}`}>
-        <h2 className="section-title text-white">Performer of the Week</h2>
         <div className={styles.container}>
           <div className={styles.cardWrapper}>
             <div className={styles.cardBorder}>
-
               <TiltedCard
                 imageSrc={potwData.img}
                 altText={potwData.name}
