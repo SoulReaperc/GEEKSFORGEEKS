@@ -9,9 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.0",
     "@tailwindcss/vite": "^4.1.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "contentful-management": "^11.63.1",
     "face-api.js": "^0.22.2",
     "faceapi": "^1.0.1",
     "gsap": "^3.13.0",
