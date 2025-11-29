@@ -5,6 +5,8 @@ import { createClient } from "contentful";
 import { Github, Linkedin, Instagram, Mail, ChevronDown, ChevronUp } from "lucide-react";
 import GlassyNavbar from "../../components/GlassyNavbar";
 import DotGrid from "../../components/DotGrid";
+import TiltedCard from "../../components/TiltedCard";
+import { motion, AnimatePresence } from "motion/react";
 
 // Contentful Client
 const client = createClient({
@@ -158,18 +160,18 @@ export default function TeamPage() {
 
                             {/* Leadership */}
                             {leadership.length > 0 && (
-                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "30px" }}>
+                                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "30px" }}>
                                     {leadership.map((member) => (
-                                        <MemberCard key={member.id} member={member} big router={router} />
+                                        <MemberCard key={member.id} member={member} big router={router} year={selectedYear} />
                                     ))}
                                 </div>
                             )}
 
                             {/* Core Team */}
                             {coreTeam.length > 0 && (
-                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "30px" }}>
+                                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "30px" }}>
                                     {coreTeam.map((member) => (
-                                        <MemberCard key={member.id} member={member} router={router} />
+                                        <MemberCard key={member.id} member={member} router={router} year={selectedYear} />
                                     ))}
                                 </div>
                             )}
@@ -189,6 +191,7 @@ export default function TeamPage() {
                                                     background: "rgba(255,255,255,0.05)",
                                                     borderRadius: "15px",
                                                     border: "1px solid rgba(255,255,255,0.1)",
+                                                    overflow: "hidden"
                                                 }}
                                             >
                                                 <button
@@ -199,34 +202,48 @@ export default function TeamPage() {
                                                         display: "flex",
                                                         justifyContent: "space-between",
                                                         alignItems: "center",
-                                                        background: "transparent",
+                                                        background: openTeams[team.teamName] ? "rgba(70,185,78,0.1)" : "transparent",
                                                         border: "none",
                                                         color: "white",
                                                         fontSize: "1.2rem",
                                                         cursor: "pointer",
+                                                        transition: "background 0.3s ease"
                                                     }}
                                                 >
-                                                    {team.teamName} Team
+                                                    <span style={{ fontWeight: "bold" }}>{team.teamName} Team</span>
                                                     {openTeams[team.teamName] ? <ChevronUp /> : <ChevronDown />}
                                                 </button>
 
-                                                {openTeams[team.teamName] && (
-                                                    <div style={{ padding: "0 30px 30px", display: "flex", flexWrap: "wrap", gap: "12px" }}>
-                                                        {team.memberList.map((name, i) => (
-                                                            <span
-                                                                key={i}
-                                                                style={{
-                                                                    padding: "8px 16px",
-                                                                    background: "rgba(70,185,78,0.2)",
-                                                                    borderRadius: "20px",
-                                                                    fontSize: "0.9rem",
-                                                                }}
-                                                            >
-                                                                {name}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                <AnimatePresence>
+                                                    {openTeams[team.teamName] && (
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: "auto", opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                        >
+                                                            <div style={{ padding: "0 30px 30px", display: "flex", flexWrap: "wrap", gap: "12px" }}>
+                                                                {team.memberList.map((name, i) => (
+                                                                    <motion.span
+                                                                        key={i}
+                                                                        initial={{ opacity: 0, y: 10 }}
+                                                                        animate={{ opacity: 1, y: 0 }}
+                                                                        transition={{ delay: i * 0.03, duration: 0.3 }}
+                                                                        style={{
+                                                                            padding: "8px 16px",
+                                                                            background: "rgba(70,185,78,0.2)",
+                                                                            borderRadius: "20px",
+                                                                            fontSize: "0.9rem",
+                                                                            border: "1px solid rgba(70,185,78,0.3)"
+                                                                        }}
+                                                                    >
+                                                                        {name}
+                                                                    </motion.span>
+                                                                ))}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
                                             </div>
                                         ))}
                                     </div>
@@ -241,67 +258,87 @@ export default function TeamPage() {
 }
 
 // Unified Card Component (Design from B, Data from A)
-function MemberCard({ member, router, big = false }) {
+function MemberCard({ member, router, big = false, year }) {
+    const useBlackBackground = year === 2023 || year === 2024 || year === 2025;
+    const imageSrc = member.image || "https://placehold.co/300x300/111/46b94e?text=" + member.name[0];
+
     return (
         <div
             onClick={() => router.push(`/pages/team/${member.id}`)}
-            style={{
-                background: "rgba(255,255,255,0.08)",
-                borderRadius: "20px",
-                padding: big ? "45px 35px" : "30px 20px",
-                textAlign: "center",
-                cursor: "pointer",
-                transition: "transform 0.3s ease",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-5px)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+            style={{ cursor: "pointer" }}
         >
-            <div
-                style={{
-                    width: big ? "160px" : "120px",
-                    height: big ? "160px" : "120px",
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    border: "3px solid #46b94e",
-                    margin: "0 auto 15px",
-                    background: "#111",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
+            <TiltedCard
+                imageSrc={imageSrc}
+                altText={member.name}
+                captionText={member.role}
+                containerHeight="300px"
+                containerWidth="300px"
+                imageHeight="300px"
+                imageWidth="300px"
+                rotateAmplitude={12}
+                scaleOnHover={1.2}
+                showMobileWarning={false}
+                showTooltip={false}
+                displayOverlayContent={true}
+                overlayContent={
+                    <div
+                        style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            width: "100%",
+                            padding: "20px",
+                            background: "linear-gradient(to top, rgba(0,0,0,0.9), transparent)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "flex-end",
+                            height: "100%",
+                            borderRadius: "15px"
+                        }}
+                    >
+                        <h3 style={{ fontSize: big ? "1.8rem" : "1.3rem", color: "white", marginBottom: "5px" }}>{member.name}</h3>
+                        <p style={{ color: "#46b94e", fontSize: big ? "1.1rem" : "0.95rem", marginBottom: "10px" }}>{member.role}</p>
+
+                        <div style={{ display: "flex", gap: "14px", justifyContent: "center" }}>
+                            {member.socials?.linkedin && (
+                                <a href={member.socials.linkedin} target="_blank" onClick={(e) => e.stopPropagation()} style={{ color: "white" }}>
+                                    <Linkedin size={18} />
+                                </a>
+                            )}
+                            {member.socials?.github && (
+                                <a href={member.socials.github} target="_blank" onClick={(e) => e.stopPropagation()} style={{ color: "white" }}>
+                                    <Github size={18} />
+                                </a>
+                            )}
+                            {member.socials?.instagram && (
+                                <a href={member.socials.instagram} target="_blank" onClick={(e) => e.stopPropagation()} style={{ color: "white" }}>
+                                    <Instagram size={18} />
+                                </a>
+                            )}
+                            {member.socials?.email && (
+                                <a href={`mailto:${member.socials.email}`} onClick={(e) => e.stopPropagation()} style={{ color: "white" }}>
+                                    <Mail size={18} />
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                }
             >
-                {member.image ? (
-                    <img src={member.image} alt={member.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                ) : (
-                    <span style={{ fontSize: "2.5rem", fontWeight: "bold" }}>{member.name[0]}</span>
+                {useBlackBackground && (
+                    <div style={{ width: "100%", height: "100%", backgroundColor: "black", borderRadius: "15px" }}>
+                        <img
+                            src={imageSrc}
+                            alt={member.name}
+                            className="absolute top-0 left-0 object-cover rounded-[15px]"
+                            style={{
+                                width: "100%",
+                                height: "100%"
+                            }}
+                        />
+                    </div>
                 )}
-            </div>
-
-            <h3 style={{ fontSize: big ? "1.8rem" : "1.3rem" }}>{member.name}</h3>
-            <p style={{ color: "#46b94e", fontSize: big ? "1.1rem" : "0.95rem" }}>{member.role}</p>
-
-            <div style={{ display: "flex", gap: "14px", justifyContent: "center", marginTop: "10px" }}>
-                {member.socials?.linkedin && (
-                    <a href={member.socials.linkedin} target="_blank" onClick={(e) => e.stopPropagation()}>
-                        <Linkedin size={18} />
-                    </a>
-                )}
-                {member.socials?.github && (
-                    <a href={member.socials.github} target="_blank" onClick={(e) => e.stopPropagation()}>
-                        <Github size={18} />
-                    </a>
-                )}
-                {member.socials?.instagram && (
-                    <a href={member.socials.instagram} target="_blank" onClick={(e) => e.stopPropagation()}>
-                        <Instagram size={18} />
-                    </a>
-                )}
-                {member.socials?.email && (
-                    <a href={`mailto:${member.socials.email}`} onClick={(e) => e.stopPropagation()}>
-                        <Mail size={18} />
-                    </a>
-                )}
-            </div>
+            </TiltedCard>
         </div>
     );
 }
