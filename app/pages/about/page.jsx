@@ -3,7 +3,7 @@ import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { Rocket, Lightbulb, Code2, Trophy, Users } from "lucide-react";
 import GlassyNavbar from "../../components/GlassyNavbar";
-import DotGrid from "../../components/DotGrid";
+import Squares from "../../components/Squares";
 import { motion, useScroll, useTransform, useInView, useSpring } from "motion/react";
 
 // Animated Counter Component
@@ -57,16 +57,12 @@ export default function HomePage() {
                     zIndex: 0,
                 }}
             >
-                <DotGrid
-                    dotSize={3}
-                    gap={15}
-                    baseColor="#073b0d"
-                    activeColor="#128224"
-                    proximity={120}
-                    shockRadius={250}
-                    shockStrength={5}
-                    resistance={750}
-                    returnDuration={1.5}
+                <Squares
+                    speed={0.5}
+                    squareSize={40}
+                    direction='diagonal'
+                    borderColor='#333'
+                    hoverFillColor='#222'
                 />
             </div>
 

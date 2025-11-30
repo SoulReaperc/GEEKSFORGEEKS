@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "contentful";
 import { Github, Linkedin, Instagram, Mail, ChevronDown, ChevronUp } from "lucide-react";
 import GlassyNavbar from "../../components/GlassyNavbar";
-import DotGrid from "../../components/DotGrid";
+import Squares from "../../components/Squares";
 import TiltedCard from "../../components/TiltedCard";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -93,16 +93,12 @@ export default function TeamPage() {
         <div style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
             {/* Background */}
             <div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
-                <DotGrid
-                    dotSize={3}
-                    gap={15}
-                    baseColor="#073b0d"
-                    activeColor="#128224"
-                    proximity={120}
-                    shockRadius={250}
-                    shockStrength={5}
-                    resistance={750}
-                    returnDuration={1.5}
+                <Squares
+                    speed={0.5}
+                    squareSize={40}
+                    direction='diagonal'
+                    borderColor='#333'
+                    hoverFillColor='#222'
                 />
             </div>
 
