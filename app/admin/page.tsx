@@ -186,7 +186,7 @@ export default function AdminPage() {
                         <div className="mb-4">
                             <label className="block text-gray-700 mb-2">Social Links (JSON)</label>
                             <textarea
-                                className="w-full p-2 border rounded h-24 font-mono text-sm text-black"
+                                className="w-full p-2 border rounded h-24 text-sm text-black"
                                 value={socialLinks}
                                 onChange={(e) => setSocialLinks(e.target.value)}
                                 placeholder='{"twitter": "...", "linkedin": "..."}'
@@ -237,7 +237,7 @@ export default function AdminPage() {
                                                 <td className="p-3">{reg.id}</td>
                                                 <td className="p-3 font-medium text-gray-900">{reg.team_name}</td>
                                                 <td className="p-3">{reg.college}</td>
-                                                <td className="p-3 font-mono text-xs">
+                                                <td className="p-3 text-xs">
                                                     {JSON.stringify(reg.members_json)}
                                                 </td>
                                             </tr>

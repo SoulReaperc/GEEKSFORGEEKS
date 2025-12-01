@@ -37,7 +37,7 @@ export default function GlassyNavbar() {
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
                             className={`
-                                flex items-center justify-center px-7 py-2.5 text-lg font-roboto-slab font-medium text-white no-underline rounded-[30px] transition-all duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)]
+                                flex items-center justify-center px-7 py-2.5 text-lg font-medium text-white no-underline rounded-[30px] transition-all duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)]
                                 ${hoveredIndex === index || pathname === item.href
                                     ? 'bg-[#2f8d46] border border-[#2f8d46] scale-105 shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-[10px]'
                                     : 'bg-transparent border border-transparent scale-100 shadow-none'}
@@ -101,7 +101,7 @@ export default function GlassyNavbar() {
                                 key={index}
                                 href={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-2xl font-roboto-slab font-medium text-white hover:text-[#2f8d46] transition-colors"
+                                className="text-2xl font-medium text-white hover:text-[#2f8d46] transition-colors"
                             >
                                 {item.label}
                             </Link>

@@ -16,12 +16,12 @@ const client = createClient({
 
 const createSlug = (name) => {
     return name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')    // Remove special chars
-      .replace(/[\s_-]+/g, '-')    // Replace spaces with hyphens
-      .replace(/^-+|-+$/g, '');    // Remove leading/trailing hyphens
-  };
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')    // Remove special chars
+        .replace(/[\s_-]+/g, '-')    // Replace spaces with hyphens
+        .replace(/^-+|-+$/g, '');    // Remove leading/trailing hyphens
+};
 
 export default function TeamPage() {
     const router = useRouter();
@@ -50,7 +50,7 @@ export default function TeamPage() {
 
                 const formatted = response.items.map((item) => {
                     const imgUrl = item.fields.photo?.fields?.file?.url;
-                    const slug = createSlug(item.fields.name); 
+                    const slug = createSlug(item.fields.name);
                     return {
                         id: item.sys.id,
                         slug: slug,
@@ -357,7 +357,7 @@ export default function TeamPage() {
             </div>
 
             {/* Copyright Footer */}
-            <div className="absolute bottom-[10px] w-full text-center z-20 text-white/60 text-xs font-sans px-4">
+            <div className="absolute bottom-[10px] w-full text-center z-20 text-white/60 text-xs px-4">
                 <p>&#9426; Copyrights 2026 by GFG SRMIST DELHI NCR. All Rights Reserved.</p>
             </div>
         </div>
@@ -371,7 +371,7 @@ function MemberCard({ member, router, big = false, year }) {
 
     return (
         <div
-        onClick={() => router.push(`/pages/team/${member.slug}`)}
+            onClick={() => router.push(`/pages/team/${member.slug}`)}
             style={{ cursor: "pointer" }}
         >
             <TiltedCard

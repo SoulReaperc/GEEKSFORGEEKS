@@ -87,11 +87,11 @@ export default function HomePage() {
                         }}
                     >
                         <motion.h1
+                            className="font-sf-pro"
                             initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
                             style={{
-                                fontFamily: "San Francisco pro",
                                 fontSize: "clamp(3rem, 8vw, 5rem)",
                                 marginBottom: "20px",
                                 background: "linear-gradient(135deg, #ffffff 0%, #46b94e 50%, #ffffff 100%)",
@@ -107,11 +107,11 @@ export default function HomePage() {
                         </motion.h1>
 
                         <motion.h2
+                            className="font-sf-pro"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                             style={{
-                                fontFamily: "San Francisco pro",
                                 fontSize: "clamp(1.5rem, 4vw, 2.5rem)",
                                 marginBottom: "30px",
                                 color: "#46b94e",
@@ -123,11 +123,11 @@ export default function HomePage() {
                         </motion.h2>
 
                         <motion.p
+                            className="font-sf-pro"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                             style={{
-                                fontFamily: "San Francisco Pro",
                                 fontSize: "clamp(1rem, 2vw, 1.15rem)",
                                 textAlign: "center",
                                 lineHeight: "1.8",
@@ -206,12 +206,12 @@ export default function HomePage() {
                         }}
                     >
                         <motion.h2
+                            className="font-sf-pro"
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
                             style={{
-                                fontFamily: "San Francisco",
                                 fontSize: "clamp(2rem, 5vw, 3rem)",
                                 textAlign: "center",
                                 marginBottom: "60px",
@@ -299,8 +299,8 @@ export default function HomePage() {
                         }}
                     >
                         <h2
+                            className="font-sf-pro"
                             style={{
-                                fontFamily: "San Francisco",
                                 fontSize: "clamp(2rem, 5vw, 3rem)",
                                 marginBottom: "30px",
                                 color: "#46b94e",
@@ -309,8 +309,8 @@ export default function HomePage() {
                             Join Our Community
                         </h2>
                         <p
+                            className="font-sf-pro"
                             style={{
-                                fontFamily: "San Francisco",
                                 fontSize: "1.2rem",
                                 lineHeight: "1.8",
                                 marginBottom: "40px",
@@ -393,7 +393,7 @@ export default function HomePage() {
         `}</style>
 
                 {/* Copyright Footer */}
-                <div className="absolute bottom-[10px] w-full text-center z-20 text-white/60 text-xs font-sans px-4">
+                <div className="absolute bottom-[10px] w-full text-center z-20 text-white/60 text-xs px-4">
                     <p>&#9426; Copyrights 2026 by GFG SRMIST DELHI NCR. All Rights Reserved.</p>
                 </div>
             </div>
@@ -438,8 +438,8 @@ function MissionCard({ icon: Icon, title, description, delay }) {
                 />
             </motion.div>
             <h3
+                className="font-sf-pro"
                 style={{
-                    fontFamily: "San Francisco",
                     fontSize: "2rem",
                     marginBottom: "20px",
                     color: "#46b94e",
@@ -448,8 +448,8 @@ function MissionCard({ icon: Icon, title, description, delay }) {
                 {title}
             </h3>
             <p
+                className="font-sf-pro"
                 style={{
-                    fontFamily: "San Francisco",
                     fontSize: "1.1rem",
                     lineHeight: "1.8",
                     color: "rgba(255, 255, 255, 0.8)",
@@ -501,6 +501,7 @@ function ActivityCard({ icon, title, description, index }) {
                 {icon}
             </motion.div>
             <h4
+                className="font-sf-pro"
                 style={{
                     fontSize: "1.4rem",
                     marginBottom: "15px",
@@ -510,6 +511,7 @@ function ActivityCard({ icon, title, description, index }) {
                 {title}
             </h4>
             <p
+                className="font-sf-pro"
                 style={{
                     fontSize: "1rem",
                     lineHeight: "1.6",
@@ -542,6 +544,7 @@ function StatCard({ number, label, index }) {
             }}
         >
             <motion.div
+                className="font-sf-pro"
                 whileHover={{ scale: 1.1 }}
                 style={{
                     fontSize: "3.5rem",
@@ -553,6 +556,7 @@ function StatCard({ number, label, index }) {
                 <AnimatedCounter value={number} />
             </motion.div>
             <div
+                className="font-sf-pro"
                 style={{
                     fontSize: "1.2rem",
                     color: "rgba(255, 255, 255, 0.8)",

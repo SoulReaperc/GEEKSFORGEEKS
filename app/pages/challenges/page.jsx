@@ -95,7 +95,7 @@ export default function ChallengesPage() {
                 </div></div>
 
             {/* Copyright Footer */}
-            <div className="absolute bottom-[10px] w-full text-center z-20 text-white/60 text-xs font-sans px-4">
+            <div className="absolute bottom-[10px] w-full text-center z-20 text-white/60 text-xs px-4">
                 <p>&#9426; Copyrights 2026 by GFG SRMIST DELHI NCR. All Rights Reserved.</p>
             </div>
         </div>
