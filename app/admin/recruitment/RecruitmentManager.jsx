@@ -162,8 +162,8 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
                                     <td colSpan="6" className="p-8 text-center text-white/40">No records found</td>
                                 </tr>
                             ) : (
-                                recruitments.map((row) => (
-                                    <tr key={row.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                recruitments.map((row, idx) => (
+                                    <tr key={`${row.id}-${idx}`} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                         <td className="p-3">{row.name}</td>
                                         <td className="p-3 font-mono text-sm">{row.reg_no}</td>
                                         <td className="p-3">{row.branch}</td>
@@ -173,8 +173,12 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
                                                 {row.team_preference}
                                             </span>
                                         </td>
-                                        <td className="p-3 text-sm text-white/60">
-                                            {new Date(row.created_at).toLocaleDateString()}
+                                        <td className="p-3 text-sm text-white/60" suppressHydrationWarning>
+                                            {row.created_at ? new Date(row.created_at).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit'
+                                            }) : 'N/A'}
                                         </td>
                                     </tr>
                                 ))

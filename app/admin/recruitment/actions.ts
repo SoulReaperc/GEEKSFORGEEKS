@@ -20,19 +20,37 @@ export async function toggleRecruitmentStatus(isOpen: boolean) {
             limit: 1
         })
 
+        let entry
+
         if (entries.items.length === 0) {
-            console.error('Global Settings entry not found')
-            throw new Error('Global Settings entry not found')
+            console.log('Global Settings entry not found, attempting to create one...')
+
+            try {
+                // Try to create a new globalSettings entry
+                entry = await environment.createEntry('globalSettings', {
+                    fields: {
+                        isRecruitmentOpen: {
+                            'en-US': isOpen
+                        }
+                    }
+                })
+
+                await entry.publish()
+                console.log('Successfully created globalSettings entry')
+            } catch (createError) {
+                console.error('Failed to create globalSettings entry:', createError)
+                throw new Error('Global Settings entry not found and could not be created. Please create a "globalSettings" content type in Contentful with an "isRecruitmentOpen" boolean field.')
+            }
+        } else {
+            entry = entries.items[0]
+
+            entry.fields.isRecruitmentOpen = {
+                'en-US': isOpen
+            }
+
+            const updatedEntry = await entry.update()
+            await updatedEntry.publish()
         }
-
-        const entry = entries.items[0]
-
-        entry.fields.isRecruitmentOpen = {
-            'en-US': isOpen
-        }
-
-        const updatedEntry = await entry.update()
-        await updatedEntry.publish()
 
         revalidatePath('/admin/recruitment')
     } catch (error) {
