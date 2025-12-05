@@ -2,25 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { Mail, Linkedin, Github, MapPin, Briefcase } from "lucide-react";
-import GlassyNavbar from "../../../components/MemberNavbar";
-import Squares from "../../../components/Squares";
+import GlassyNavbar from "../../../../components/MemberNavbar";
+import Squares from "../../../../components/Squares";
 import { contentfulClient } from '@/lib/contentful';
-import { Logo2 } from "../../../logo/logo2";
+import { Logo2 } from "../../../../logo/logo2";
 
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-       name: "Pulkit Gupta",
-        role: "Technical Co-Lead",
+        name: "Aryan Tiwari",
+        role: "Chairperson",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "gupta.pulkit2408@gmail.com",
-        linkedin: "https://www.linkedin.com/in/pulkitgupta2408/",
-        github: "https://github.com/pulkit1417",
-
-        about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/2iHxApodM34qW7BuN1mV44/391332fe506b7c43998876e2afff7792/pulkit.jpeg",
-
+        email: "at8585@srmist.edu.in",
+        linkedin: "https://in.linkedin.com/in/aryan-tiwari-shade",
+        github: "https://github.com/primexshade",
+        about: "I’m Aryan Tiwari, a third-year B.Tech CSE student at SRM Institute of Science and Technology (SRM-IST), passionate about technology, problem-solving, and building meaningful digital experiences. With strong foundations in Java, C/C++, and core computer science concepts, I focus on creating scalable, efficient, and user-centric applications. I actively practice Data Structures and Algorithms (DSA) and enjoy approaching real-world challenges with logic, optimization, and analytical thinking. My academic interests include Artificial Intelligence, Machine Learning, Networking, and system-level reasoning such as AI planning and socket programming. I currently serve as the Chairperson of the GeeksforGeeks Campus Body at SRMIST Delhi–NCR, leading initiatives, guiding teams, and helping grow the campus tech culture. I enjoy working with people, collaborating on ideas, and building solutions together. Looking ahead, I aim to grow as a versatile technologist by exploring AI/ML, Cybersecurity, and Cloud Engineering to build impactful, scalable products.",
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/1kCU2M9dF2u7ljRFz7tAXf/d8fb86da25e976217abfbdedbeac8a52/image.png",
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
             { name: "Next.js", level: "Advanced", color: "#000000" },
@@ -39,7 +37,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Pulkit Gupta',
+                    'fields.name': 'Aryan Tiwari',
                 });
 
                 if (response.items.length > 0) {
@@ -54,7 +52,7 @@ export default function AdrikaSarawatPage() {
                         linkedin: member.linkedin || prev.linkedin,
                         github: member.github || prev.github,
                         about: member.about || prev.about,
-                        profileImage: member.profileImage || prev.profileImage,
+                        profileImage: member.photo?.fields?.file?.url ? (member.photo.fields.file.url.startsWith('//') ? `https:${member.photo.fields.file.url}` : member.photo.fields.file.url) : prev.profileImage,
                         skills: member.skills || prev.skills,
                     }));
                 }
@@ -122,7 +120,6 @@ export default function AdrikaSarawatPage() {
                                 className="id-card-wrapper"
                                 style={{
                                     position: "relative",
-                                    
                                     transformOrigin: "top center",
                                 }}
                             >
@@ -167,7 +164,7 @@ export default function AdrikaSarawatPage() {
                                 <div
                                     style={{
                                         width: "320px",
-                                        background: "rgba(5, 3, 3, 0.89)",
+                                        background: "rgba(10, 10, 10, 0.8)",
                                         backdropFilter: "blur(20px)",
                                         borderRadius: "24px",
                                         padding: "30px",
@@ -175,7 +172,7 @@ export default function AdrikaSarawatPage() {
                                         boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 255, 136, 0.1), inset 0 0 20px rgba(0, 255, 136, 0.05)",
                                         position: "relative",
                                         overflow: "hidden",
-                                        transition: "all 0.3s ease",
+                                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.transform = "scale(1.05) rotateY(5deg)";
@@ -226,7 +223,7 @@ export default function AdrikaSarawatPage() {
                                     <div style={{ textAlign: "center", marginTop: "30px" }}>
                                         <h2
                                             style={{
-                                            
+
                                                 fontSize: "26px",
                                                 fontWeight: "700",
                                                 marginBottom: "8px",
@@ -345,6 +342,7 @@ export default function AdrikaSarawatPage() {
                                             color: "rgba(255,255,255,0.85)",
                                             marginBottom: "20px",
                                             fontWeight: "400",
+                                            textAlign: "justify",
                                         }}
                                     >
                                         {profileData.about}
@@ -641,34 +639,115 @@ export default function AdrikaSarawatPage() {
           }
         }
 
-        /* Responsive Styles */
-        @media (max-width: 1024px) {
+        /* Mobile-First Responsive Styles */
+        /* Base styles are mobile, then we enhance for larger screens */
+        
+        /* Tablet and up (768px+) */
+        @media (min-width: 768px) {
+          main {
+            padding: 100px 40px 40px !important;
+          }
+        }
+        
+        /* Desktop (1200px+) */
+        @media (min-width: 1200px) {
+          .main-grid {
+            grid-template-columns: 400px 1fr !important;
+          }
+          
+          .id-card-container {
+            position: sticky !important;
+            top: 120px !important;
+          }
+          
+          .right-column {
+            padding-left: 240px !important;
+            padding-top: 120px !important;
+          }
+        }
+        
+        /* Mobile overrides (max-width approach for specificity) */
+        @media (max-width: 1199px) {
           .main-grid {
             grid-template-columns: 1fr !important;
-            gap: 60px !important;
-            padding-right: 0 !important;
+            gap: 40px !important;
           }
           
           .id-card-container {
             position: relative !important;
             top: 0 !important;
-            margin-bottom: 40px;
+            left: 0 !important;
+            margin: 0 auto 20px !important;
+            display: flex !important;
+            justify-content: center !important;
           }
 
-          .content-container {
+          .right-column {
             padding-left: 0 !important;
-            margin-left: 0 !important;
             padding-top: 0 !important;
+            max-width: 100% !important;
           }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 767px) {
           main {
             padding: 80px 20px 40px !important;
           }
           
           .id-card-wrapper {
-            transform: scale(0.9);
+            transform: scale(0.85) !important;
+            transform-origin: top center !important;
+          }
+
+          .right-column > div {
+            padding: 20px 24px !important;
+            max-width: 100% !important;
+          }
+
+          .right-column h3 {
+            font-size: 22px !important;
+          }
+
+          .right-column p {
+            font-size: 13px !important;
+          }
+        }
+
+        @media (max-width: 479px) {
+          main {
+            padding: 70px 16px 30px !important;
+          }
+
+          .id-card-wrapper {
+            transform: scale(0.75) !important;
+            transform-origin: top center !important;
+          }
+
+          .main-grid {
+            gap: 30px !important;
+          }
+
+          .right-column > div {
+            padding: 18px 20px !important;
+            border-radius: 18px !important;
+          }
+
+          .right-column h3 {
+            font-size: 20px !important;
+          }
+
+          .right-column p {
+            font-size: 12px !important;
+            line-height: 1.6 !important;
+          }
+
+          .right-column > div > div > div[style*="gridTemplateColumns"] {
+            grid-template-columns: 1fr !important;
+          }
+
+          .right-column a {
+            font-size: 12px !important;
+            padding: 10px 14px !important;
           }
         }
       `}</style >

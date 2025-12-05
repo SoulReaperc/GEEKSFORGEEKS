@@ -2,23 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { Mail, Linkedin, Github, MapPin, Briefcase } from "lucide-react";
-import GlassyNavbar from "../../../components/MemberNavbar";
-import Squares from "../../../components/Squares";
+import GlassyNavbar from "../../../../components/MemberNavbar";
+import Squares from "../../../../components/Squares";
 import { contentfulClient } from '@/lib/contentful';
-import { Logo2 } from "../../../logo/logo2";
+import { Logo2 } from "../../../../logo/logo2";
 
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Aryan Tiwari",
-        role: "Chairperson",
+        name: "Ajeet Singh Rawat",
+        role: "Design Lead",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "at8585@srmist.edu.in",
-        linkedin: "https://in.linkedin.com/in/aryan-tiwari-shade",
-        github: "https://github.com/primexshade",
-        about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/1kCU2M9dF2u7ljRFz7tAXf/d8fb86da25e976217abfbdedbeac8a52/image.png",
+        email: "ajeetrawat1007@gmail.com",
+        linkedin: "https://www.linkedin.com/in/ajeet-singh-rawat/",
+        github: "https://github.com",
+        about: "I’m a third-year B.Tech Computer Science student at SRM Institute of Science and Technology (SRM-IST), passionate about building full stack web applications that deliver seamless and responsive user experiences. Tech Stack: As a Full Stack Developer specializing in the MERN stack (MongoDB, Express.js, React.js, Node.js), I build dynamic, scalable, and modern web applications from front to back, with a strong focus on performance and usability. Problem Solving: I enjoy tackling complex problems through Data Structures and Algorithms (DSA), which helps me write efficient, maintainable, and optimized code across the stack. Campus Engagement: As the Lead of the Design and Branding team for the Geeks for Geeks Club, I actively contribute to organizing hackathons, coding contests, and tech events that helps me growing through collaboration, creativity, and leadership. Future Goals: I'm eager to dive deeper into Cybersecurity and AI/ML, aiming to expand my expertise beyond full stack development into cutting-edge areas of technology.",
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/5BbZ5YUFtxdLQf5bJAZFU/4f6ddc95556a6330b5d391135a12dd98/image.png",
+
+
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
             { name: "Next.js", level: "Advanced", color: "#000000" },
@@ -37,7 +39,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Aryan Tiwari',
+                    'fields.name': 'Ajeet Singh Rawat',
                 });
 
                 if (response.items.length > 0) {
@@ -52,7 +54,7 @@ export default function AdrikaSarawatPage() {
                         linkedin: member.linkedin || prev.linkedin,
                         github: member.github || prev.github,
                         about: member.about || prev.about,
-                        profileImage: member.photo?.fields?.file?.url ? (member.photo.fields.file.url.startsWith('//') ? `https:${member.photo.fields.file.url}` : member.photo.fields.file.url) : prev.profileImage,
+                        profileImage: member.profileImage || prev.profileImage,
                         skills: member.skills || prev.skills,
                     }));
                 }
@@ -120,11 +122,13 @@ export default function AdrikaSarawatPage() {
                                 className="id-card-wrapper"
                                 style={{
                                     position: "relative",
+
                                     transformOrigin: "top center",
                                 }}
                             >
                                 {/* Lanyard Clip */}
                                 <div
+                                    className="lanyard-clip"
                                     style={{
                                         width: "40px",
                                         height: "20px",
@@ -151,6 +155,7 @@ export default function AdrikaSarawatPage() {
 
                                 {/* Lanyard String */}
                                 <div
+                                    className="lanyard-string"
                                     style={{
                                         width: "4px",
                                         height: "80px",
@@ -164,7 +169,7 @@ export default function AdrikaSarawatPage() {
                                 <div
                                     style={{
                                         width: "320px",
-                                        background: "rgba(10, 10, 10, 0.8)",
+                                        background: "rgba(5, 3, 3, 0.89)",
                                         backdropFilter: "blur(20px)",
                                         borderRadius: "24px",
                                         padding: "30px",
@@ -342,6 +347,7 @@ export default function AdrikaSarawatPage() {
                                             color: "rgba(255,255,255,0.85)",
                                             marginBottom: "20px",
                                             fontWeight: "400",
+                                            textAlign: "justify",
                                         }}
                                     >
                                         {profileData.about}
@@ -615,7 +621,17 @@ export default function AdrikaSarawatPage() {
 
             {/* CSS Animations */}
             <style jsx>{`
-
+        @keyframes swingLanyard {
+          0% {
+            transform: rotate(3deg);
+          }
+          50% {
+            transform: rotate(-3deg);
+          }
+          100% {
+            transform: rotate(3deg);
+          }
+        }
 
         @keyframes fadeInUp {
           from {
@@ -629,33 +645,100 @@ export default function AdrikaSarawatPage() {
         }
 
         /* Responsive Styles */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .main-grid {
             grid-template-columns: 1fr !important;
-            gap: 60px !important;
-            padding-right: 0 !important;
+            gap: 40px !important;
           }
           
           .id-card-container {
             position: relative !important;
             top: 0 !important;
-            margin-bottom: 40px;
+            left: 0 !important;
+            margin-bottom: 20px;
           }
 
-          .content-container {
+          .right-column {
             padding-left: 0 !important;
-            margin-left: 0 !important;
             padding-top: 0 !important;
           }
         }
 
         @media (max-width: 768px) {
           main {
-            padding: 80px 20px 40px !important;
+            padding: 120px 20px 40px !important;
           }
           
           .id-card-wrapper {
-            transform: scale(0.9);
+            transform: scale(0.85);
+          }
+
+          .lanyard-clip {
+            width: 35px !important;
+            height: 18px !important;
+          }
+
+          .lanyard-string {
+            height: 65px !important;
+          }
+
+          .right-column > div {
+            padding: 20px 24px !important;
+          }
+
+          .right-column h3 {
+            font-size: 22px !important;
+          }
+
+          .right-column p {
+            font-size: 13px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          main {
+            padding: 110px 16px 30px !important;
+          }
+
+          .id-card-wrapper {
+            transform: scale(0.75);
+          }
+
+          .lanyard-clip {
+            width: 30px !important;
+            height: 15px !important;
+          }
+
+          .lanyard-string {
+            width: 3px !important;
+            height: 50px !important;
+          }
+
+          .main-grid {
+            gap: 30px !important;
+          }
+
+          .right-column > div {
+            padding: 18px 20px !important;
+            border-radius: 18px !important;
+          }
+
+          .right-column h3 {
+            font-size: 20px !important;
+          }
+
+          .right-column p {
+            font-size: 12px !important;
+            line-height: 1.6 !important;
+          }
+
+          .right-column > div > div > div[style*="gridTemplateColumns"] {
+            grid-template-columns: 1fr !important;
+          }
+
+          .right-column a {
+            font-size: 12px !important;
+            padding: 10px 14px !important;
           }
         }
       `}</style >

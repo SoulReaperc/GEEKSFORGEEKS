@@ -2,27 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { Mail, Linkedin, Github, MapPin, Briefcase } from "lucide-react";
-import GlassyNavbar from "../../../components/MemberNavbar";
-import Squares from "../../../components/Squares";
+import GlassyNavbar from "../../../../components/MemberNavbar";
+import Squares from "../../../../components/Squares";
 import { contentfulClient } from '@/lib/contentful';
-import { Logo2 } from "../../../logo/logo2";
+import { Logo2 } from "../../../../logo/logo2";
 
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Ankita Gupta",
-        role: "Event Co-Lead",
+        name: "Pranati Verma",
+        role: "Design Co-Lead",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "ankitagupta2603@gmail.com",
-        linkedin: " https://www.linkedin.com/in/ankita-gupta-6b2a752ab/",
-        github: "https://github.com/ankitaa2603",
+        email: "pranativerma2008@gmail.com",
+        linkedin: " linkedin.com/in/aayush-verma-262785330",
+        github: "https://github.com",
         about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/WOSheDfoaJupQEfR9arve/d672168d86088c53f58d6b4b0d604838/image.png",
-
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/66YihVLOvBiqx6riw7nX3I/7f1cf827feaf08f585de1a62a27d10bf/image.png",
         skills: [
-            { name: "React", level: "Advanced", color: "#61DAFB" },
-            { name: "Next.js", level: "Advanced", color: "#000000" },
+            { name: "Figma", level: "Advanced", color: "#000000" },
             { name: "Node.js", level: "Intermediate", color: "#339933" },
             { name: "TypeScript", level: "Advanced", color: "#3178C6" },
             { name: "Python", level: "Intermediate", color: "#3776AB" },
@@ -38,7 +36,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Ankita Gupta',
+                    'fields.name': 'Pranati Verma',
                 });
 
                 if (response.items.length > 0) {
@@ -53,7 +51,7 @@ export default function AdrikaSarawatPage() {
                         linkedin: member.linkedin || prev.linkedin,
                         github: member.github || prev.github,
                         about: member.about || prev.about,
-                        profileImage: member.photo?.fields?.file?.url ? (member.photo.fields.file.url.startsWith('//') ? `https:${member.photo.fields.file.url}` : member.photo.fields.file.url) : prev.profileImage,
+                        profileImage: member.profileImage || prev.profileImage,
                         skills: member.skills || prev.skills,
                     }));
                 }
@@ -121,7 +119,7 @@ export default function AdrikaSarawatPage() {
                                 className="id-card-wrapper"
                                 style={{
                                     position: "relative",
-                                    
+
                                     transformOrigin: "top center",
                                 }}
                             >
@@ -225,7 +223,7 @@ export default function AdrikaSarawatPage() {
                                     <div style={{ textAlign: "center", marginTop: "30px" }}>
                                         <h2
                                             style={{
-                                            
+
                                                 fontSize: "26px",
                                                 fontWeight: "700",
                                                 marginBottom: "8px",
@@ -641,22 +639,21 @@ export default function AdrikaSarawatPage() {
         }
 
         /* Responsive Styles */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .main-grid {
             grid-template-columns: 1fr !important;
-            gap: 60px !important;
-            padding-right: 0 !important;
+            gap: 40px !important;
           }
           
           .id-card-container {
             position: relative !important;
             top: 0 !important;
-            margin-bottom: 40px;
+            left: 0 !important;
+            margin-bottom: 20px;
           }
 
-          .content-container {
+          .right-column {
             padding-left: 0 !important;
-            margin-left: 0 !important;
             padding-top: 0 !important;
           }
         }
@@ -667,7 +664,56 @@ export default function AdrikaSarawatPage() {
           }
           
           .id-card-wrapper {
-            transform: scale(0.9);
+            transform: scale(0.85);
+          }
+
+          .right-column > div {
+            padding: 20px 24px !important;
+          }
+
+          .right-column h3 {
+            font-size: 22px !important;
+          }
+
+          .right-column p {
+            font-size: 13px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          main {
+            padding: 70px 16px 30px !important;
+          }
+
+          .id-card-wrapper {
+            transform: scale(0.75);
+          }
+
+          .main-grid {
+            gap: 30px !important;
+          }
+
+          .right-column > div {
+            padding: 18px 20px !important;
+            border-radius: 18px !important;
+          }
+
+          .right-column h3 {
+            font-size: 20px !important;
+          }
+
+          .right-column p {
+            font-size: 12px !important;
+            line-height: 1.6 !important;
+          }
+
+          .right-column > div > div > div[style*="gridTemplateColumns"] {
+            grid-template-columns: 1fr !important;
+          }
+
+          .right-column a {
+            font-size: 12px !important;
+            padding: 10px 14px !important;
           }
         }
       `}</style >

@@ -2,24 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { Mail, Linkedin, Github, MapPin, Briefcase } from "lucide-react";
-import GlassyNavbar from "../../../components/MemberNavbar";
-import Squares from "../../../components/Squares";
+import GlassyNavbar from "../../../../components/MemberNavbar";
+import Squares from "../../../../components/Squares";
 import { contentfulClient } from '@/lib/contentful';
-import { Logo2 } from "../../../logo/logo2";
+import { Logo2 } from "../../../../logo/logo2";
 
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Shivangi Saxena",
-        role: "P.R Co-Lead",
-        memberId: "GFG-2024-1150",
+        name: "Adrika Sarawat",
+        role: "Vice Chairperson",
+        memberId: "GFG-2024-2026",
         location: "SRM Institute of Science and Technology",
-        email: "shivangisaxena2712@gmail.com",
-        linkedin: "https://www.linkedin.com/in/shivangi-saxena-b33aa2292/",
-        github: "https://github.com",
+        email: "sarawatadrika@gmail.com",
+        linkedin: "https://www.linkedin.com/in/adrika-sarawat-99209a328/",
+        github: "https://github.com/Adrika-02",
         about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/10zeZLfZHUulElhfIdnKag/6596dfe2a60037ed47296089ff769a5d/image.png",
-
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/4Rc3YNWdd96uMWsOA2wPHd/a0fd1329b0a1392fc8ddefb6782816bf/image.png",
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
             { name: "Next.js", level: "Advanced", color: "#000000" },
@@ -38,7 +37,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Shivangi Saxena',
+                    'fields.name': 'Adrika Sarawat',
                 });
 
                 if (response.items.length > 0) {
@@ -121,7 +120,7 @@ export default function AdrikaSarawatPage() {
                                 className="id-card-wrapper"
                                 style={{
                                     position: "relative",
-                                    
+
                                     transformOrigin: "top center",
                                 }}
                             >
@@ -225,7 +224,7 @@ export default function AdrikaSarawatPage() {
                                     <div style={{ textAlign: "center", marginTop: "30px" }}>
                                         <h2
                                             style={{
-                                            
+
                                                 fontSize: "26px",
                                                 fontWeight: "700",
                                                 marginBottom: "8px",
@@ -440,7 +439,7 @@ export default function AdrikaSarawatPage() {
                                     {/* Social Links */}
                                     <div style={{ display: "flex", gap: "12px" }}>
                                         <a
-                                            href={`${profileData.linkedin}`}
+                                            href={`https://${profileData.linkedin}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
@@ -474,7 +473,7 @@ export default function AdrikaSarawatPage() {
                                             LinkedIn
                                         </a>
                                         <a
-                                            href={`${profileData.github}`}
+                                            href={`https://${profileData.github}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
@@ -641,22 +640,21 @@ export default function AdrikaSarawatPage() {
         }
 
         /* Responsive Styles */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .main-grid {
             grid-template-columns: 1fr !important;
-            gap: 60px !important;
-            padding-right: 0 !important;
+            gap: 40px !important;
           }
           
           .id-card-container {
             position: relative !important;
             top: 0 !important;
-            margin-bottom: 40px;
+            left: 0 !important;
+            margin-bottom: 20px;
           }
 
-          .content-container {
+          .right-column {
             padding-left: 0 !important;
-            margin-left: 0 !important;
             padding-top: 0 !important;
           }
         }
@@ -667,7 +665,56 @@ export default function AdrikaSarawatPage() {
           }
           
           .id-card-wrapper {
-            transform: scale(0.9);
+            transform: scale(0.85);
+          }
+
+          .right-column > div {
+            padding: 20px 24px !important;
+          }
+
+          .right-column h3 {
+            font-size: 22px !important;
+          }
+
+          .right-column p {
+            font-size: 13px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          main {
+            padding: 70px 16px 30px !important;
+          }
+
+          .id-card-wrapper {
+            transform: scale(0.75);
+          }
+
+          .main-grid {
+            gap: 30px !important;
+          }
+
+          .right-column > div {
+            padding: 18px 20px !important;
+            border-radius: 18px !important;
+          }
+
+          .right-column h3 {
+            font-size: 20px !important;
+          }
+
+          .right-column p {
+            font-size: 12px !important;
+            line-height: 1.6 !important;
+          }
+
+          .right-column > div > div > div[style*="gridTemplateColumns"] {
+            grid-template-columns: 1fr !important;
+          }
+
+          .right-column a {
+            font-size: 12px !important;
+            padding: 10px 14px !important;
           }
         }
       `}</style >

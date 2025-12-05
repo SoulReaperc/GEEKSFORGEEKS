@@ -2,24 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { Mail, Linkedin, Github, MapPin, Briefcase } from "lucide-react";
-import GlassyNavbar from "../../../components/MemberNavbar";
-import Squares from "../../../components/Squares";
+import GlassyNavbar from "../../../../components/MemberNavbar";
+import Squares from "../../../../components/Squares";
 import { contentfulClient } from '@/lib/contentful';
-import { Logo2 } from "../../../logo/logo2";
+import { Logo2 } from "../../../../logo/logo2";
 
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Vaibhav Sharma",
-        role: "Event Lead",
+        name: "Ankita Gupta",
+        role: "Event Co-Lead",
         memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "sharmavaibhav447@gmail.com",
-        linkedin: "https://www.linkedin.com/in/vaibhav-sharma-71a066363/",
-        github: "https://github.com",
-        about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/1KgtxBtXpB2ZtREJYb5UFw/8276293443027570a98672ed33ab6f82/image.png",
- 
+        email: "ankitagupta2603@gmail.com",
+        linkedin: " https://www.linkedin.com/in/ankita-gupta-6b2a752ab/",
+        github: "https://github.com/ankitaa2603",
+        about: "I’m Ankita Gupta, a 3rd-year CSE–Data Science student who thrives on building intelligent, scalable, and impact-driven technology. With strong skills across full-stack development, data science, and core CS fundamentals, I love transforming complex problems into clean, bold solutions. I’ve cleared high-level challenges like TechGig Code Gladiators, Adobe Hackathon, Devalchemy and Geek Tank, consistently proving my problem-solving mindset. Selected among top students for a Government-collaborated Data Science Bootcamp, I continue pushing my limits through projects, innovation, and continuous learning, aiming to create work that speaks for itself.",
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/WOSheDfoaJupQEfR9arve/d672168d86088c53f58d6b4b0d604838/image.png",
 
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
@@ -39,7 +38,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Vaibhav Sharma',
+                    'fields.name': 'Ankita Gupta',
                 });
 
                 if (response.items.length > 0) {
@@ -54,7 +53,7 @@ export default function AdrikaSarawatPage() {
                         linkedin: member.linkedin || prev.linkedin,
                         github: member.github || prev.github,
                         about: member.about || prev.about,
-                        profileImage: member.profileImage || prev.profileImage,
+                        profileImage: member.photo?.fields?.file?.url ? (member.photo.fields.file.url.startsWith('//') ? `https:${member.photo.fields.file.url}` : member.photo.fields.file.url) : prev.profileImage,
                         skills: member.skills || prev.skills,
                     }));
                 }
@@ -122,12 +121,13 @@ export default function AdrikaSarawatPage() {
                                 className="id-card-wrapper"
                                 style={{
                                     position: "relative",
-                                    
+
                                     transformOrigin: "top center",
                                 }}
                             >
                                 {/* Lanyard Clip */}
                                 <div
+                                    className="lanyard-clip"
                                     style={{
                                         width: "40px",
                                         height: "20px",
@@ -154,6 +154,7 @@ export default function AdrikaSarawatPage() {
 
                                 {/* Lanyard String */}
                                 <div
+                                    className="lanyard-string"
                                     style={{
                                         width: "4px",
                                         height: "80px",
@@ -226,7 +227,7 @@ export default function AdrikaSarawatPage() {
                                     <div style={{ textAlign: "center", marginTop: "30px" }}>
                                         <h2
                                             style={{
-                                            
+
                                                 fontSize: "26px",
                                                 fontWeight: "700",
                                                 marginBottom: "8px",
@@ -345,6 +346,7 @@ export default function AdrikaSarawatPage() {
                                             color: "rgba(255,255,255,0.85)",
                                             marginBottom: "20px",
                                             fontWeight: "400",
+                                            textAlign: "justify",
                                         }}
                                     >
                                         {profileData.about}
@@ -642,33 +644,100 @@ export default function AdrikaSarawatPage() {
         }
 
         /* Responsive Styles */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .main-grid {
             grid-template-columns: 1fr !important;
-            gap: 60px !important;
-            padding-right: 0 !important;
+            gap: 40px !important;
           }
           
           .id-card-container {
             position: relative !important;
             top: 0 !important;
-            margin-bottom: 40px;
+            left: 0 !important;
+            margin-bottom: 20px;
           }
 
-          .content-container {
+          .right-column {
             padding-left: 0 !important;
-            margin-left: 0 !important;
             padding-top: 0 !important;
           }
         }
 
         @media (max-width: 768px) {
           main {
-            padding: 80px 20px 40px !important;
+            padding: 120px 20px 40px !important;
           }
           
           .id-card-wrapper {
-            transform: scale(0.9);
+            transform: scale(0.85);
+          }
+
+          .lanyard-clip {
+            width: 35px !important;
+            height: 18px !important;
+          }
+
+          .lanyard-string {
+            height: 65px !important;
+          }
+
+          .right-column > div {
+            padding: 20px 24px !important;
+          }
+
+          .right-column h3 {
+            font-size: 22px !important;
+          }
+
+          .right-column p {
+            font-size: 13px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          main {
+            padding: 110px 16px 30px !important;
+          }
+
+          .id-card-wrapper {
+            transform: scale(0.75);
+          }
+
+          .lanyard-clip {
+            width: 30px !important;
+            height: 15px !important;
+          }
+
+          .lanyard-string {
+            width: 3px !important;
+            height: 50px !important;
+          }
+
+          .main-grid {
+            gap: 30px !important;
+          }
+
+          .right-column > div {
+            padding: 18px 20px !important;
+            border-radius: 18px !important;
+          }
+
+          .right-column h3 {
+            font-size: 20px !important;
+          }
+
+          .right-column p {
+            font-size: 12px !important;
+            line-height: 1.6 !important;
+          }
+
+          .right-column > div > div > div[style*="gridTemplateColumns"] {
+            grid-template-columns: 1fr !important;
+          }
+
+          .right-column a {
+            font-size: 12px !important;
+            padding: 10px 14px !important;
           }
         }
       `}</style >

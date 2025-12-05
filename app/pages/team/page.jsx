@@ -371,7 +371,7 @@ function MemberCard({ member, router, big = false, year }) {
 
     const handleClick = () => {
         if (year === 2025) {
-            router.push(`/pages/team/${member.slug}`);
+            router.push(`/pages/team/2025/${member.slug}`);
         }
     };
 

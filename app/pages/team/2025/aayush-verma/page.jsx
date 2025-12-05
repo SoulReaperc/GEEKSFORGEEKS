@@ -2,23 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { Mail, Linkedin, Github, MapPin, Briefcase } from "lucide-react";
-import GlassyNavbar from "../../../components/MemberNavbar";
-import Squares from "../../../components/Squares";
+import GlassyNavbar from "../../../../components/MemberNavbar";
+import Squares from "../../../../components/Squares";
 import { contentfulClient } from '@/lib/contentful';
-import { Logo2 } from "../../../logo/logo2";
+import { Logo2 } from "../../../../logo/logo2";
 
 export default function AdrikaSarawatPage() {
     const [isHovered, setIsHovered] = useState(false);
     const [profileData, setProfileData] = useState({
-        name: "Adrika Sarawat",
-        role: "Vice Chairperson",
-        memberId: "GFG-2024-2026",
+        name: "Aayush Verma",
+        role: "P.R. & Outreach Lead",
+        memberId: "GFG-2024-1150",
         location: "SRM Institute of Science and Technology",
-        email: "adrika@geeksforgeeks.com",
-        linkedin: "linkedin.com/in/adrika-sarawat",
-        github: "github.com/adrikasarawat",
-        about: "Passionate developer with expertise in modern web technologies. I love building scalable applications and contributing to open-source projects. Always eager to learn new technologies and solve complex problems.",
-        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/4Rc3YNWdd96uMWsOA2wPHd/a0fd1329b0a1392fc8ddefb6782816bf/image.png",
+        email: "aayushverma1602@gmail.com",
+        linkedin: " linkedin.com/in/aayush-verma-262785330",
+        github: "https://github.com/AayushVerma16",
+        about: "I’m a third-year B.Tech Data Science student at SRM Institute of Science and Technology (SRM-IST), passionate about technology, communication, and creating meaningful impact through innovation. Tech Stack: I specialize in the MERN stack (MongoDB, Express.js, React.js, Node.js) for full-stack development, with a solid foundation in Java and C++. I’ve built responsive, user-focused applications and am currently strengthening my DSA skills to write efficient, high-quality code. Problem Solving: I enjoy tackling real-world problems through logical thinking. My DSA practice helps me build optimized, scalable solutions across the stack.As the PR Lead of GeeksforGeeks SRMIST Delhi-NCR, I lead outreach, build strong networks, and help grow our tech community through events and collaborations. Future Goals: I'm eager to explore AI/ML and Cybersecurity, aiming to become a versatile technologist who builds impactful products and connects people and ideas.",
+        profileImage: "https://images.ctfassets.net/u39iu0kuz48f/2k3itmwMBO8H5x9KPRYBAE/ef5b4a672fceb91a3efeda74571504b8/aayush-verma.jpeg",
+
         skills: [
             { name: "React", level: "Advanced", color: "#61DAFB" },
             { name: "Next.js", level: "Advanced", color: "#000000" },
@@ -37,7 +38,7 @@ export default function AdrikaSarawatPage() {
             try {
                 const response = await contentfulClient.getEntries({
                     content_type: 'memberProfile',
-                    'fields.name': 'Adrika Sarawat',
+                    'fields.name': 'Aayush Verma',
                 });
 
                 if (response.items.length > 0) {
@@ -52,7 +53,7 @@ export default function AdrikaSarawatPage() {
                         linkedin: member.linkedin || prev.linkedin,
                         github: member.github || prev.github,
                         about: member.about || prev.about,
-                        profileImage: member.photo?.fields?.file?.url ? (member.photo.fields.file.url.startsWith('//') ? `https:${member.photo.fields.file.url}` : member.photo.fields.file.url) : prev.profileImage,
+                        profileImage: member.profileImage || prev.profileImage,
                         skills: member.skills || prev.skills,
                     }));
                 }
@@ -120,12 +121,13 @@ export default function AdrikaSarawatPage() {
                                 className="id-card-wrapper"
                                 style={{
                                     position: "relative",
-                                    
+
                                     transformOrigin: "top center",
                                 }}
                             >
                                 {/* Lanyard Clip */}
                                 <div
+                                    className="lanyard-clip"
                                     style={{
                                         width: "40px",
                                         height: "20px",
@@ -152,6 +154,7 @@ export default function AdrikaSarawatPage() {
 
                                 {/* Lanyard String */}
                                 <div
+                                    className="lanyard-string"
                                     style={{
                                         width: "4px",
                                         height: "80px",
@@ -224,7 +227,7 @@ export default function AdrikaSarawatPage() {
                                     <div style={{ textAlign: "center", marginTop: "30px" }}>
                                         <h2
                                             style={{
-                                            
+
                                                 fontSize: "26px",
                                                 fontWeight: "700",
                                                 marginBottom: "8px",
@@ -343,6 +346,7 @@ export default function AdrikaSarawatPage() {
                                             color: "rgba(255,255,255,0.85)",
                                             marginBottom: "20px",
                                             fontWeight: "400",
+                                            textAlign: "justify",
                                         }}
                                     >
                                         {profileData.about}
@@ -439,7 +443,7 @@ export default function AdrikaSarawatPage() {
                                     {/* Social Links */}
                                     <div style={{ display: "flex", gap: "12px" }}>
                                         <a
-                                            href={`https://${profileData.linkedin}`}
+                                            href={`${profileData.linkedin}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
@@ -473,7 +477,7 @@ export default function AdrikaSarawatPage() {
                                             LinkedIn
                                         </a>
                                         <a
-                                            href={`https://${profileData.github}`}
+                                            href={`${profileData.github}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
@@ -640,33 +644,100 @@ export default function AdrikaSarawatPage() {
         }
 
         /* Responsive Styles */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .main-grid {
             grid-template-columns: 1fr !important;
-            gap: 60px !important;
-            padding-right: 0 !important;
+            gap: 40px !important;
           }
           
           .id-card-container {
             position: relative !important;
             top: 0 !important;
-            margin-bottom: 40px;
+            left: 0 !important;
+            margin-bottom: 20px;
           }
 
-          .content-container {
+          .right-column {
             padding-left: 0 !important;
-            margin-left: 0 !important;
             padding-top: 0 !important;
           }
         }
 
         @media (max-width: 768px) {
           main {
-            padding: 80px 20px 40px !important;
+            padding: 120px 20px 40px !important;
           }
           
           .id-card-wrapper {
-            transform: scale(0.9);
+            transform: scale(0.85);
+          }
+
+          .lanyard-clip {
+            width: 35px !important;
+            height: 18px !important;
+          }
+
+          .lanyard-string {
+            height: 65px !important;
+          }
+
+          .right-column > div {
+            padding: 20px 24px !important;
+          }
+
+          .right-column h3 {
+            font-size: 22px !important;
+          }
+
+          .right-column p {
+            font-size: 13px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          main {
+            padding: 110px 16px 30px !important;
+          }
+
+          .id-card-wrapper {
+            transform: scale(0.75);
+          }
+
+          .lanyard-clip {
+            width: 30px !important;
+            height: 15px !important;
+          }
+
+          .lanyard-string {
+            width: 3px !important;
+            height: 50px !important;
+          }
+
+          .main-grid {
+            gap: 30px !important;
+          }
+
+          .right-column > div {
+            padding: 18px 20px !important;
+            border-radius: 18px !important;
+          }
+
+          .right-column h3 {
+            font-size: 20px !important;
+          }
+
+          .right-column p {
+            font-size: 12px !important;
+            line-height: 1.6 !important;
+          }
+
+          .right-column > div > div > div[style*="gridTemplateColumns"] {
+            grid-template-columns: 1fr !important;
+          }
+
+          .right-column a {
+            font-size: 12px !important;
+            padding: 10px 14px !important;
           }
         }
       `}</style >
