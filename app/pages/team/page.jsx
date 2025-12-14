@@ -7,6 +7,7 @@ import GlassyNavbar from "../../components/GlassyNavbar";
 import Squares from "../../components/Squares";
 import TiltedCard from "../../components/TiltedCard";
 import { motion, AnimatePresence } from "motion/react";
+import { AnimatedTooltip } from "../../../components/ui/animated-tooltip";
 
 // Contentful Client
 const client = createClient({
@@ -99,6 +100,27 @@ export default function TeamPage() {
             leadName: m.name,
             memberList: m.generalMembers.split(",").map((s) => s.trim()),
         }));
+
+    // Team member photo mapping - placeholder images (replace with actual photos)
+    const memberPhotoMap = {
+     
+        "Aryan Sharma": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_1_1765724493945.png",
+        "Priya Patel": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_2_1765724513504.png",
+        "Rahul Kumar": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_3_1765724531360.png",
+        "Sneha Gupta": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_4_1765724547957.png",
+        "Vikram Singh": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_5_1765724575419.png",
+    
+    };
+
+    // Convert team members to AnimatedTooltip format
+    const getTooltipItems = (memberList) => {
+        return memberList.map((name, index) => ({
+            id: index + 1,
+            name: name,
+            designation: "Team Member",
+            image: memberPhotoMap[name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=46b94e&color=fff&size=100`,
+        }));
+    };
 
     return (
         <div style={{ width: "100%", minHeight: "100vh", position: "relative" }}>
@@ -304,44 +326,12 @@ export default function TeamPage() {
                                                             transition={{ duration: 0.2, ease: "easeOut" }}
                                                         >
                                                             <div style={{
-                                                                padding: "10px 30px 30px",
+                                                                padding: "30px 30px 40px",
                                                                 display: "flex",
-                                                                flexWrap: "wrap",
-                                                                gap: "12px"
+                                                                justifyContent: "center",
+                                                                alignItems: "center"
                                                             }}>
-                                                                {team.memberList.map((name, i) => (
-                                                                    <motion.span
-                                                                        key={i}
-                                                                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                                        transition={{
-                                                                            delay: i * 0.02,
-                                                                            duration: 0.3,
-                                                                            type: "spring",
-                                                                            stiffness: 200
-                                                                        }}
-                                                                        whileHover={{
-                                                                            scale: 1.1,
-                                                                            rotate: 2,
-                                                                            boxShadow: "0 4px 20px rgba(70,185,78,0.4)",
-                                                                            background: "rgba(70,185,78,0.3)"
-                                                                        }}
-                                                                        whileTap={{ scale: 0.95 }}
-                                                                        style={{
-                                                                            padding: "10px 18px",
-                                                                            background: "rgba(70,185,78,0.2)",
-                                                                            borderRadius: "25px",
-                                                                            fontSize: "0.95rem",
-                                                                            border: "1px solid rgba(70,185,78,0.4)",
-                                                                            cursor: "pointer",
-                                                                            fontWeight: "500",
-                                                                            backdropFilter: "blur(5px)",
-                                                                            transition: "all 0.3s ease"
-                                                                        }}
-                                                                    >
-                                                                        {name}
-                                                                    </motion.span>
-                                                                ))}
+                                                                <AnimatedTooltip items={getTooltipItems(team.memberList)} />
                                                             </div>
                                                         </motion.div>
                                                     )}
