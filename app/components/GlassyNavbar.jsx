@@ -176,9 +176,9 @@ export default function GlassyNavbar() {
                     ))}
                 </div>
 
-                {/* Right side - Login/Logout (No Home button anymore since logo is clickable) */}
+                {/* Right side - Login/Logout & Go Back (Home button restored) */}
                 <div className="hidden md:flex flex-none w-[150px] justify-end items-center gap-3">
-                    {isHomePage ? (
+                    {isHomePage && (
                         user ? (
                             <button
                                 onClick={handleLogout}
@@ -186,7 +186,6 @@ export default function GlassyNavbar() {
                                 title="Logout"
                             >
                                 <LogOut size={18} />
-                                <span className="hidden sm:inline">Logout</span>
                             </button>
                         ) : (
                             <Link
@@ -195,26 +194,25 @@ export default function GlassyNavbar() {
                                 title="Login"
                             >
                                 <LogIn size={18} />
-                                <span className="hidden sm:inline">Login</span>
                             </Link>
                         )
-                    ) : (
-                        // Only show "Home" link on mobile; desktop users can click the logo
-                        <div className="md:hidden">
-                            <Link
-                                href="/"
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
-                            >
-                                <FiArrowLeft />
-                                <span>Home</span>
-                            </Link>
-                        </div>
+                    )}
+
+                    {/* Home button restored - always show when not on homepage */}
+                    {!isHomePage && (
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10 hover:border-white/30"
+                        >
+                            <FiArrowLeft />
+                            <span>Home</span>
+                        </Link>
                     )}
                 </div>
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden flex items-center gap-4">
-                    {isHomePage ? (
+                    {isHomePage && (
                         user ? (
                             <button
                                 onClick={handleLogout}
@@ -232,8 +230,10 @@ export default function GlassyNavbar() {
                                 <LogIn size={18} />
                             </Link>
                         )
-                    ) : (
-                        // On mobile, show back arrow even if not on homepage
+                    )}
+
+                    {/* Home button on mobile - show when not on homepage */}
+                    {!isHomePage && (
                         <Link
                             href="/"
                             className="flex items-center justify-center w-10 h-10 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
