@@ -322,8 +322,7 @@ export default function TeamPage() {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.6, delay: 0.3 }}
-                                        className="mt-16 max-w-6xl mx-auto bg-black/30 backdrop-blur-sm border border-white/10 rounded-2xl p-8"
-t                                    >
+                                        className="mt-16 max-w-6xl mx-auto bg-black/30 backdrop-blur-sm border border-white/10 rounded-2xl p-8"                                    >
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                                             <div>
                                                 <div className="text-4xl font-bold text-white mb-2">
