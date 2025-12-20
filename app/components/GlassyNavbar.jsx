@@ -100,7 +100,7 @@ export default function GlassyNavbar() {
         const animationKey = `${index}-${isHovered ? 'hover' : 'normal'}`;
         
         return (
-            <div className="inline-block min-w-max text-center">
+            <div className="inline-block font-sf-pro font-bold text-[18px] text-center">
                 <DecryptedText
                     key={animationKey}
                     text={text}
