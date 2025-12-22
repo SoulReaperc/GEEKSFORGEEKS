@@ -28,7 +28,7 @@ async function getSolvedProblems(userId) {
     try {
         const supabase = await createClient();
         const { data } = await supabase
-            .from('user_submissions')
+            .from('submissions')
             .select('problem_slug')
             .eq('user_id', userId)
             .eq('status', 'Passed');
@@ -45,9 +45,9 @@ async function getLeaderboard() {
     try {
         const supabase = await createClient();
         const { data } = await supabase
-            .from('user_stats')
-            .select('*')
-            .order('total_solved', { ascending: false })
+            .from('profiles')
+            .select('username, total_points, avatar_url, id') // Select necessary fields
+            .order('total_points', { ascending: false })
             .limit(10); // Top 10 for sidebar
         return data || [];
     } catch (e) {
@@ -105,7 +105,7 @@ export default async function PracticePage() {
     const totalProblems = problems.length;
     const solvedCount = solvedProblems.size;
     const progressPercentage = totalProblems > 0 ? Math.round((solvedCount / totalProblems) * 100) : 0;
-    const userRank = user && leaderboard.length > 0 ? (leaderboard.findIndex(u => u.user_id === user.id) + 1 || 'N/A') : 'N/A';
+    const userRank = user && leaderboard.length > 0 ? (leaderboard.findIndex(u => u.id === user.id) + 1 || 'N/A') : 'N/A';
 
     const easyProblems = problems.filter(p => p.fields.difficulty === 'Easy');
     const mediumProblems = problems.filter(p => p.fields.difficulty === 'Medium');

@@ -217,11 +217,7 @@ const IDEClient = ({ problem, initialCode }) => {
                         )}
 
                         {activeTab === 'submissions' && (
-                            <div className="text-center py-12">
-                                <TrendingUp className="mx-auto mb-4 text-gray-600" size={48} />
-                                <p className="text-gray-500">No submissions yet</p>
-                                <p className="text-sm text-gray-600 mt-2">Submit your solution to see it here</p>
-                            </div>
+                            <SubmissionsTab problemSlug={problem.fields.slug} />
                         )}
                     </div>
                 </div>
@@ -260,10 +256,12 @@ const IDEClient = ({ problem, initialCode }) => {
                                 {isRunning ? 'Running...' : 'Run Code'}
                             </button>
                             <button
-                                className="flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-lg shadow-blue-500/20"
+                                onClick={handleRun}
+                                disabled={isRunning}
+                                className="flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Send size={16} />
-                                Submit
+                                {isRunning ? 'Submitting...' : 'Submit'}
                             </button>
                         </div>
                     </div>
@@ -293,6 +291,72 @@ const IDEClient = ({ problem, initialCode }) => {
                     </div>
                 </div>
             </div>
+        </div>
+    );
+};
+
+const SubmissionsTab = ({ problemSlug }) => {
+    const [submissions, setSubmissions] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSubmissions = async () => {
+            const { createClient } = await import('@/lib/supabase');
+            const supabase = createClient();
+
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data } = await supabase
+                .from('submissions')
+                .select('*')
+                .eq('user_id', user.id)
+                .eq('problem_slug', problemSlug)
+                .order('created_at', { ascending: false });
+
+            setSubmissions(data || []);
+            setLoading(false);
+        };
+
+        fetchSubmissions();
+    }, [problemSlug]);
+
+    if (loading) return <div className="text-center py-8 text-gray-500">Loading...</div>;
+
+    if (submissions.length === 0) {
+        return (
+            <div className="text-center py-12">
+                <TrendingUp className="mx-auto mb-4 text-gray-600" size={48} />
+                <p className="text-gray-500">No submissions yet</p>
+                <p className="text-sm text-gray-600 mt-2">Submit your solution to see it here</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-4">
+            {submissions.map((sub) => (
+                <div key={sub.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <div className={`font-bold ${sub.status === 'Passed' ? 'text-green-400' : 'text-red-400'}`}>
+                            {sub.status}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                            {new Date(sub.created_at).toLocaleString()}
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        {sub.status === 'Passed' && (
+                            <div className="text-sm font-semibold text-white">
+                                {sub.points_awarded} pts
+                            </div>
+                        )}
+                        <div className="text-xs text-gray-400 font-mono">
+                            {sub.language}
+                        </div>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };

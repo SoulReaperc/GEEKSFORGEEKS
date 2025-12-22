@@ -7,15 +7,13 @@ import { Logo2 } from "../logo/logo2";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 
-// Demo profile photos for top 3
-const PROFILE_PHOTOS = {
-    1: "https://randomuser.me/api/portraits/men/32.jpg",
-    2: "https://randomuser.me/api/portraits/women/44.jpg",
-    3: "https://randomuser.me/api/portraits/men/52.jpg"
-};
-
 export default function LeaderboardClient({ leaderboard }) {
     const router = useRouter();
+
+    const getAvatar = (user) => {
+        if (user.avatar_url) return user.avatar_url;
+        return `https://ui-avatars.com/api/?name=${user.username || 'User'}&background=random`;
+    };
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -37,7 +35,7 @@ export default function LeaderboardClient({ leaderboard }) {
             {/* Custom Navbar with Back Button */}
             <div className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    {/* Back Button instead of Home */}
+                    {/* Back Button */}
                     <button
                         onClick={() => router.back()}
                         className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300 group"
@@ -97,56 +95,56 @@ export default function LeaderboardClient({ leaderboard }) {
                             </div>
                         </div>
 
-                        {/* Top 3 Podium - Static */}
+                        {/* Top 3 Podium */}
                         {leaderboard.length >= 3 && (
                             <div className="bg-gradient-to-b from-white/5 to-transparent p-8 pt-24 border-b border-white/10">
                                 <div className="flex items-end justify-center gap-8">
                                     {/* 2nd Place */}
                                     <div className="flex flex-col items-center">
                                         <Medal className="text-gray-400 mb-3" size={36} />
-                                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 animate-pulse overflow-hidden" style={{ animationDuration: '3s' }}>
-                                            <img src={PROFILE_PHOTOS[2]} alt="2nd place" className="w-full h-full object-cover" />
+                                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 animate-pulse overflow-hidden">
+                                            <img src={getAvatar(leaderboard[1])} alt="2nd place" className="w-full h-full object-cover" />
                                         </div>
                                         <div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-t-2xl px-6 py-10 text-center min-w-[160px]">
                                             <div className="text-6xl mb-3">🥈</div>
-                                            <h3 className="text-white font-bold text-xl mb-2 truncate">User_{leaderboard[1].user_id.slice(0, 6)}</h3>
-                                            <div className="text-3xl font-bold text-white mb-2">{leaderboard[1].total_solved}</div>
-                                            <p className="text-sm text-gray-300">score</p>
+                                            <h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">{leaderboard[1].username || 'Anonymous'}</h3>
+                                            <div className="text-3xl font-bold text-white mb-2">{leaderboard[1].total_points}</div>
+                                            <p className="text-sm text-gray-300">points</p>
                                         </div>
                                     </div>
 
-                                    {/* 1st Place - Bigger */}
+                                    {/* 1st Place */}
                                     <div className="flex flex-col items-center -mt-16">
                                         <Crown className="text-yellow-400 mb-3 animate-bounce" size={48} />
-                                        <div className="w-40 h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-5xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 animate-pulse overflow-hidden" style={{ animationDuration: '2s' }}>
-                                            <img src={PROFILE_PHOTOS[1]} alt="1st place" className="w-full h-full object-cover" />
+                                        <div className="w-40 h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-5xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 animate-pulse overflow-hidden">
+                                            <img src={getAvatar(leaderboard[0])} alt="1st place" className="w-full h-full object-cover" />
                                         </div>
                                         <div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/60 rounded-t-2xl px-8 py-12 text-center min-w-[180px]">
                                             <div className="text-7xl mb-4">🥇</div>
-                                            <h3 className="text-white font-bold text-2xl mb-3 truncate">User_{leaderboard[0].user_id.slice(0, 6)}</h3>
-                                            <div className="text-4xl font-bold text-white mb-2">{leaderboard[0].total_solved}</div>
-                                            <p className="text-base text-yellow-100">score</p>
+                                            <h3 className="text-white font-bold text-2xl mb-3 truncate max-w-[160px]">{leaderboard[0].username || 'Anonymous'}</h3>
+                                            <div className="text-4xl font-bold text-white mb-2">{leaderboard[0].total_points}</div>
+                                            <p className="text-base text-yellow-100">points</p>
                                         </div>
                                     </div>
 
                                     {/* 3rd Place */}
                                     <div className="flex flex-col items-center">
                                         <Award className="text-amber-600 mb-3" size={36} />
-                                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-amber-700/40 animate-pulse overflow-hidden" style={{ animationDuration: '3s' }}>
-                                            <img src={PROFILE_PHOTOS[3]} alt="3rd place" className="w-full h-full object-cover" />
+                                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-amber-700/40 animate-pulse overflow-hidden">
+                                            <img src={getAvatar(leaderboard[2])} alt="3rd place" className="w-full h-full object-cover" />
                                         </div>
                                         <div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-t-2xl px-6 py-10 text-center min-w-[160px]">
                                             <div className="text-6xl mb-3">🥉</div>
-                                            <h3 className="text-white font-bold text-xl mb-2 truncate">User_{leaderboard[2].user_id.slice(0, 6)}</h3>
-                                            <div className="text-3xl font-bold text-white mb-2">{leaderboard[2].total_solved}</div>
-                                            <p className="text-sm text-amber-200">score</p>
+                                            <h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">{leaderboard[2].username || 'Anonymous'}</h3>
+                                            <div className="text-3xl font-bold text-white mb-2">{leaderboard[2].total_points}</div>
+                                            <p className="text-sm text-amber-200">points</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* Scrollable Rankings List - Starting from 4th */}
+                        {/* Scrollable Rankings List */}
                         <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
                             <div className="p-6 space-y-3">
                                 {leaderboard.length > 3 ? (
@@ -154,7 +152,7 @@ export default function LeaderboardClient({ leaderboard }) {
                                         const actualRank = idx + 4;
                                         return (
                                             <div
-                                                key={user.user_id}
+                                                key={user.username || idx}
                                                 className="flex items-center justify-between p-5 rounded-xl transition-all duration-300 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20"
                                             >
                                                 <div className="flex items-center gap-4 flex-1">
@@ -164,24 +162,24 @@ export default function LeaderboardClient({ leaderboard }) {
                                                     </div>
 
                                                     {/* User Avatar */}
-                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white font-bold text-xl border-2 border-white/20">
-                                                        {user.user_id.charAt(0).toUpperCase()}
+                                                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20">
+                                                        <img src={getAvatar(user)} alt={user.username} className="w-full h-full object-cover" />
                                                     </div>
 
                                                     {/* User Info */}
                                                     <div className="flex-1">
-                                                        <h3 className="text-white font-semibold text-lg">User_{user.user_id.slice(0, 8)}</h3>
-                                                        <p className="text-gray-400 text-sm">{user.user_id}</p>
+                                                        <h3 className="text-white font-semibold text-lg">{user.username || 'Anonymous'}</h3>
+                                                        <p className="text-gray-400 text-sm">{user.rank || 'Student'}</p>
                                                     </div>
                                                 </div>
 
-                                                {/* Score - Right Most */}
+                                                {/* Score */}
                                                 <div className="text-right">
                                                     <div className="flex items-center gap-2">
                                                         <Trophy className="text-green-400" size={20} />
-                                                        <span className="text-2xl font-bold text-green-400">{user.total_solved}</span>
+                                                        <span className="text-2xl font-bold text-green-400">{user.total_points}</span>
                                                     </div>
-                                                    <p className="text-xs text-gray-500 mt-1">score</p>
+                                                    <p className="text-xs text-gray-500 mt-1">points</p>
                                                 </div>
                                             </div>
                                         );
