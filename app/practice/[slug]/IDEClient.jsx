@@ -30,9 +30,18 @@ const IDEClient = ({ problem, initialCode }) => {
         if (starterCodes[newLang]) {
             setCode(starterCodes[newLang]);
         } else {
-            if (newLang === 'python') setCode("# Start coding here...\nprint('Hello World')");
-            else if (newLang === 'javascript') setCode("// Start coding here...\nconsole.log('Hello World')");
-            else if (newLang === 'c++') setCode("#include <iostream>\nusing namespace std;\nint main() {\n  cout << \"Hello World\";\n  return 0;\n}");
+            // Fallbacks if no starter code provided
+            switch (newLang) {
+                case 'python': setCode("import sys\n\n# Read from stdin\n# data = sys.stdin.read().split()"); break;
+                case 'javascript': setCode("// Read from stdin\nconst fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8');"); break;
+                case 'c++': setCode("#include <iostream>\nusing namespace std;\n\nint main() {\n    // your code\n    return 0;\n}"); break;
+                case 'c': setCode("#include <stdio.h>\n\nint main() {\n    // your code\n    return 0;\n}"); break;
+                case 'java': setCode("import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // your code\n    }\n}"); break;
+                case 'csharp': setCode("using System;\n\npublic class Program {\n    public static void Main() {\n        // your code\n    }\n}"); break;
+                case 'go': setCode("package main\nimport \"fmt\"\n\nfunc main() {\n    // your code\n}"); break;
+                case 'rust': setCode("use std::io;\n\nfn main() {\n    // your code\n}"); break;
+                default: setCode("// Start coding...");
+            }
         }
     };
 
@@ -165,9 +174,11 @@ const IDEClient = ({ problem, initialCode }) => {
                                 {/* Problem Description */}
                                 <div>
                                     <h2 className="text-lg font-bold text-white mb-3">Problem Statement</h2>
-                                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
-                                        {descriptionText}
-                                    </p>
+                                    <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap rich-text-content">
+                                        {typeof problem.fields.description === 'object' && problem.fields.description.nodeType === 'document'
+                                            ? documentToReactComponents(problem.fields.description)
+                                            : descriptionText}
+                                    </div>
                                 </div>
 
                                 {/* Example Section */}
@@ -240,7 +251,12 @@ const IDEClient = ({ problem, initialCode }) => {
                                 >
                                     <option value="javascript">JavaScript</option>
                                     <option value="python">Python</option>
+                                    <option value="java">Java</option>
                                     <option value="c++">C++</option>
+                                    <option value="c">C</option>
+                                    <option value="csharp">C#</option>
+                                    <option value="go">Go</option>
+                                    <option value="rust">Rust</option>
                                 </select>
                                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                             </div>
