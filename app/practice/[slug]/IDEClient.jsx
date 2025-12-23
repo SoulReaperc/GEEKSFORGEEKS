@@ -62,13 +62,6 @@ const IDEClient = ({ problem, initialCode }) => {
             setExecutionResult(data.results);
             setExecutionStatus(data.passed ? 'Passed' : 'Failed');
 
-            // If this is a submit and all tests passed, reload the page to update stats
-            if (isSubmit && data.passed) {
-                setTimeout(() => {
-                    window.location.href = '/practice';
-                }, 2000); // Give user time to see success message
-            }
-
         } catch (err) {
             setError(err.message);
         } finally {
