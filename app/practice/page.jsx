@@ -28,7 +28,7 @@ async function getSolvedProblems(userId) {
     try {
         const supabase = await createClient();
         const { data } = await supabase
-            .from('submissions')
+            .from('user_submissions')
             .select('problem_slug')
             .eq('user_id', userId)
             .eq('status', 'Passed');
