@@ -47,11 +47,29 @@ export default function TeamPage() {
                 const response = await client.getEntries({
                     content_type: "memberProfile",
                     "fields.year": selectedYear,
+                    order: 'fields.order',
                 });
+
+                console.log('Fetched members count:', response.items.length);
 
                 const formatted = response.items.map((item) => {
                     const imgUrl = item.fields.photo?.fields?.file?.url;
                     const slug = createSlug(item.fields.name);
+
+                    // Parse order field properly
+                    let orderValue = 999;
+                    if (item.fields.order !== undefined && item.fields.order !== null) {
+                        orderValue = typeof item.fields.order === 'number'
+                            ? item.fields.order
+                            : parseInt(item.fields.order, 10);
+
+                        if (isNaN(orderValue)) {
+                            orderValue = 999;
+                        }
+                    }
+
+                    console.log(`${item.fields.name}: order=${orderValue}`);
+
                     return {
                         id: item.sys.id,
                         slug: slug,
@@ -61,6 +79,7 @@ export default function TeamPage() {
                         image: imgUrl ? (imgUrl.startsWith("//") ? `https:${imgUrl}` : imgUrl) : null,
                         generalMembers: item.fields.generalMembers,
                         coLead: item.fields.coLead,
+                        order: orderValue,
                         socials: {
                             linkedin: item.fields.linkedin,
                             github: item.fields.github,
@@ -70,7 +89,16 @@ export default function TeamPage() {
                     };
                 });
 
-                setMembers(formatted);
+                // Sort members by order field (ascending)
+                const sortedMembers = formatted.sort((a, b) => {
+                    const orderA = Number(a.order) || 999;
+                    const orderB = Number(b.order) || 999;
+                    return orderA - orderB;
+                });
+
+                console.log('Sorted order:', sortedMembers.map(m => `${m.name}:${m.order}`).join(', '));
+
+                setMembers(sortedMembers);
             } catch (err) {
                 console.error("Error fetching members:", err);
             } finally {
@@ -81,18 +109,34 @@ export default function TeamPage() {
         fetchMembers();
     }, [selectedYear]);
 
-    // Filtering Logic (from File A)
-    const leadership = members.filter(
-        (m) =>
-            m.role?.toLowerCase().includes("chair") ||
-            m.role?.toLowerCase().includes("president")
-    );
+    // Filtering Logic with Order Sorting
+    const facultyCoordinators = members
+        .filter(
+            (m) =>
+                m.role?.toLowerCase().includes("faculty") ||
+                m.role?.toLowerCase().includes("coordinator")
+        )
+        .sort((a, b) => a.order - b.order);
 
-    const coreTeam = members.filter(
-        (m) =>
-            !m.role?.toLowerCase().includes("chair") &&
-            !m.role?.toLowerCase().includes("president")
-    );
+    const leadership = members
+        .filter(
+            (m) =>
+                (m.role?.toLowerCase().includes("chair") ||
+                    m.role?.toLowerCase().includes("president")) &&
+                !m.role?.toLowerCase().includes("faculty") &&
+                !m.role?.toLowerCase().includes("coordinator")
+        )
+        .sort((a, b) => a.order - b.order);
+
+    const coreTeam = members
+        .filter(
+            (m) =>
+                !m.role?.toLowerCase().includes("chair") &&
+                !m.role?.toLowerCase().includes("president") &&
+                !m.role?.toLowerCase().includes("faculty") &&
+                !m.role?.toLowerCase().includes("coordinator")
+        )
+        .sort((a, b) => a.order - b.order);
 
     const teamsWithMembers = members
         .filter((m) => m.generalMembers)
@@ -105,13 +149,13 @@ export default function TeamPage() {
 
     // Team member photo mapping - placeholder images (replace with actual photos)
     const memberPhotoMap = {
-     
+
         "Aryan Sharma": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_1_1765724493945.png",
         "Priya Patel": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_2_1765724513504.png",
         "Rahul Kumar": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_3_1765724531360.png",
         "Sneha Gupta": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_4_1765724547957.png",
         "Vikram Singh": "/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_5_1765724575419.png",
-    
+
     };
 
     // Convert team members to AnimatedTooltip format
@@ -150,16 +194,16 @@ export default function TeamPage() {
                         minHeight: "100vh",
                     }}
                 >
-                            <h1 className="font-sf-pro" style={{
-                                fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
-                                fontWeight: "800",
-                                color: "#fff",
-                                marginBottom: "25px",
-                                letterSpacing: "-3px",
-                                lineHeight: "1.1",
-                            }}>
-                                OUR <span style={{ color: "#46b94e" }}> TEAM</span>
-                            </h1>
+                    <h1 className="font-sf-pro" style={{
+                        fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
+                        fontWeight: "800",
+                        color: "#fff",
+                        marginBottom: "25px",
+                        letterSpacing: "-3px",
+                        lineHeight: "1.1",
+                    }}>
+                        OUR <span style={{ color: "#46b94e" }}> TEAM</span>
+                    </h1>
 
                     {/* Year Toggle */}
                     <div
@@ -196,6 +240,28 @@ export default function TeamPage() {
                     ) : (
                         <div style={{ maxWidth: "1400px", width: "100%", display: "flex", flexDirection: "column", gap: "80px" }}>
 
+                            {/* Faculty Coordinators */}
+                            {facultyCoordinators.length > 0 && (
+                                <div>
+                                    <h2 className="font-sf-pro" style={{
+                                        fontSize: "clamp(2rem, 3vw, 3.5rem)",
+                                        fontWeight: "800",
+                                        color: "#fff",
+                                        marginBottom: "40px",
+                                        letterSpacing: "-2px",
+                                        lineHeight: "1.1",
+                                        textAlign: "center",
+                                    }}>
+                                        FACULTY <span style={{ color: "#46b94e" }}>COORDINATOR</span>
+                                    </h2>
+                                    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "clamp(30px, 4vw, 60px)" }}>
+                                        {facultyCoordinators.map((member) => (
+                                            <MemberCard key={member.id} member={member} big router={router} year={selectedYear} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Leadership */}
                             {leadership.length > 0 && (
                                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "clamp(30px, 4vw, 60px)" }}>
@@ -231,16 +297,16 @@ export default function TeamPage() {
                                         transition={{ duration: 0.5 }}
                                         className="text-center mb-16"
                                     >
-                                <h2 className="font-sf-pro" style={{
-                                fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
-                                fontWeight: "800",
-                                color: "#fff",
-                                marginBottom: "25px",
-                                letterSpacing: "-3px",
-                                lineHeight: "1.1",
-                            }}>
-                                CORE <span style={{ color: "#46b94e" }}> MEMBERS</span>
-                            </h2>
+                                        <h2 className="font-sf-pro" style={{
+                                            fontSize: "clamp(3.5rem, 5vw, 6.5rem)",
+                                            fontWeight: "800",
+                                            color: "#fff",
+                                            marginBottom: "25px",
+                                            letterSpacing: "-3px",
+                                            lineHeight: "1.1",
+                                        }}>
+                                            CORE <span style={{ color: "#46b94e" }}> MEMBERS</span>
+                                        </h2>
                                         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
                                             Meet the talented individuals driving each department
                                         </p>
@@ -273,7 +339,7 @@ export default function TeamPage() {
                                                             )}
                                                         </p>
                                                     </div>
-                                                    
+
                                                     <div className="flex items-center gap-6">
                                                         <div className="text-right">
                                                             <div className="text-2xl font-bold text-white">
@@ -281,7 +347,7 @@ export default function TeamPage() {
                                                             </div>
                                                             <p className="text-sm text-gray-400">Members</p>
                                                         </div>
-                                                        
+
                                                         {/* Chevron Icon */}
                                                         <motion.div
                                                             animate={{ rotate: openTeams[team.teamName] ? 180 : 0 }}
@@ -306,7 +372,7 @@ export default function TeamPage() {
                                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                                     {team.memberList.map((memberName, i) => {
                                                                         const memberImage = memberPhotoMap[memberName] || `https://ui-avatars.com/api/?name=${encodeURIComponent(memberName)}&background=1f1f1f&color=fff&size=100`;
-                                                                        
+
                                                                         return (
                                                                             <motion.div
                                                                                 key={i}
@@ -315,7 +381,7 @@ export default function TeamPage() {
                                                                                 transition={{ delay: i * 0.05 }}
                                                                                 className="flex items-center gap-4 p-4 bg-black/20 rounded-xl hover:bg-black/40 transition-all duration-200 border border-white/5 hover:border-white/10"
                                                                             >
-                                                                            
+
 
                                                                                 <div className="flex-1 min-w-0">
                                                                                     <p className="text-white font-medium truncate">
