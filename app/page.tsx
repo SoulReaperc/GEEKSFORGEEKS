@@ -6,9 +6,12 @@ import LogoLoop from './components/LogoLoop';
 import { SiInstagram, SiGithub, SiLinkedin, SiDiscord, SiX } from 'react-icons/si';
 
 import DecryptedText from './components/DecryptedText';
+import { contentfulClient } from '@/lib/contentful';
 
+export const revalidate = 60; // Revalidate every minute
 
-export default function Home() {
+export default async function Home() {
+
   const socialLogos = [
     { node: <SiInstagram color="#ffffff" />, title: "Instagram", href: "https://www.instagram.com/gfg_srmist_ncr" },
     { node: <SiGithub color="#ffffff" />, title: "GitHub", href: "https://github.com/GEEKSFORGEEKS-SRMIST-NCR" },
