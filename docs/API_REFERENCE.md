@@ -1,6 +1,7 @@
-# GeeksforGeeks SRMIST Chapter - API Reference
+# GeeksforGeeks SRMIST Chapter - API Reference v2
 
 > **Audience:** Developers  
+> **Version:** 2.0  
 > **Last Updated:** December 2025
 
 ---
@@ -450,4 +451,4 @@ ALLOWED_ADMIN_EMAILS=admin@club.com,lead1@club.com,lead2@club.com
 
 ---
 
-*Document maintained by the GFG SRMIST Technical Team*
+*Document maintained by Ayaan Mirza Baig*

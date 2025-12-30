@@ -1,6 +1,7 @@
-# GeeksforGeeks SRMIST Chapter - User Guide
+# GeeksforGeeks SRMIST Chapter - User Guide v2
 
 > **Audience:** Club Admins & Team Leads  
+> **Version:** 2.0  
 > **Last Updated:** December 2025
 
 ---
@@ -231,4 +232,4 @@ If you encounter any issues:
 
 ---
 
-*Document maintained by the GFG SRMIST Technical Team*
+*Document maintained by Ayaan Mirza Baig*

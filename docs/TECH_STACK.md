@@ -1,6 +1,7 @@
-# GeeksforGeeks SRMIST Chapter - Tech Stack Documentation
+# GeeksforGeeks SRMIST Chapter - Tech Stack Documentation v2
 
 > **Audience:** Future Maintainers  
+> **Version:** 2.0  
 > **Last Updated:** December 2025
 
 ---
@@ -481,4 +482,4 @@ When onboarding as a new maintainer:
 
 ---
 
-*Document maintained by the GFG SRMIST Technical Team*
+*Document maintained by Ayaan Mirza Baig*
