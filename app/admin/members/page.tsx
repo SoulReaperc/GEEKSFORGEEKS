@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Github, Linkedin, Instagram, Mail, Loader2, ShieldAlert, Search, X, Calendar, User, Plus, Trash2, Edit2, Save, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
 import gsap from 'gsap';
+import type { ContentfulRichTextNode } from '@/types';
 
 
 // --- CONFIGURATION ---
@@ -43,8 +44,28 @@ interface ContentfulEntry {
     };
 }
 
+interface ContentfulDeliveryItem {
+    sys: { id: string; version?: number; revision?: number };
+    fields: {
+        name?: string;
+        role?: string;
+        email?: string;
+        bio?: string | ContentfulRichTextNode;
+        photo?: { sys: { type: string; linkType: string; id: string } };
+        team?: string;
+        year?: number;
+        github?: string;
+        linkedin?: string;
+        instagram?: string;
+        order?: number;
+        coLead?: string;
+        generalMembers?: string;
+        [key: string]: unknown;
+    };
+}
+
 interface ContentfulResponse {
-    items: any[];
+    items: ContentfulDeliveryItem[];
     includes?: {
         Asset?: ContentfulAsset[];
     };
@@ -88,12 +109,12 @@ interface Member {
 // createRichText moved to API route
 
 
-const extractRawText = (richText: any): string => {
+const extractRawText = (richText: string | ContentfulRichTextNode | null | undefined): string => {
     if (typeof richText === 'string') return richText;
     if (!richText || !richText.content) return '';
-    return richText.content.map((block: any) => {
+    return richText.content.map((block: ContentfulRichTextNode) => {
         if (block.nodeType === 'paragraph') {
-            return block.content.map((text: any) => text.value || '').join('');
+            return (block.content ?? []).map((text: ContentfulRichTextNode) => text.value || '').join('');
         }
         return '';
     }).join('\n\n');
@@ -325,7 +346,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ member, onClose, onSave, onDe
             .to(modalRef.current, { opacity: 0, duration: 0.2 }, "-=0.1");
     };
 
-    const handleInputChange = (field: keyof Member, value: any) => {
+    const handleInputChange = (field: keyof Member, value: Member[keyof Member]) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -881,9 +902,9 @@ export default function MembersPage() {
             // Refresh Local Data
             await fetchMembers();
             setSelectedMember(null);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Update failed:', err);
-            alert(`Update failed: ${err.message}`);
+            alert(`Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
         }
     };
 
@@ -981,9 +1002,9 @@ export default function MembersPage() {
 
             await fetchMembers();
             setSelectedMember(null);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Delete failed:', err);
-            alert(`Delete failed: ${err.message}`);
+            alert(`Delete failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
         }
     };
 
@@ -1088,9 +1109,9 @@ export default function MembersPage() {
             await fetchMembers();
             setIsAddingNew(false);
             setSelectedMember(null);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Creation failed:', err);
-            alert(`Creation failed: ${err.message}`);
+            alert(`Creation failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
         }
     };
 

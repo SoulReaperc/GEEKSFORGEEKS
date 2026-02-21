@@ -17,8 +17,8 @@ interface EditEventProps {
         description: string;
         isRegOpen: boolean;
     };
-    coverImage: any;
-    galleryImages: any[];
+    coverImage: { sys: { id: string }; fields: { file: Record<string, { url: string }> } } | null;
+    galleryImages: { sys: { id: string }; fields: { file: Record<string, { url: string }> } }[];
     onBack: () => void;
     onSave: (formData: FormData) => Promise<void>;
 }
@@ -31,9 +31,9 @@ export const EditEvent: React.FC<EditEventProps> = ({
     onBack,
     onSave
 }) => {
-    // Cast JS components to any to avoid TypeScript inference issues (implicit never[] on empty default props)
-    const CoverImageManagerAny = CoverImageManager as any;
-    const GalleryManagerAny = GalleryManager as any;
+    // Cast JS components to avoid TypeScript inference issues (implicit never[] on empty default props)
+    const CoverImageManagerAny = CoverImageManager as unknown as React.ComponentType<Record<string, unknown>>;
+    const GalleryManagerAny = GalleryManager as unknown as React.ComponentType<Record<string, unknown>>;
 
     const containerRef = useRef<HTMLDivElement>(null);
 

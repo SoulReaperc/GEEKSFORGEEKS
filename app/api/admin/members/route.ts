@@ -38,7 +38,7 @@ export async function POST(request: Request) {
             const buffer = Buffer.from(arrayBuffer);
 
             // 1. Create Upload
-            const upload = await environment.createUpload({ file: buffer as any });
+            const upload = await environment.createUpload({ file: arrayBuffer });
 
             // 2. Create Asset
             let asset = await environment.createAsset({
@@ -86,8 +86,23 @@ export async function POST(request: Request) {
         };
 
         // --- MAP FIELDS HELPER ---
-        const mapFields = (m: any, photoAssetId?: string) => {
-            const fields: any = {
+        interface MemberInput {
+            name: string;
+            role: string;
+            team: string;
+            year: string;
+            order?: number;
+            bio?: string;
+            email?: string;
+            github?: string;
+            linkedin?: string;
+            instagram?: string;
+            coLead?: string;
+            generalMembers?: string;
+        }
+
+        const mapFields = (m: MemberInput, photoAssetId?: string) => {
+            const fields: Record<string, { 'en-US': unknown }> = {
                 name: { 'en-US': m.name },
                 role: { 'en-US': m.role },
                 team: { 'en-US': m.team },
@@ -169,8 +184,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         // Error handled in response
-        return NextResponse.json({ success: false, error: error.message || 'Unknown Error' }, { status: 500 });
+        return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Unknown Error' }, { status: 500 });
     }
 }

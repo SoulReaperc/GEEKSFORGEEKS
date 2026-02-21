@@ -73,7 +73,7 @@ const LANGUAGE_MAP: Record<string, { language: string; version: string }> = {
 // PYTHON GRADER RUNNER (UNCHANGED)
 // --------------------------------------------------
 
-function runGradingScript(submissionData: object): Promise<any> {
+function runGradingScript(submissionData: object): Promise<{ total_score: number; max_marks: number; details: Record<string, unknown> }> {
     return new Promise((resolve, reject) => {
         const pythonProcess = spawn(
             'python',
@@ -330,10 +330,10 @@ export async function POST(request: Request) {
             gradingResult,
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Submission Error:', error);
         return NextResponse.json(
-            { error: error.message || 'Internal Server Error' },
+            { error: error instanceof Error ? error.message : 'Internal Server Error' },
             { status: 500 }
         );
     }

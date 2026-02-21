@@ -241,7 +241,7 @@ async function calculateAdvancedScore(submissionData: {
 }): Promise<{
     total_score: number;
     max_marks: number;
-    details: any;
+    details: Record<string, unknown>;
 }> {
     try {
         // Path to the Python grading script
@@ -263,7 +263,7 @@ async function calculateAdvancedScore(submissionData: {
 
         const result = JSON.parse(stdout);
         return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Grading algorithm error:', error);
 
         // Fallback to basic scoring if Python script fails
@@ -285,7 +285,7 @@ async function calculateAdvancedScore(submissionData: {
 /**
  * Update rankings for all users based on total points
  */
-async function updateAllRankings(supabase: any): Promise<void> {
+async function updateAllRankings(supabase: import('@supabase/supabase-js').SupabaseClient): Promise<void> {
     try {
         // Fetch all users sorted by points from profiles
         const { data: allUsers, error } = await supabase
@@ -306,10 +306,10 @@ async function updateAllRankings(supabase: any): Promise<void> {
                     .update({
                         rank: `#${i + 1}`
                     })
-                    .eq('id', allUsers[i].id);
+                    .eq('id', allUsers[i]!.id);
 
                 if (updateError) {
-                    console.error(`Error updating rank for user ${allUsers[i].id}:`, updateError);
+                    console.error(`Error updating rank for user ${allUsers[i]!.id}:`, updateError);
                 }
             }
             console.log(`Successfully updated rankings for ${allUsers.length} users`);
@@ -424,16 +424,17 @@ export async function POST(request: Request) {
                     runtime: runtime
                 });
 
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error(`Test Case ${i + 1} Error:`, err);
+                const errMessage = err instanceof Error ? err.message : 'Unknown error';
                 results.push({
                     testCase: i + 1,
                     input: testCase.input,
                     expected: testCase.output,
                     actual: "Execution Error",
                     passed: false,
-                    error: err.message,
-                    stderr: err.message
+                    error: errMessage,
+                    stderr: errMessage
                 });
                 allPassed = false;
             }
@@ -456,12 +457,12 @@ export async function POST(request: Request) {
                 : `${results.filter(r => r.passed).length}/${testCases.length} test cases passed. Keep trying!`
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Execution API Global Error:', error);
         return NextResponse.json({
             success: false,
-            error: error.message || 'Internal Server Error',
-            details: error.stack
+            error: error instanceof Error ? error.message : 'Internal Server Error',
+            details: error instanceof Error ? error.stack : undefined
         }, { status: 500 });
     }
 }

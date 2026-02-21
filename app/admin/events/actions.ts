@@ -48,7 +48,7 @@ async function getEnvironment() {
 }
 
 // Helper function to upload an asset to Contentful
-async function uploadAsset(environment: any, file: File) {
+async function uploadAsset(environment: Awaited<ReturnType<typeof getEnvironment>>, file: File) {
     const arrayBuffer = await file.arrayBuffer()
 
     const upload = await environment.createUpload({ file: arrayBuffer })
@@ -74,7 +74,7 @@ async function uploadAsset(environment: any, file: File) {
     for (let i = 0; i < MAX_RETRIES; i++) {
         await new Promise(r => setTimeout(r, 1000))
         asset = await environment.getAsset(asset.sys.id)
-        if (asset.fields.file['en-US'].url) break
+        if (asset.fields.file['en-US']?.url) break
     }
 
     asset = await asset.publish()
@@ -290,7 +290,7 @@ export async function deleteEventImage(eventId: string, imageId: string) {
 
     if (entry.fields.galleryImages && entry.fields.galleryImages['en-US']) {
         entry.fields.galleryImages['en-US'] = entry.fields.galleryImages['en-US'].filter(
-            (link: any) => link.sys.id !== imageId
+            (link: { sys: { id: string } }) => link.sys.id !== imageId
         )
 
         const updatedEntry = await entry.update()

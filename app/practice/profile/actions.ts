@@ -46,7 +46,7 @@ export async function updateProfile(formData: FormData) {
         }
     }
 
-    const updates: any = {
+    const updates: Record<string, string> = {
         updated_at: new Date().toISOString(),
     }
     if (username) updates.username = username

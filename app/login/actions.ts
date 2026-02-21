@@ -2,8 +2,9 @@
 
 import { createClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
+import type { ActionState } from '@/types'
 
-export async function sendOtp(previousState: any, formData: FormData) {
+export async function sendOtp(previousState: ActionState | null, formData: FormData) {
     const email = formData.get('email') as string
 
     if (!email) {
@@ -35,7 +36,7 @@ export async function sendOtp(previousState: any, formData: FormData) {
     }
 }
 
-export async function verifyOtp(previousState: any, formData: FormData) {
+export async function verifyOtp(previousState: ActionState | null, formData: FormData) {
     const email = formData.get('email') as string
     const otp = formData.get('otp') as string
 
