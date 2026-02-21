@@ -15,16 +15,16 @@ const springValues = {
     mass: 2
 };
 
-export default function TeamRegistrationForm({ eventName: propEventName, noMembers = "4" }) {
+export default function TeamRegistrationForm({ eventName: propEventName, noMembers = "4" }: { eventName?: string; noMembers?: string }) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const errorScrollRef = useRef(null);
+    const errorScrollRef = useRef<HTMLDivElement>(null);
 
     // Parse noMembers string into min and max
     const parts = String(noMembers || "4").split('-').map(s => parseInt(s.trim(), 10));
-    const minMembers = (!isNaN(parts[0]) && parts[0] > 0) ? parts[0] : 1;
-    const maxMembers = (parts.length > 1 && !isNaN(parts[1])) ? parts[1] : minMembers;
+    const minMembers = (!isNaN(parts[0]!) && parts[0]! > 0) ? parts[0]! : 1;
+    const maxMembers = (parts.length > 1 && !isNaN(parts[1]!)) ? parts[1]! : minMembers;
 
     // Remove the Team Leader from the count of "Additional Members"
     // So if the form takes 2-4 total members, additional members are 1-3
@@ -36,7 +36,7 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
     const eventName = propEventName || searchParams.get('event') || 'General Event Registration';
     const eventSlug = searchParams.get('slug') || '';
 
-    const { register, handleSubmit, watch, formState: { errors }, setValue, control } = useForm({
+    const { register, handleSubmit, watch, formState: { errors }, setValue, control } = useForm<any>({
         defaultValues: {
             event_name: eventName
         }
@@ -46,7 +46,7 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
         setValue('event_name', eventName);
     }, [eventName, setValue]);
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: any) => {
         setSubmitting(true);
         setErrorMessage("");
         try {
@@ -74,7 +74,6 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
                     year: data.year,
                     branch: data.branch,
                     section: data.section,
-                    section: data.section,
                     email_id: data.email_id,
                     phone_number: data.phone_number
                 },
@@ -92,9 +91,9 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
             } else {
                 throw new Error(result.message || 'Failed to submit registration');
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error Submitting:', err);
-            setErrorMessage(err.message || 'Please try again');
+            setErrorMessage(err?.message || 'Please try again');
             if (errorScrollRef.current) {
                 errorScrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -144,7 +143,7 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
         visible: { opacity: 1, y: 0 }
     };
 
-    const renderTeamMemberFields = (memberNumber) => {
+    const renderTeamMemberFields = (memberNumber: number) => {
         return (
             <motion.div
                 key={memberNumber}
@@ -187,17 +186,18 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
                             placeholder="RAxxxxxxxxxxxxx"
                             maxLength={15}
                             onInput={(e) => {
-                                let val = e.target.value.toUpperCase();
+                                const target = e.target as HTMLInputElement;
+                                let val = target.value.toUpperCase();
                                 if (!val.startsWith('RA')) {
                                     val = 'RA' + val.replace(/^RA/i, '');
                                 }
                                 const numbers = val.substring(2).replace(/[^0-9]/g, '');
-                                e.target.value = 'RA' + numbers.substring(0, 13);
+                                target.value = 'RA' + numbers.substring(0, 13);
                             }}
                             className={`${inputClasses} ${errors[`member${memberNumber}_reg_no`] ? '!border-red-500' : ''}`}
                         />
                         {errors[`member${memberNumber}_reg_no`] && (
-                            <p className="text-red-500 text-xs mt-1 ml-1">{errors[`member${memberNumber}_reg_no`].message}</p>
+                            <p className="text-red-500 text-xs mt-1 ml-1">{errors[`member${memberNumber}_reg_no`]?.message as string}</p>
                         )}
                     </div>
                     <div className="relative z-[50]">
@@ -249,7 +249,7 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
                             placeholder="Enter Your Mobile No."
                             type="tel"
                             maxLength={10}
-                            onInput={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10); }}
+                            onInput={(e) => { const t = e.target as HTMLInputElement; t.value = t.value.replace(/[^0-9]/g, '').slice(0, 10); }}
                             className={inputClasses}
                         />
                     </div>
@@ -388,17 +388,18 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
                                 placeholder="RAxxxxxxxxxxxxx"
                                 maxLength={15}
                                 onInput={(e) => {
-                                    let val = e.target.value.toUpperCase();
+                                    const target = e.target as HTMLInputElement;
+                                    let val = target.value.toUpperCase();
                                     if (!val.startsWith('RA')) {
                                         val = 'RA' + val.replace(/^RA/i, '');
                                     }
                                     const numbers = val.substring(2).replace(/[^0-9]/g, '');
-                                    e.target.value = 'RA' + numbers.substring(0, 13);
+                                    target.value = 'RA' + numbers.substring(0, 13);
                                 }}
                                 className={`${inputClasses} ${errors.reg_no ? '!border-red-500' : ''}`}
                             />
                             {errors.reg_no && (
-                                <p className="text-red-500 text-xs mt-1 ml-1">{errors.reg_no.message}</p>
+                                <p className="text-red-500 text-xs mt-1 ml-1">{errors.reg_no.message as string}</p>
                             )}
                         </div>
                         <div className="relative z-[50]">
@@ -450,7 +451,7 @@ export default function TeamRegistrationForm({ eventName: propEventName, noMembe
                                 placeholder="10-digit Mobile No."
                                 type="tel"
                                 maxLength={10}
-                                onInput={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10); }}
+                                onInput={(e) => { const t = e.target as HTMLInputElement; t.value = t.value.replace(/[^0-9]/g, '').slice(0, 10); }}
                                 className={inputClasses}
                             />
                         </div>

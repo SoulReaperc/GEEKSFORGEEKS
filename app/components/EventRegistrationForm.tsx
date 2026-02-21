@@ -5,21 +5,21 @@ import { supabase } from '@/lib/supabase';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import CustomSelect, { yearOptions, branchOptions, sectionOptions } from "@/app/components/CustomSelect";
 
-export default function EventRegistrationForm({ eventName, noMembers = "4" }) {
+export default function EventRegistrationForm({ eventName, noMembers = "4" }: { eventName: string; noMembers?: string }) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
     // Parse noMembers string into min and max
     const parts = String(noMembers).split('-').map(s => parseInt(s.trim(), 10));
-    const minMembers = !isNaN(parts[0]) && parts[0] > 0 ? parts[0] : 1;
-    const maxMembers = parts.length > 1 && !isNaN(parts[1]) ? parts[1] : minMembers;
+    const minMembers = !isNaN(parts[0]!) && parts[0]! > 0 ? parts[0]! : 1;
+    const maxMembers = parts.length > 1 && !isNaN(parts[1]!) ? parts[1]! : minMembers;
 
     // Initial members array dynamically set to the minimum number of required members
-    const initialMembers = Array.from({ length: minMembers }, () => ({
+    const initialMembers = Array.from({ length: minMembers! }, () => ({
         name: '', year: '', section: '', branch: '', email: '', regNumber: '', phone: ''
     }));
 
-    const { register, control, handleSubmit, formState: { errors } } = useForm({
+    const { register, control, handleSubmit, formState: { errors } } = useForm<any>({
         defaultValues: {
             members: initialMembers
         }
@@ -27,7 +27,7 @@ export default function EventRegistrationForm({ eventName, noMembers = "4" }) {
 
     const { fields, append, remove } = useFieldArray({ control, name: "members" });
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: any) => {
         setSubmitting(true);
         try {
             const payload = {
@@ -79,7 +79,7 @@ export default function EventRegistrationForm({ eventName, noMembers = "4" }) {
                                 {index === 0 ? 'Team Leader' : `Member ${index + 1}`}
                             </div>
 
-                            {index >= minMembers && (
+                            {index >= minMembers! && (
                                 <button
                                     type="button"
                                     onClick={() => remove(index)}
@@ -103,17 +103,18 @@ export default function EventRegistrationForm({ eventName, noMembers = "4" }) {
                                     placeholder="RAxxxxxxxxxxxxx"
                                     maxLength={15}
                                     onInput={(e) => {
-                                        let val = e.target.value.toUpperCase();
+                                        const target = e.target as HTMLInputElement;
+                                        let val = target.value.toUpperCase();
                                         if (!val.startsWith('RA')) {
                                             val = 'RA' + val.replace(/^RA/i, '');
                                         }
                                         const numbers = val.substring(2).replace(/[^0-9]/g, '');
-                                        e.target.value = 'RA' + numbers.substring(0, 13);
+                                        target.value = 'RA' + numbers.substring(0, 13);
                                     }}
-                                    className={`p-3 w-full bg-white/10 rounded-lg border outline-none placeholder:text-gray-500 ${errors?.members?.[index]?.regNumber ? 'border-red-500' : 'border-white/20'}`}
+                                    className={`p-3 w-full bg-white/10 rounded-lg border outline-none placeholder:text-gray-500 ${(errors as any)?.members?.[index]?.regNumber ? 'border-red-500' : 'border-white/20'}`}
                                 />
-                                {errors?.members?.[index]?.regNumber && (
-                                    <span className="text-red-500 text-xs mt-1 ml-1">{errors.members[index].regNumber.message}</span>
+                                {(errors as any)?.members?.[index]?.regNumber && (
+                                    <span className="text-red-500 text-xs mt-1 ml-1">{(errors as any).members[index].regNumber.message}</span>
                                 )}
                             </div>
                             <input {...register(`members.${index}.email`, { required: true })} placeholder="Email Address *" type="email" className="p-3 bg-white/10 rounded-lg border border-white/20 outline-none placeholder:text-gray-500" />
@@ -153,7 +154,7 @@ export default function EventRegistrationForm({ eventName, noMembers = "4" }) {
                 ))}
             </div>
 
-            {fields.length < maxMembers && (
+            {fields.length < maxMembers! && (
                 <button
                     type="button"
                     onClick={() => append({ name: '', year: '', section: '', branch: '', email: '', regNumber: '', phone: '' })}

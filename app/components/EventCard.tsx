@@ -6,17 +6,17 @@ import PixelCard from './PixelCard';
 import ShapeBlur from './ShapeBlur';
 
 // Helper function to extract plain text from RichText document
-function extractTextFromRichText(richText) {
+function extractTextFromRichText(richText: any) {
     if (!richText || typeof richText === 'string') {
         return richText || '';
     }
 
     if (richText.content && Array.isArray(richText.content)) {
         return richText.content
-            .map(node => {
+            .map((node: any) => {
                 if (node.content && Array.isArray(node.content)) {
                     return node.content
-                        .map(textNode => textNode.value || '')
+                        .map((textNode: any) => textNode.value || '')
                         .join('');
                 }
                 return '';
@@ -28,14 +28,14 @@ function extractTextFromRichText(richText) {
 }
 
 // Helper function to generate slug from title
-function generateSlug(title) {
+function generateSlug(title: string) {
     return title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
 }
 
-export default function EventCard({ event }) {
+export default function EventCard({ event }: { event: any }) {
     const { title, slug, date, venue, coverImage, registrationLink } = event.fields;
     const imageUrl = coverImage?.fields?.file?.url ? `https:${coverImage.fields.file.url}` : '/placeholder.jpg';
 

@@ -8,7 +8,7 @@ export default function NewsletterSubscribe() {
     const [status, setStatus] = useState('idle'); // idle | loading | success | error
     const [message, setMessage] = useState('');
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setStatus('loading');
         setMessage('');

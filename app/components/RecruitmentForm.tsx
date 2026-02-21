@@ -28,7 +28,7 @@ export default function RecruitmentForm() {
     const scale = useSpring(1, springValues);
     const opacity = useSpring(0);
 
-    function handleMouse(e) {
+    function handleMouse(e: React.MouseEvent<HTMLDivElement>) {
         if (window.innerWidth < 768) return; // Disable tilt on mobile
 
         const rect = e.currentTarget.getBoundingClientRect();
@@ -58,7 +58,7 @@ export default function RecruitmentForm() {
         rotateY.set(0);
     }
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: any) => {
         setSubmitting(true);
         try {
             const payload = {
@@ -83,10 +83,10 @@ export default function RecruitmentForm() {
 
             console.log('Successfully submitted application');
             setSubmitted(true);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error Submitting:', err);
-            console.error('Error message:', err.message);
-            alert(`Something went wrong: ${err.message || 'Please try again'}`);
+            console.error('Error message:', err?.message);
+            alert(`Something went wrong: ${err?.message || 'Please try again'}`);
         } finally {
             setSubmitting(false);
         }
@@ -205,17 +205,18 @@ export default function RecruitmentForm() {
                             placeholder="RAxxxxxxxxxxxxx"
                             maxLength={15}
                             onInput={(e) => {
-                                let val = e.target.value.toUpperCase();
+                                const target = e.target as HTMLInputElement;
+                                let val = target.value.toUpperCase();
                                 if (!val.startsWith('RA')) {
                                     val = 'RA' + val.replace(/^RA/i, '');
                                 }
                                 const numbers = val.substring(2).replace(/[^0-9]/g, '');
-                                e.target.value = 'RA' + numbers.substring(0, 13);
+                                target.value = 'RA' + numbers.substring(0, 13);
                             }}
                             className={`${inputClasses} ${errors.reg_no ? '!border-red-500' : ''}`}
                         />
                         {errors.reg_no && (
-                            <p className="text-red-500 text-xs mt-1 ml-1">{errors.reg_no.message}</p>
+                            <p className="text-red-500 text-xs mt-1 ml-1">{errors.reg_no.message as string}</p>
                         )}
                     </motion.div>
                     <motion.div variants={itemVariants}>

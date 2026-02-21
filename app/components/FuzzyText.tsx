@@ -1,6 +1,17 @@
 "use client";
 import React, { useEffect, useRef } from 'react';
 
+interface FuzzyTextProps {
+  children: React.ReactNode;
+  fontSize?: string | number;
+  fontWeight?: number;
+  fontFamily?: string;
+  color?: string;
+  enableHover?: boolean;
+  baseIntensity?: number;
+  hoverIntensity?: number;
+}
+
 const FuzzyText = ({
   children,
   fontSize = 'clamp(2rem, 10vw, 10rem)',
@@ -10,11 +21,11 @@ const FuzzyText = ({
   enableHover = true,
   baseIntensity = 0.18,
   hoverIntensity = 0.5
-}) => {
-  const canvasRef = useRef(null);
+}: FuzzyTextProps) => {
+  const canvasRef = useRef<HTMLCanvasElement & { cleanupFuzzyText?: () => void }>(null);
 
   useEffect(() => {
-    let animationFrameId;
+    let animationFrameId: number;
     let isCancelled = false;
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -101,11 +112,11 @@ const FuzzyText = ({
 
       run();
 
-      const isInsideTextArea = (x, y) => {
+      const isInsideTextArea = (x: number, y: number) => {
         return x >= interactiveLeft && x <= interactiveRight && y >= interactiveTop && y <= interactiveBottom;
       };
 
-      const handleMouseMove = e => {
+      const handleMouseMove = (e: MouseEvent) => {
         if (!enableHover) return;
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -117,11 +128,12 @@ const FuzzyText = ({
         isHovering = false;
       };
 
-      const handleTouchMove = e => {
+      const handleTouchMove = (e: TouchEvent) => {
         if (!enableHover) return;
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
         const touch = e.touches[0];
+        if (!touch) return;
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
         isHovering = isInsideTextArea(x, y);

@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { vibrateLightClick } from "@/lib/vibration";
 
 export default function GlassyNavbar() {
-    const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const pathname = usePathname();
 
@@ -48,7 +48,7 @@ export default function GlassyNavbar() {
                         >
                             <DecryptedText
                                 text={item.label}
-                                animate={hoveredIndex === index}
+                                animate={hoveredIndex === index ? true : undefined}
                                 animateOn="hover"
                                 revealDirection="center"
                                 speed={40}

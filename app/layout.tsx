@@ -45,7 +45,7 @@ async function getRecruitmentStatus() {
     });
 
     if (entries.items.length > 0) {
-      return entries.items[0]!.fields.isRecruitmentOpen || false;
+      return Boolean(entries.items[0]!.fields.isRecruitmentOpen);
     }
     return false;
   } catch (error) {

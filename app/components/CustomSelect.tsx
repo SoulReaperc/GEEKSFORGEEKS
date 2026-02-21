@@ -2,15 +2,29 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Controller } from "react-hook-form";
+import { Controller, Control, RegisterOptions } from "react-hook-form";
 
-export default function CustomSelect({ control, name, options, placeholder, className, rules }) {
+interface SelectOption {
+    value: string;
+    label: string;
+}
+
+interface CustomSelectProps {
+    control: Control<any>;
+    name: string;
+    options: SelectOption[];
+    placeholder: string;
+    className?: string;
+    rules?: RegisterOptions;
+}
+
+export default function CustomSelect({ control, name, options, placeholder, className, rules }: CustomSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -24,7 +38,7 @@ export default function CustomSelect({ control, name, options, placeholder, clas
             name={name}
             rules={rules}
             render={({ field: { onChange, value }, fieldState: { error } }) => {
-                const selectedOption = options.find(opt => opt.value === value);
+                const selectedOption = options.find((opt: SelectOption) => opt.value === value);
                 return (
                     <div className="w-full">
                         <div className="relative" ref={dropdownRef}>
@@ -59,7 +73,7 @@ export default function CustomSelect({ control, name, options, placeholder, clas
                                             onWheel={(e) => e.stopPropagation()}
                                             onTouchMove={(e) => e.stopPropagation()}
                                         >
-                                            {options.map((opt) => (
+                                            {options.map((opt: SelectOption) => (
                                                 <div
                                                     key={opt.value}
                                                     className={`px-4 py-3 cursor-pointer text-sm transition-colors ${value === opt.value ? 'bg-[#46b94e]/20 text-[#46b94e] font-medium border-l-2 border-[#46b94e]' : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'}`}

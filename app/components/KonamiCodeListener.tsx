@@ -6,7 +6,7 @@ import { vibrateLightClick } from '@/lib/vibration';
 import Link from 'next/link';
 
 export default function KonamiCodeListener() {
-    const [keys, setKeys] = useState([]);
+    const [keys, setKeys] = useState<string[]>([]);
     const [triggered, setTriggered] = useState(false);
     const [isDesktop, setIsDesktop] = useState(false);
 
@@ -21,7 +21,7 @@ export default function KonamiCodeListener() {
         checkDesktop();
         window.addEventListener('resize', checkDesktop);
 
-        const handleKeyDown = (e) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (!isDesktop) return;
 
             setKeys((prevKeys) => {

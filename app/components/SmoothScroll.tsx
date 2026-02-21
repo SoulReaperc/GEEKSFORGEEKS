@@ -26,7 +26,7 @@ export default function SmoothScroll() {
         })
 
 
-        function raf(time) {
+        function raf(time: number) {
             lenis.raf(time)
             requestAnimationFrame(raf)
         }

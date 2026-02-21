@@ -12,21 +12,21 @@ import { vibrateLightClick } from "@/lib/vibration";
 
 
 export default function GlassyNavbar() {
-    const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     // showLoginOptions state removed
-    const [user, setUser] = useState(null);
-    const desktopDropdownRef = useRef(null);
-    const mobileDropdownRef = useRef(null);
+    const [user, setUser] = useState<any>(null);
+    const desktopDropdownRef = useRef<HTMLDivElement>(null);
+    const mobileDropdownRef = useRef<HTMLDivElement>(null);
 
     const pathname = usePathname();
     const router = useRouter();
 
     // Use refs to track animation states
-    const animationStatesRef = useRef({});
-    const hoverTimeoutRef = useRef(null);
-    const lastHoverTimeRef = useRef({});
+    const animationStatesRef = useRef<Record<number, any>>({});
+    const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const lastHoverTimeRef = useRef<Record<number, number>>({});
 
     useEffect(() => {
         const checkUser = async () => {
@@ -59,7 +59,7 @@ export default function GlassyNavbar() {
     };
 
     // Enhanced hover handler that ensures animations complete
-    const handleMouseEnter = useCallback((index) => {
+    const handleMouseEnter = useCallback((index: number) => {
         const now = Date.now();
         lastHoverTimeRef.current[index] = now;
 
@@ -79,7 +79,7 @@ export default function GlassyNavbar() {
         };
     }, []);
 
-    const handleMouseLeave = useCallback((index) => {
+    const handleMouseLeave = useCallback((index: number) => {
         const now = Date.now();
         lastHoverTimeRef.current[index] = now;
 
@@ -93,7 +93,7 @@ export default function GlassyNavbar() {
             ...animationStatesRef.current[index],
             timeout: setTimeout(() => {
                 // Only reset if this is still the most recent action
-                if (lastHoverTimeRef.current[index] <= now) {
+                if ((lastHoverTimeRef.current[index] ?? 0) <= now) {
                     setHoveredIndex(null);
                     animationStatesRef.current[index] = {
                         ...animationStatesRef.current[index],
@@ -107,7 +107,7 @@ export default function GlassyNavbar() {
     }, []);
 
     // Modified DecryptedText wrapper component that ensures proper animation
-    const NavItemText = useCallback(({ text, isHovered, index }) => {
+    const NavItemText = useCallback(({ text, isHovered, index }: { text: string; isHovered: boolean; index: number }) => {
         // Force a key change to reset animation when hover state changes
         const animationKey = `${index}-${isHovered ? 'hover' : 'normal'}`;
 

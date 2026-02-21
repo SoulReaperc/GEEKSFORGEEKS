@@ -5,7 +5,7 @@ import { X, Megaphone, ChevronUp, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 
-export default function RecruitmentNotification({ isRecruitmentOpen }) {
+export default function RecruitmentNotification({ isRecruitmentOpen }: { isRecruitmentOpen: boolean }) {
     const [stage, setStage] = useState('hidden');
     const pathname = usePathname();
 
@@ -27,6 +27,7 @@ export default function RecruitmentNotification({ isRecruitmentOpen }) {
                 return () => clearTimeout(timer);
             }
         }
+        return undefined;
     }, [isRecruitmentOpen, pathname]);
 
     const isHomePage = pathname === '/';
