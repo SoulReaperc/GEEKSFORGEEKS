@@ -4,7 +4,40 @@ import React from 'react';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Terminal, Loader2, AlertCircle } from 'lucide-react';
 
-const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) => {
+interface TestResult {
+    passed: boolean;
+    input: string;
+    expected: string;
+    actual: string;
+    stderr?: string;
+}
+
+interface GradingDetail {
+    score: number;
+    max: number;
+}
+
+interface GradingResult {
+    total_score: number;
+    max_marks: number;
+    details: Record<string, GradingDetail>;
+}
+
+interface SubmissionResult {
+    status: string;
+    message: string;
+    gradingResult?: GradingResult;
+}
+
+interface ConsoleOutputProps {
+    results: TestResult[] | null;
+    status: string | null;
+    isRunning: boolean;
+    error: string | null;
+    submissionResult: SubmissionResult | null;
+}
+
+const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }: ConsoleOutputProps) => {
     if (submissionResult) {
         const isSuccess = submissionResult.status === 'Success';
         const grading = submissionResult.gradingResult;
@@ -53,7 +86,7 @@ const ConsoleOutput = ({ results, status, isRunning, error, submissionResult }) 
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                {Object.entries(grading.details).map(([key, value]) => (
+                                {Object.entries(grading.details).map(([key, value]: [string, GradingDetail]) => (
                                     <div key={key} className="bg-black/50 p-3 rounded-lg border border-white/10">
                                         <div className="capitalize text-gray-400 text-xs mb-1">{key.replace(/_/g, ' ')}</div>
                                         <div className="font-medium text-white">

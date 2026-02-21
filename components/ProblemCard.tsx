@@ -4,18 +4,24 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, Code2, Award, Zap, Clock, TrendingUp } from 'lucide-react';
 
-const ProblemCard = ({ problem, isSolved, index }) => {
+interface ProblemCardProps {
+    problem: { fields: { title: string; slug: string; difficulty: string; description: any } };
+    isSolved: boolean;
+    index: number;
+}
+
+const ProblemCard = ({ problem, isSolved, index }: ProblemCardProps) => {
     const { title, slug, difficulty, description } = problem.fields;
 
     // Safely extract text from description (could be Rich Text object or string)
-    const getDescriptionText = (desc) => {
+    const getDescriptionText = (desc: any): string | null => {
         if (!desc) return null;
         if (typeof desc === 'string') return desc;
         
         // If it's a Rich Text object from Contentful
         if (desc.content && Array.isArray(desc.content)) {
-            const texts = [];
-            const extractText = (node) => {
+            const texts: string[] = [];
+            const extractText = (node: any) => {
                 if (node.nodeType === 'text') {
                     texts.push(node.value);
                 } else if (node.content && Array.isArray(node.content)) {
@@ -58,7 +64,7 @@ const ProblemCard = ({ problem, isSolved, index }) => {
         },
     };
 
-    const config = difficultyConfig[difficulty] || {
+    const config = difficultyConfig[difficulty as keyof typeof difficultyConfig] || {
         color: 'text-gray-400',
         bg: 'bg-gray-500/10',
         border: 'border-gray-500/30',

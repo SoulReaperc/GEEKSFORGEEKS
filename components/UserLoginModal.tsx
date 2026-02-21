@@ -6,7 +6,12 @@ import { sendOtp, verifyOtp } from '@/app/actions/user-auth';
 import { useRouter } from 'next/navigation';
 import { vibrateLightClick } from '@/lib/vibration';
 
-export default function UserLoginModal({ isOpen, onClose }) {
+interface UserLoginModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function UserLoginModal({ isOpen, onClose }: UserLoginModalProps) {
   const [step, setStep] = useState(1); // 1: Email, 2: OTP
   const [emailPrefix, setEmailPrefix] = useState(''); // Only the prefix part (before @)
   const [email, setEmail] = useState(''); // Full email with @srmist.edu.in
@@ -45,7 +50,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  async function handleSendOtp(e) {
+  async function handleSendOtp(e: React.FormEvent) {
     e.preventDefault();
     if (emailPrefix === 'admin_') {
       vibrateLightClick();
@@ -75,7 +80,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
     }
   }
 
-  async function handleVerifyOtp(e) {
+  async function handleVerifyOtp(e: React.FormEvent) {
     e.preventDefault();
     if (!otp) return;
 
@@ -105,7 +110,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
     setSuccess('');
   }
 
-  const handleEmailPrefixChange = (e) => {
+  const handleEmailPrefixChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Only allow letters, numbers, dots, underscores, and hyphens
     // Limit to 20 characters to allow "admin_access"
@@ -117,7 +122,7 @@ export default function UserLoginModal({ isOpen, onClose }) {
     <div
       className="modal-overlay"
       onClick={(e) => {
-        if (e.target.className === 'modal-overlay') onClose();
+        if ((e.target as HTMLElement).className === 'modal-overlay') onClose();
       }}
     >
       <div

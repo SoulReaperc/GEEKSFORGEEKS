@@ -3,18 +3,25 @@
 import React, { useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 
-const CodeEditor = ({ code, language, onChange, theme = 'vs-dark' }) => {
+interface CodeEditorProps {
+    code: string;
+    language: string;
+    onChange: (value: string | undefined) => void;
+    theme?: string;
+}
+
+const CodeEditor = ({ code, language, onChange, theme = 'vs-dark' }: CodeEditorProps) => {
     const editorRef = useRef(null);
 
-    const handleEditorChange = (value) => {
+    const handleEditorChange = (value: string | undefined) => {
         onChange(value);
     };
 
-    const handleEditorDidMount = (editor, monaco) => {
+    const handleEditorDidMount = (editor: any, monaco: any) => {
         editorRef.current = editor;
 
         // Disable copy, cut, and paste commands in Monaco Editor
-        editor.onKeyDown((e) => {
+        editor.onKeyDown((e: any) => {
             const isCopy = (e.ctrlKey || e.metaKey) && e.code === 'KeyC';
             const isCut = (e.ctrlKey || e.metaKey) && e.code === 'KeyX';
             const isPaste = (e.ctrlKey || e.metaKey) && e.code === 'KeyV';
@@ -26,7 +33,7 @@ const CodeEditor = ({ code, language, onChange, theme = 'vs-dark' }) => {
         });
 
         // Add context menu interception
-        editor.onContextMenu((e) => {
+        editor.onContextMenu((e: any) => {
             e.event.preventDefault();
             e.event.stopPropagation();
         });
@@ -34,7 +41,7 @@ const CodeEditor = ({ code, language, onChange, theme = 'vs-dark' }) => {
         // Disable right-click context menu completely
         const editorDomNode = editor.getDomNode();
         if (editorDomNode) {
-            editorDomNode.addEventListener('contextmenu', (e) => {
+            editorDomNode.addEventListener('contextmenu', (e: Event) => {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;

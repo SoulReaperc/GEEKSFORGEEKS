@@ -1,13 +1,13 @@
 'use client';
-import { ReactLenis } from 'lenis/react';
+import { ReactLenis, type LenisRef } from 'lenis/react';
 import { gsap } from 'gsap';
-import { useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
-export default function SmoothScrolling({ children }) {
-    const lenisRef = useRef();
+export default function SmoothScrolling({ children }: { children: ReactNode }) {
+    const lenisRef = useRef<LenisRef>(null);
 
     useEffect(() => {
-        function update(time) {
+        function update(time: number) {
             if (lenisRef.current?.lenis) {
                 lenisRef.current.lenis.raf(time * 1000);
             }
