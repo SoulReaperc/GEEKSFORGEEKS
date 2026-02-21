@@ -1,4 +1,4 @@
-import { createClient } from 'contentful';
+import { createClient, ContentfulClientApi } from 'contentful';
 
 const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
 const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN;
@@ -11,8 +11,8 @@ if (!space || !accessToken) {
   );
 }
 
-export const contentfulClient = createClient({
-  space,
-  accessToken,
+export const contentfulClient: ContentfulClientApi<undefined> = createClient({
+  space: space ?? '',
+  accessToken: accessToken ?? '',
   environment,
 });

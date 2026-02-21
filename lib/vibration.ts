@@ -3,11 +3,12 @@
  * Uses the Vibration API to provide vibrations on supported devices
  */
 
+type VibrationPattern = number | number[];
+
 /**
  * Trigger a vibration effect on the device
- * @param {number|number[]} pattern 
  */
-export function triggerVibration(pattern = 50) {
+export function triggerVibration(pattern: VibrationPattern = 50): void {
   // Check if Vibration API is supported
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
     try {

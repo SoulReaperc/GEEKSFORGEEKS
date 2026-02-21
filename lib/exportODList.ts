@@ -1,4 +1,24 @@
-const getShortForm = (branch) => {
+interface RegistrationMember {
+    name?: string;
+    reg_no?: string;
+    section?: string;
+    branch?: string;
+    year?: string;
+}
+
+interface Registration {
+    members?: RegistrationMember[];
+    branch?: string;
+    year_of_study?: string;
+}
+
+interface GroupedData {
+    branch: string;
+    year: string;
+    members: RegistrationMember[];
+}
+
+const getShortForm = (branch: string): string => {
     const b = (branch || 'Unknown Course').trim().toUpperCase();
     if (b.includes('DATA SCIENCE') || b === 'DS') return 'DS';
     if (b.includes('CLOUD') || b === 'CLOUD COMPUTING') return 'CLOUD';
@@ -10,7 +30,7 @@ const getShortForm = (branch) => {
     return b;
 };
 
-const branchOrder = (branch) => {
+const branchOrder = (branch: string): number => {
     const b = (branch || '').toUpperCase().trim();
     if (b === 'CORE') return 1;
     if (b === 'AIML') return 2;
@@ -22,12 +42,12 @@ const branchOrder = (branch) => {
     return 8;
 };
 
-export const exportODListExcel = async (registrations, eventName) => {
+export const exportODListExcel = async (registrations: Registration[], eventName: string): Promise<void> => {
     // 1) Gather members 
-    const allMembers = [];
+    const allMembers: RegistrationMember[] = [];
     registrations.forEach(r => {
         if (r.members && Array.isArray(r.members)) {
-            r.members.forEach(m => {
+            r.members.forEach((m: RegistrationMember) => {
                 const b = m.branch || r.branch || '';
                 const y = m.year || r.year_of_study || '';
                 allMembers.push({ ...m, branch: b, year: y });
@@ -41,9 +61,9 @@ export const exportODListExcel = async (registrations, eventName) => {
     }
 
     // 2) Group by (Branch + Year)
-    const groups = {};
+    const groups: Record<string, GroupedData> = {};
     allMembers.forEach(m => {
-        const shortBranch = getShortForm(m.branch);
+        const shortBranch = getShortForm(m.branch ?? '');
         let y = (m.year || '').toString().toUpperCase().replace(/[^0-9]/g, '');
         if (!y) y = '1';
 
@@ -63,15 +83,17 @@ export const exportODListExcel = async (registrations, eventName) => {
 
     // 3) Sort branches and years
     const sortedGroupKeys = Object.keys(groups).sort((keyA, keyB) => {
-        const branchA = groups[keyA].branch;
-        const branchB = groups[keyB].branch;
+        const groupA = groups[keyA]!;
+        const groupB = groups[keyB]!;
+        const branchA = groupA.branch;
+        const branchB = groupB.branch;
         const orderA = branchOrder(branchA);
         const orderB = branchOrder(branchB);
         if (orderA !== orderB) return orderA - orderB;
         if (branchA !== branchB) return branchA.localeCompare(branchB);
 
-        const yearA = groups[keyA].year;
-        const yearB = groups[keyB].year;
+        const yearA = groupA.year;
+        const yearB = groupB.year;
         return yearA.localeCompare(yearB);
     });
 
@@ -97,9 +119,9 @@ export const exportODListExcel = async (registrations, eventName) => {
         let currentRow = 1;
 
         sortedGroupKeys.forEach((key, groupIdx) => {
-            const group = groups[key];
+            const group = groups[key]!;
 
-            group.members.sort((a, b) => {
+            group.members.sort((a: RegistrationMember, b: RegistrationMember) => {
                 const secA = (a.section || '').toUpperCase();
                 const secB = (b.section || '').toUpperCase();
                 if (secA !== secB) return secA < secB ? -1 : 1;
@@ -167,10 +189,10 @@ export const exportODListExcel = async (registrations, eventName) => {
 
             // Table Headers
             const borderStyle = {
-                top: { style: 'thin' },
-                left: { style: 'thin' },
-                bottom: { style: 'thin' },
-                right: { style: 'thin' }
+                top: { style: 'thin' as const },
+                left: { style: 'thin' as const },
+                bottom: { style: 'thin' as const },
+                right: { style: 'thin' as const }
             };
 
             // Add header values
@@ -202,7 +224,7 @@ export const exportODListExcel = async (registrations, eventName) => {
             currentRow += 2;
 
             // Members Table
-            group.members.forEach((m, i) => {
+            group.members.forEach((m: RegistrationMember, i: number) => {
                 const section = (m.section || '').trim() || '-';
                 const sectionDisplay = section === '-' ? '-' : `${group.branch}-${section}`;
 

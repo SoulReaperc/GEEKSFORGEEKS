@@ -1,12 +1,7 @@
 /**
  * Calculates the score for a submission based on runtime and test case results.
- * 
- * @param {boolean} allPassed - Whether all test cases passed
- * @param {number} runtimeMs - The runtime execution time in milliseconds
- * @param {number} basePoints - Base points for the problem (default 100)
- * @returns {number} - The calculated score
  */
-export function calculateScore(allPassed, runtimeMs, basePoints = 100) {
+export function calculateScore(allPassed: boolean, runtimeMs: number, basePoints: number = 100): number {
     if (!allPassed) return 0;
 
     // Minimum runtime to avoid division by zero or excessive points for 0ms
