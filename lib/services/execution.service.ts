@@ -1,6 +1,10 @@
 import type { CodingTestCase, PistonExecuteResponse } from '@/types';
+import { CircuitBreaker } from '@/lib/utils/circuit-breaker';
 
 const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
+
+/** Circuit breaker shared across all Piston calls in this process */
+const pistonCircuit = new CircuitBreaker({ failureThreshold: 5, resetTimeoutMs: 30_000 });
 
 /**
  * Language configuration for Piston API
@@ -99,16 +103,18 @@ async function executeSingleTestCase(
 ): Promise<TestCaseExecResult> {
   const startTime = Date.now();
 
-  const runRes = await fetch(PISTON_API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      language,
-      version,
-      files: [{ content: code }],
-      stdin: testCase.input || '',
-    }),
-  });
+  const runRes = await pistonCircuit.execute(() =>
+    fetch(PISTON_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        language,
+        version,
+        files: [{ content: code }],
+        stdin: testCase.input || '',
+      }),
+    })
+  );
 
   const runtime = Date.now() - startTime;
 
@@ -145,16 +151,18 @@ export async function verifyAllTestCases(
   testCases: CodingTestCase[],
 ): Promise<boolean> {
   for (const testCase of testCases) {
-    const runRes = await fetch(PISTON_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        language,
-        version,
-        files: [{ content: code }],
-        stdin: testCase.input || '',
-      }),
-    });
+    const runRes = await pistonCircuit.execute(() =>
+      fetch(PISTON_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language,
+          version,
+          files: [{ content: code }],
+          stdin: testCase.input || '',
+        }),
+      })
+    );
 
     const runData = await runRes.json();
     const actual = (runData?.run?.output ?? '').trim();
