@@ -3,26 +3,25 @@ import { requireAuth } from '@/lib/services/auth.service';
 import { getProblemBySlug } from '@/lib/services/contentful.service';
 import { getLanguageConfig, executeTestCases } from '@/lib/services/execution.service';
 import { handleApiError, ValidationError, NotFoundError } from '@/lib/middleware/error.middleware';
+import { codeRequestSchema } from '@/lib/validation/code.schema';
 
 export async function POST(request: Request) {
     try {
-        const { code, language, problemSlug } = await request.json();
+        const body = await request.json();
 
         // 1. Authentication
         await requireAuth();
 
-        // 2. Input Validation
-        if (!code || !language || !problemSlug) {
-            throw new ValidationError(
-                'Missing required fields: code, language, and problemSlug are required'
-            );
+        // 2. Input Validation (Zod)
+        const parsed = codeRequestSchema.safeParse(body);
+        if (!parsed.success) {
+            throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid request');
         }
+        const { code, language, problemSlug } = parsed.data;
 
         const langConfig = getLanguageConfig(language);
         if (!langConfig) {
-            throw new ValidationError(
-                `Unsupported language: ${language}`
-            );
+            throw new ValidationError(`Unsupported language: ${language}`);
         }
 
         // 3. Fetch Problem from Contentful

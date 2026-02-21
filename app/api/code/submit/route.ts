@@ -6,14 +6,18 @@ import { countEffectiveLOC, calculateScore } from '@/lib/services/grading.servic
 import { findSubmission, createSubmission, updateSubmission } from '@/lib/repositories/submission.repository';
 import { handlePointsUpdate } from '@/lib/repositories/profile.repository';
 import { handleApiError, ValidationError, NotFoundError } from '@/lib/middleware/error.middleware';
+import { codeRequestSchema } from '@/lib/validation/code.schema';
 
 export async function POST(request: Request) {
     try {
-        const { code, language, problemSlug } = await request.json();
+        const body = await request.json();
 
-        if (!code || !language || !problemSlug) {
-            throw new ValidationError('Missing required fields');
+        // Input Validation (Zod)
+        const parsed = codeRequestSchema.safeParse(body);
+        if (!parsed.success) {
+            throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid request');
         }
+        const { code, language, problemSlug } = parsed.data;
 
         const langConfig = getLanguageConfig(language);
         if (!langConfig) {
