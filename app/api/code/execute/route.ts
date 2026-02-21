@@ -361,7 +361,7 @@ export async function POST(request: Request) {
             }, { status: 404 });
         }
 
-        const problem = response.items[0];
+        const problem = response.items[0]!;
         const testCases = problem.fields.testCases as Array<{ input: string; output: string }>;
         const difficulty = (problem.fields.difficulty as string)?.toLowerCase() || 'easy';
         const expectedComplexity = (problem.fields.expectedComplexity as string) || 'O(n)';
@@ -379,7 +379,7 @@ export async function POST(request: Request) {
         const executionTimes: number[] = [];
 
         for (let i = 0; i < testCases.length; i++) {
-            const testCase = testCases[i];
+            const testCase = testCases[i]!;
             const pistonPayload = {
                 language: langConfig.language,
                 version: langConfig.version,

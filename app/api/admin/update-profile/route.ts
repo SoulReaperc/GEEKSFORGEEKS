@@ -38,16 +38,16 @@ export async function POST(request: Request) {
         const locale = 'en-US'; // This should ideally be dynamic or fetched from space locales
 
         if (bio) {
-            entry.fields.bio = { [locale]: bio };
+            entry!.fields.bio = { [locale]: bio };
         }
         if (socialLinks) {
-            entry.fields.socialLinks = { [locale]: socialLinks };
+            entry!.fields.socialLinks = { [locale]: socialLinks };
         }
 
         // 5. Optimistic Locking & Update
         // The SDK handles versioning automatically if we use the entry object returned by getEntries
         // providing we update the object and call update() on it.
-        const updatedEntry = await entry.update();
+        const updatedEntry = await entry!.update();
 
         // 6. Publish (Optional, but usually desired for "Update")
         // The prompt didn't explicitly say "Publish", but "Update" usually implies saving.

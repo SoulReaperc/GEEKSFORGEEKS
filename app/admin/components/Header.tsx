@@ -28,14 +28,14 @@ export const Header: React.FC<{ userEmail: string }> = ({ userEmail }) => {
     const getUserName = (email: string): string => {
         if (!email) return DEFAULT_NAME;
         const normalizedEmail = email.toLowerCase().trim();
-        return USER_ID_MAP[normalizedEmail] || email.split('@')[0]; // Fallback to email prefix
+        return USER_ID_MAP[normalizedEmail] || email.split('@')[0] || email; // Fallback to email prefix
     };
 
     const getInitials = (name: string): string => {
         const parts = name.split(' ').filter(part => part.length > 0);
         if (parts.length === 0) return "AD"; // Admin Default
-        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-        return (parts[0][0] + parts[1][0]).toUpperCase();
+        if (parts.length === 1) return parts[0]!.substring(0, 2).toUpperCase();
+        return (parts[0]![0]! + parts[1]![0]!).toUpperCase();
     };
 
     const displayName = getUserName(userEmail);

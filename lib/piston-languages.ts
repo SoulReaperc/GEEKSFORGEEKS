@@ -26,8 +26,8 @@ export const getLanguageConfig = (lang: string) => {
 
     // Alias match
     for (const key in LANGUAGE_MAP) {
-        if (LANGUAGE_MAP[key].aliases?.includes(normalized)) {
-            return LANGUAGE_MAP[key];
+        if (LANGUAGE_MAP[key]?.aliases?.includes(normalized)) {
+            return LANGUAGE_MAP[key]!;
         }
     }
 

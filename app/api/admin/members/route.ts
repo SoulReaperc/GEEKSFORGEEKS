@@ -71,7 +71,7 @@ export async function POST(request: Request) {
             while (retries > 0) {
                 try {
                     asset = await environment.getAsset(asset.sys.id); // Refresh
-                    if (asset.fields.file['en-US'].url) { // URL exists means processed
+                    if (asset.fields.file['en-US']?.url) { // URL exists means processed
                         asset = await asset.publish();
                         break;
                     }

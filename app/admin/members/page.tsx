@@ -826,7 +826,7 @@ export default function MembersPage() {
 
                 // Parse index from ID: parentId-gm-index
                 const idParts = updatedMember.id.split('-gm-');
-                const index = parseInt(idParts[1]);
+                const index = parseInt(idParts[1] ?? '');
 
                 if (isNaN(index)) throw new Error("Could not determine member index");
 
@@ -1191,6 +1191,7 @@ export default function MembersPage() {
             }, 50);
             return () => clearTimeout(timer);
         }
+        return undefined;
     }, [loading, isSearching]);
 
     // --- Render Card Helper ---

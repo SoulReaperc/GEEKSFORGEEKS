@@ -143,7 +143,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const problem = problemResponse.items[0];
+        const problem = problemResponse.items[0]!;
         const testCases = problem.fields.testCases as Array<{
             input: string;
             output: string;

@@ -243,7 +243,7 @@ export async function uploadEventImage(eventId: string, formData: FormData) {
     for (let i = 0; i < MAX_RETRIES; i++) {
         await new Promise(r => setTimeout(r, 1000))
         asset = await environment.getAsset(asset.sys.id)
-        if (asset.fields.file['en-US'].url) {
+        if (asset.fields.file['en-US']?.url) {
             break
         }
     }

@@ -44,7 +44,7 @@ export async function toggleRecruitmentStatus(isOpen: boolean) {
                 throw new Error(`Global Settings entry not found and could not be created: ${errorMessage}. Please create a globalSettings entry manually in Contentful.`)
             }
         } else {
-            entry = entries.items[0]
+            entry = entries.items[0]!
 
             entry.fields.isRecruitmentOpen = {
                 'en-US': isOpen
