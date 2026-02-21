@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL! ,
-    process.env. SUPABASE_SERVICE_ROLE_KEY!
-);
+import { findSubscriberByEmail, createSubscriber } from '@/lib/repositories/newsletter.repository';
+import { handleApiError, ValidationError } from '@/lib/middleware/error.middleware';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -13,20 +9,12 @@ export async function POST(request:  Request) {
     try {
         const { email } = await request.json();
 
-        // Validate email
         if (!email || ! email.includes('@')) {
-            return NextResponse.json(
-                { error: 'Valid email is required' },
-                { status: 400 }
-            );
+            throw new ValidationError('Valid email is required');
         }
 
         // Check if already subscribed
-        const { data:  existing } = await supabase
-            .from('newsletter_subscribers')
-            .select('*')
-            .eq('email', email)
-            .single();
+        const existing = await findSubscriberByEmail(email);
 
         if (existing) {
             if (existing.is_active && existing.confirmed) {
@@ -35,7 +23,6 @@ export async function POST(request:  Request) {
                     { status: 400 }
                 );
             } else if (existing.is_active && !existing.confirmed) {
-                // Resend confirmation
                 await sendConfirmationEmail(email, existing.unsubscribe_token);
                 return NextResponse.json({
                     message: 'Confirmation email resent!  Please check your inbox.',
@@ -43,38 +30,15 @@ export async function POST(request:  Request) {
             }
         }
 
-        // Insert new subscriber
-        const { data: newSubscriber, error } = await supabase
-            .from('newsletter_subscribers')
-            .insert({
-                email,
-                is_active: true,
-                confirmed: false,
-            })
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Supabase error:', error);
-            return NextResponse.json(
-                { error: 'Failed to subscribe.  Please try again.' },
-                { status: 500 }
-            );
-        }
-
-        // Send confirmation email
+        const newSubscriber = await createSubscriber(email);
         await sendConfirmationEmail(email, newSubscriber.unsubscribe_token);
 
         return NextResponse.json({
             message: 'Success! Please check your email to confirm your subscription.',
         });
 
-    } catch (error) {
-        console.error('Newsletter subscribe error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+    } catch (error: unknown) {
+        return handleApiError(error);
     }
 }
 

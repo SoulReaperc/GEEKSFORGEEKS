@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-    process. env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { unsubscribe } from '@/lib/repositories/newsletter.repository';
 
 export async function GET(request: Request) {
     try {
@@ -25,18 +20,7 @@ export async function GET(request: Request) {
             );
         }
 
-        // Update subscriber status
-        const { error } = await supabase
-            .from('newsletter_subscribers')
-            .update({ 
-                is_active: false,
-                unsubscribed_at: new Date().toISOString()
-            })
-            .eq('unsubscribe_token', token);
-
-        if (error) {
-            throw error;
-        }
+        await unsubscribe(token);
 
         return new NextResponse(
             `<!DOCTYPE html>
