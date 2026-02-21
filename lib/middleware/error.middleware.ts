@@ -22,6 +22,14 @@ export function handleApiError(error: unknown): NextResponse<ErrorResponseBody> 
     );
   }
 
+  // Not found errors
+  if (error instanceof NotFoundError) {
+    return NextResponse.json(
+      { success: false as const, error: error.message },
+      { status: 404 }
+    );
+  }
+
   // Validation errors
   if (error instanceof ValidationError) {
     return NextResponse.json(

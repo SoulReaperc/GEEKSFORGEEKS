@@ -10,8 +10,8 @@ export interface GradingScriptInput {
   execution_time_ms: number;
   code: string;
   optimal_loc: number;
-  expected_complexity: string;
-  user_complexity: string;
+  expected_complexity?: string;
+  user_complexity?: string;
 }
 
 /**
