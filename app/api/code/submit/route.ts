@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { validateSession } from '@/lib/services/auth.service';
 import { getProblemBySlug } from '@/lib/services/contentful.service';
 import { getLanguageConfig, verifyAllTestCases } from '@/lib/services/execution.service';
-import { countEffectiveLOC, calculateScore } from '@/lib/services/grading.service';
+import { calculateScore } from '@/lib/services/grading.service';
 import { findSubmission, createSubmission, updateSubmission } from '@/lib/repositories/submission.repository';
 import { handlePointsUpdate } from '@/lib/repositories/profile.repository';
 import { handleApiError, ValidationError, NotFoundError } from '@/lib/middleware/error.middleware';
@@ -59,7 +59,6 @@ export async function POST(request: Request) {
         }
 
         // Grade submission
-        const currentLOC = countEffectiveLOC(code);
         const mockExecutionTime = Math.floor(Math.random() * 5);
 
         const gradingResult = await calculateScore({
