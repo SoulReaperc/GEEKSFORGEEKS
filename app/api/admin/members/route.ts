@@ -1,23 +1,10 @@
 import { NextResponse } from 'next/server';
-import { contentfulManagementClient, SPACE_ID, ENVIRONMENT_ID } from '@/lib/contentful-admin';
-
-// Helper to create Rich Text structure from plain string
-const createRichText = (text: string) => {
-    return {
-        nodeType: 'document',
-        data: {},
-        content: text.split('\n\n').map(para => ({
-            nodeType: 'paragraph',
-            data: {},
-            content: [{
-                nodeType: 'text',
-                value: para,
-                marks: [],
-                data: {}
-            }]
-        }))
-    };
-};
+import {
+    getEnvironment,
+    processAndPublishAsset,
+    mapMemberFields,
+} from '@/lib/services/contentful-admin.service';
+import { handleApiError } from '@/lib/middleware/error.middleware';
 
 export async function POST(request: Request) {
     try {
@@ -29,144 +16,40 @@ export async function POST(request: Request) {
         if (!memberData) throw new Error("Missing member data");
         const member = JSON.parse(memberData);
 
-        const space = await contentfulManagementClient.getSpace(SPACE_ID);
-        const environment = await space.getEnvironment(ENVIRONMENT_ID);
+        const environment = await getEnvironment();
 
-        // --- ASSET PROCESSING HELPER ---
-        const processAndPublishAsset = async (file: File) => {
-            const arrayBuffer = await file.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            // 1. Create Upload
-            const upload = await environment.createUpload({ file: arrayBuffer });
-
-            // 2. Create Asset
-            let asset = await environment.createAsset({
-                fields: {
-                    title: { 'en-US': `${member.name} Profile` },
-                    file: {
-                        'en-US': {
-                            fileName: file.name,
-                            contentType: file.type,
-                            uploadFrom: {
-                                sys: {
-                                    type: 'Link',
-                                    linkType: 'Upload',
-                                    id: upload.sys.id
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // 3. Process Asset
-            asset = await asset.processForAllLocales();
-
-            // 4. Publish Asset (Poll for readiness)
-            // Contentful processing is async, we often need to wait a beat or check status.
-            // For simplicity in this script, we'll try to publish immediately, but usually one might need a small delay or polling.
-            // A simple polling mechanism:
-            let retries = 5;
-            while (retries > 0) {
-                try {
-                    asset = await environment.getAsset(asset.sys.id); // Refresh
-                    if (asset.fields.file['en-US']?.url) { // URL exists means processed
-                        asset = await asset.publish();
-                        break;
-                    }
-                } catch (e) {
-                    // Ignore publish error, wait and retry
-                }
-                await new Promise(r => setTimeout(r, 1000));
-                retries--;
-            }
-
-            return asset;
-        };
-
-        // --- MAP FIELDS HELPER ---
-        interface MemberInput {
-            name: string;
-            role: string;
-            team: string;
-            year: string;
-            order?: number;
-            bio?: string;
-            email?: string;
-            github?: string;
-            linkedin?: string;
-            instagram?: string;
-            coLead?: string;
-            generalMembers?: string;
-        }
-
-        const mapFields = (m: MemberInput, photoAssetId?: string) => {
-            const fields: Record<string, { 'en-US': unknown }> = {
-                name: { 'en-US': m.name },
-                role: { 'en-US': m.role },
-                team: { 'en-US': m.team },
-                year: { 'en-US': m.year },
-                order: { 'en-US': m.order || 99 },
-                bio: { 'en-US': createRichText(m.bio || '') }
-            };
-
-            if (m.email) fields.email = { 'en-US': m.email };
-            if (m.github) fields.github = { 'en-US': m.github };
-            if (m.linkedin) fields.linkedin = { 'en-US': m.linkedin };
-            if (m.instagram) fields.instagram = { 'en-US': m.instagram };
-
-            // Handle Derived Arrays (CSV strings)
-            if (m.coLead) fields.coLead = { 'en-US': m.coLead };
-
-            // Handle General Members
-            // ID verified from user-provided JSON: "id": "generalMembers"
-            if (m.generalMembers) {
-                fields.generalMembers = { 'en-US': m.generalMembers };
-            }
-
-            if (photoAssetId) {
-                fields.photo = { 'en-US': { sys: { type: 'Link', linkType: 'Asset', id: photoAssetId } } };
-            }
-
-            return fields;
-        };
-
-        let photoId = member.photoId; // Preserve existing by default
+        let photoId = member.photoId;
         if (file) {
-            const asset = await processAndPublishAsset(file);
-            photoId = asset.sys.id;
+            const asset = await processAndPublishAsset(file, `${member.name} Profile`);
+            photoId = asset.id;
         }
 
         if (action === 'create') {
-            const fields = mapFields(member, photoId);
+            const fields = mapMemberFields(member, photoId);
             const entry = await environment.createEntry('memberProfile', { fields });
             const published = await entry.publish();
-
             return NextResponse.json({ success: true, data: published });
 
         } else if (action === 'update') {
             if (!member.id) throw new Error("Member ID required for update");
 
             const entry = await environment.getEntry(member.id);
-            const fields = mapFields(member, photoId);
+            const fields = mapMemberFields(member, photoId);
 
-            // Update fields manually
             Object.keys(fields).forEach(key => {
                 entry.fields[key] = fields[key];
             });
 
-            // Handle clean up of deleted optional fields
+            // Clean up deleted optional fields
             const optionalFields = ['email', 'github', 'linkedin', 'instagram'];
             optionalFields.forEach(field => {
-                if (member.hasOwnProperty(field) && !member[field]) {
+                if (Object.prototype.hasOwnProperty.call(member, field) && !member[field]) {
                     delete entry.fields[field];
                 }
             });
 
             const updated = await entry.update();
             const published = await updated.publish();
-
             return NextResponse.json({ success: true, data: published });
 
         } else if (action === 'delete') {
@@ -178,14 +61,12 @@ export async function POST(request: Request) {
                 await entry.unpublish();
             }
             await entry.delete();
-
             return NextResponse.json({ success: true });
         }
 
         return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
 
     } catch (error: unknown) {
-        // Error handled in response
-        return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Unknown Error' }, { status: 500 });
+        return handleApiError(error);
     }
 }

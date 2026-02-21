@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
 import { contentfulManagementClient, SPACE_ID, ENVIRONMENT_ID } from '@/lib/contentful-admin';
-
-const SUPER_ADMINS = ['admin@club.com', 'chairperson@club.com'];
+import { requireAuth, isSuperAdmin, AuthError } from '@/lib/services/auth.service';
+import { handleApiError } from '@/lib/middleware/error.middleware';
 
 export async function POST(request: Request) {
     try {
-        // 1. Mock Authentication & Authorization
-        const mockEmail = request.headers.get('x-mock-user-email');
+        const user = await requireAuth();
 
-        if (!mockEmail || !SUPER_ADMINS.includes(mockEmail)) {
-            return NextResponse.json({ error: 'Forbidden: God Mode Access Denied' }, { status: 403 });
+        if (!isSuperAdmin(user.email)) {
+            throw new AuthError('Forbidden: God Mode Access Denied', 403);
         }
 
         const body = await request.json();
@@ -23,40 +22,36 @@ export async function POST(request: Request) {
         switch (action) {
             case 'create':
                 if (!contentType) throw new Error('ContentType is required for create');
-                result = await environment.createEntry(contentType, {
-                    fields: data,
-                });
+                result = await environment.createEntry(contentType, { fields: data });
                 break;
 
-            case 'update':
+            case 'update': {
                 if (!entryId) throw new Error('EntryId is required for update');
                 const entryToUpdate = await environment.getEntry(entryId);
-                // Merge data into fields
                 Object.keys(data).forEach(key => {
-                    // Assuming data is in the format { fieldName: { 'en-US': value } } or just { fieldName: value }
-                    // For simplicity in God Mode, let's assume the admin sends full localized structure or we map it.
-                    // Let's assume the admin sends { fieldName: { 'en-US': value } } for maximum control.
                     entryToUpdate.fields[key] = data[key];
                 });
                 result = await entryToUpdate.update();
                 break;
+            }
 
-            case 'delete':
+            case 'delete': {
                 if (!entryId) throw new Error('EntryId is required for delete');
                 const entryToDelete = await environment.getEntry(entryId);
-                // Unpublish first if published
                 if (entryToDelete.isPublished()) {
                     await entryToDelete.unpublish();
                 }
                 await entryToDelete.delete();
                 result = { success: true, id: entryId };
                 break;
+            }
 
-            case 'publish':
+            case 'publish': {
                 if (!entryId) throw new Error('EntryId is required for publish');
                 const entryToPublish = await environment.getEntry(entryId);
                 result = await entryToPublish.publish();
                 break;
+            }
 
             default:
                 return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
@@ -65,10 +60,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true, result });
 
     } catch (error: unknown) {
-        console.error('God Mode Error:', error);
-        return NextResponse.json(
-            { error: error instanceof Error ? error.message : 'Internal Server Error' },
-            { status: 500 }
-        );
+        return handleApiError(error);
     }
 }
