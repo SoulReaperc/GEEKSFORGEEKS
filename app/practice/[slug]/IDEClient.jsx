@@ -39,56 +39,6 @@ const IDEClient = ({ problem, initialCode }) => {
         return () => subscription.unsubscribe();
     }, []);
 
-    // Block copy/paste/cut and drag/drop events
-    useEffect(() => {
-        const preventCopyPaste = (e) => {
-            e.preventDefault();
-            return false;
-        };
-
-        const preventContextMenu = (e) => {
-            e.preventDefault();
-            return false;
-        };
-
-        const preventDragDrop = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-            return false;
-        };
-
-        // Add event listeners with capture phase to intercept early
-        document.addEventListener('copy', preventCopyPaste, true);
-        document.addEventListener('cut', preventCopyPaste, true);
-        document.addEventListener('paste', preventCopyPaste, true);
-        document.addEventListener('contextmenu', preventContextMenu, true);
-
-        // Prevent drag and drop with capture
-        document.addEventListener('drag', preventDragDrop, true);
-        document.addEventListener('dragstart', preventDragDrop, true);
-        document.addEventListener('dragover', preventDragDrop, true);
-        document.addEventListener('dragenter', preventDragDrop, true);
-        document.addEventListener('dragleave', preventDragDrop, true);
-        document.addEventListener('drop', preventDragDrop, true);
-
-        return () => {
-            // Cleanup
-            document.removeEventListener('copy', preventCopyPaste, true);
-            document.removeEventListener('cut', preventCopyPaste, true);
-            document.removeEventListener('paste', preventCopyPaste, true);
-            document.removeEventListener('contextmenu', preventContextMenu, true);
-
-            // Remove drag and drop listeners
-            document.removeEventListener('drag', preventDragDrop, true);
-            document.removeEventListener('dragstart', preventDragDrop, true);
-            document.removeEventListener('dragover', preventDragDrop, true);
-            document.removeEventListener('dragenter', preventDragDrop, true);
-            document.removeEventListener('dragleave', preventDragDrop, true);
-            document.removeEventListener('drop', preventDragDrop, true);
-        };
-    }, []);
-
     // Reset scroll position when component mounts
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -403,16 +353,6 @@ const IDEClient = ({ problem, initialCode }) => {
                             {/* Absolute positioned wrapper to ensure full expansion */}
                             <div
                                 className="absolute inset-0 w-full h-full"
-                                onCopy={(e) => e.preventDefault()}
-                                onCut={(e) => e.preventDefault()}
-                                onPaste={(e) => e.preventDefault()}
-                                onContextMenu={(e) => e.preventDefault()}
-                                onDrag={(e) => e.preventDefault()}
-                                onDragStart={(e) => e.preventDefault()}
-                                onDragOver={(e) => e.preventDefault()}
-                                onDragEnter={(e) => e.preventDefault()}
-                                onDragLeave={(e) => e.preventDefault()}
-                                onDrop={(e) => e.preventDefault()}
                             >
                                 <CodeEditor
                                     code={code}
