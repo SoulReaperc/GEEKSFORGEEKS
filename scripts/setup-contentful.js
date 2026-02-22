@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const contentful = require("contentful-management");
 require("dotenv").config(); // Load env vars
 

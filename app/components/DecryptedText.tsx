@@ -15,7 +15,7 @@ interface DecryptedTextProps {
 	encryptedClassName?: string;
 	animateOn?: "hover" | "view" | "both";
 	animate?: boolean;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export default function DecryptedText({
@@ -102,8 +102,8 @@ export default function DecryptedText({
 					}));
 
 				const nonSpaceChars = positions
-					.filter((p: any) => !p.isSpace && !p.isRevealed)
-					.map((p: any) => p.char);
+					.filter((p) => !p.isSpace && !p.isRevealed)
+					.map((p) => p.char);
 
 				for (let i = nonSpaceChars.length - 1; i > 0; i--) {
 					const j = Math.floor(Math.random() * (i + 1));
@@ -115,7 +115,7 @@ export default function DecryptedText({
 
 				let charIndex = 0;
 				return positions
-					.map((p: any) => {
+					.map((p) => {
 						if (p.isSpace) return " ";
 						if (p.isRevealed) return originalText[p.index];
 						return nonSpaceChars[charIndex++];

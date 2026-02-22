@@ -43,10 +43,6 @@ export default function ProfilePage() {
 		fullName: "",
 	});
 
-	useEffect(() => {
-		loadProfile();
-	}, []);
-
 	async function loadProfile() {
 		const { data, error } = await getProfile();
 		if (data) {
@@ -58,6 +54,11 @@ export default function ProfilePage() {
 		}
 		setLoading(false);
 	}
+
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		void loadProfile();
+	}, []);
 
 	async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();

@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import { submitTeamRegistration } from "@/app/actions/team-registration";
 import CustomSelect, {
 	branchOptions,
@@ -70,7 +70,7 @@ export default function TeamRegistrationForm({
 		formState: { errors },
 		setValue,
 		control,
-	} = useForm<any>({
+	} = useForm<FieldValues>({
 		defaultValues: {
 			event_name: eventName,
 		},
@@ -80,7 +80,7 @@ export default function TeamRegistrationForm({
 		setValue("event_name", eventName);
 	}, [eventName, setValue]);
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: FieldValues) => {
 		setSubmitting(true);
 		setErrorMessage("");
 		try {
@@ -125,9 +125,9 @@ export default function TeamRegistrationForm({
 			} else {
 				throw new Error(result.message || "Failed to submit registration");
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Error Submitting:", err);
-			setErrorMessage(err?.message || "Please try again");
+			setErrorMessage(err instanceof Error ? err.message : "Please try again");
 			if (errorScrollRef.current) {
 				errorScrollRef.current.scrollIntoView({
 					behavior: "smooth",
@@ -158,7 +158,7 @@ export default function TeamRegistrationForm({
 					Registration Received!
 				</h2>
 				<p className="text-gray-300 text-lg">
-					Your team has been registered successfully. We'll contact you soon
+					Your team has been registered successfully. We&apos;ll contact you soon
 					with further details!
 				</p>
 			</motion.div>

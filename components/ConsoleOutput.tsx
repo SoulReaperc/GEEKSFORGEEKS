@@ -200,7 +200,7 @@ const ConsoleOutput = ({
 					<Terminal size={40} className="mx-auto text-gray-600" />
 					<p className="text-sm text-gray-500">Run your code to see output</p>
 					<p className="text-xs text-gray-600">
-						Click "Run Code" to test against sample cases
+						Click &quot;Run Code&quot; to test against sample cases
 					</p>
 				</div>
 			</div>

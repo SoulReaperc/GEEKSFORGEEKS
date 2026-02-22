@@ -682,7 +682,7 @@ export default function AboutPage() {
 							}}
 						>
 							Be part of a vibrant community where innovation meets
-							collaboration. Whether you're a beginner or an expert, there's a
+							collaboration. Whether you&apos;re a beginner or an expert, there&apos;s a
 							place for you here. Join us to learn, grow, and build amazing
 							things together!
 						</p>
