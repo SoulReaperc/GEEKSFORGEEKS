@@ -25,23 +25,23 @@ const client = createClient({
 
 
 interface MemberSocials {
-linkedin: unknown;
-github: unknown;
-instagram: unknown;
-email: unknown;
+	linkedin: string | undefined;
+	github: string | undefined;
+	instagram: string | undefined;
+	email: string | undefined;
 }
 
 interface Member {
-id: string;
-slug: string;
-name: string;
-role: unknown;
-team: unknown;
-image: string | null;
-generalMembers: unknown;
-coLead: unknown;
-order: number;
-socials: MemberSocials;
+	id: string;
+	slug: string;
+	name: string;
+	role: string | undefined;
+	team: string | undefined;
+	image: string | null;
+	generalMembers: string | undefined;
+	coLead: string | undefined;
+	order: number;
+	socials: MemberSocials;
 }
 
 const createSlug = (name: string): string => {
