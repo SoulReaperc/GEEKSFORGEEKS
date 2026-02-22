@@ -40,9 +40,13 @@ export async function applyRateLimit(
 	limiter: Ratelimit | null,
 	identifier: string,
 ): Promise<NextResponse | null> {
-	if (!limiter) return null;
+	if (!limiter) {
+		console.log(`[RateLimit] SKIP ${identifier} — Redis not configured`);
+		return null;
+	}
 
 	const { success, limit, remaining, reset } = await limiter.limit(identifier);
+	console.log(`[RateLimit] ${success ? "OK  " : "HIT "} ${identifier} — ${remaining}/${limit} remaining`);
 
 	if (!success) {
 		return NextResponse.json(
