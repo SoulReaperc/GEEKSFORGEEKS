@@ -4,6 +4,7 @@ import {
 	NotFoundError,
 	ValidationError,
 } from "@/lib/middleware/error.middleware";
+import { applyRateLimit, codeRatelimit } from "@/lib/middleware/rate-limit";
 import { withAuth } from "@/lib/middleware/with-auth";
 import { handlePointsUpdate } from "@/lib/repositories/profile.repository";
 import {
@@ -21,6 +22,9 @@ import { codeRequestSchema } from "@/lib/validation/code.schema";
 
 export const POST = withAuth(async (request, user) => {
 	try {
+		const rateLimitResponse = await applyRateLimit(codeRatelimit, user.email);
+		if (rateLimitResponse) return rateLimitResponse;
+
 		const body = await request.json();
 
 		// Input Validation (Zod)

@@ -3,6 +3,7 @@ import {
 	handleApiError,
 	ValidationError,
 } from "@/lib/middleware/error.middleware";
+import { adminRatelimit, applyRateLimit } from "@/lib/middleware/rate-limit";
 import { withAdmin } from "@/lib/middleware/with-auth";
 import {
 	getEnvironment,
@@ -11,8 +12,11 @@ import {
 } from "@/lib/services/contentful-admin.service";
 import { memberSchema } from "@/lib/validation/admin.schema";
 
-export const POST = withAdmin(async (request) => {
+export const POST = withAdmin(async (request, user) => {
 	try {
+		const rateLimitResponse = await applyRateLimit(adminRatelimit, user.email);
+		if (rateLimitResponse) return rateLimitResponse;
+
 		const formData = await request.formData();
 		const action = formData.get("action") as string;
 		const memberData = formData.get("member") as string;

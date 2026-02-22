@@ -303,6 +303,10 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 
 # Allowlist (comma-separated emails)
 ALLOWED_ADMIN_EMAILS=chair@club.com,vicechair@club.com,lead1@club.com
+
+# Upstash Redis (optional — enables rate limiting & Contentful caching)
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=AX...
 ```
 
 ---
@@ -425,6 +429,7 @@ import { Mail, Loader2, ArrowRight, KeyRound } from 'lucide-react';
 | **Contentful** | Headless CMS for structured content |
 | **Supabase** | PostgreSQL database + Auth |
 | **Resend** | Transactional email delivery |
+| **Upstash Redis** | Serverless Redis for API rate limiting and Contentful response caching |
 | **Vercel** | Deployment platform (recommended) |
 
 ### Key Dependencies

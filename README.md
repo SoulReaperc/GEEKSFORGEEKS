@@ -125,6 +125,10 @@ A modern, feature-rich community platform built with **Next.js 16** and the **Ap
    NEXT_PUBLIC_CONTENTFUL_PAT=           # Management API token (write; server-only despite prefix)
    NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID=master
 
+   # ─── Upstash Redis (optional) ────────────────────────────────
+   UPSTASH_REDIS_REST_URL=               # Upstash Redis REST URL (rate limiting & caching)
+   UPSTASH_REDIS_REST_TOKEN=             # Upstash Redis REST token (rate limiting & caching)
+
    # ─── Auth & Admin ────────────────────────────────────────────
    ALLOWED_ADMIN_EMAILS=                 # Comma-separated list of admin emails
 

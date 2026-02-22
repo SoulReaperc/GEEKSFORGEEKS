@@ -5,6 +5,10 @@ import {
 	ValidationError,
 } from "@/lib/middleware/error.middleware";
 import {
+	applyRateLimit,
+	newsletterRatelimit,
+} from "@/lib/middleware/rate-limit";
+import {
 	createSubscriber,
 	findSubscriberByEmail,
 } from "@/lib/repositories/newsletter.repository";
@@ -14,6 +18,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
 	try {
+		const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+		const rateLimitResponse = await applyRateLimit(newsletterRatelimit, ip);
+		if (rateLimitResponse) return rateLimitResponse;
+
 		const body = await request.json();
 
 		const parsed = subscribeSchema.safeParse(body);
