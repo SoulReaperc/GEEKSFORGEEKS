@@ -6,9 +6,17 @@ import { useEffect, useState } from "react";
 import { contentfulClient } from "@/lib/contentful";
 import DomeGallery from "../../../../components/DomeGallery";
 
+interface GalleryImage {
+	fields: { file: { url: string }; title?: string };
+}
+
+interface EventWithGallery {
+	fields: { galleryImages?: GalleryImage[] };
+}
+
 export default function EventGalleryPage() {
 	const { slug } = useParams();
-	const [event, setEvent] = useState(null);
+	const [event, setEvent] = useState<EventWithGallery | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 
@@ -68,7 +76,7 @@ export default function EventGalleryPage() {
 
 	// Transform Contentful images to DomeGallery format with high quality
 	const domeImages =
-		galleryImages?.map((image) => ({
+		galleryImages?.map((image: GalleryImage) => ({
 			src: `https:${image.fields.file.url}?fm=jpg&q=90&w=1920`,
 			alt: image.fields.title || "Event Photo",
 		})) || [];

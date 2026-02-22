@@ -8,9 +8,18 @@ import Squares from "@/app/components/Squares";
 import TeamRegistrationForm from "@/app/components/TeamRegistrationForm";
 import { contentfulClient } from "@/lib/contentful";
 
+interface EventEntry {
+	fields: {
+		title: string;
+		isRegOpen?: boolean;
+		noMembers?: string;
+		date?: string;
+	};
+}
+
 export default function EventRegistrationPage() {
 	const { slug } = useParams();
-	const [event, setEvent] = useState(null);
+	const [event, setEvent] = useState<EventEntry | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {

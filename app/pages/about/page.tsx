@@ -11,6 +11,7 @@ import {
 	Trophy,
 	Users,
 	Zap,
+	type LucideIcon,
 } from "lucide-react";
 import {
 	AnimatePresence,
@@ -25,16 +26,16 @@ import GlassyNavbar from "../../components/GlassyNavbar";
 import Squares from "../../components/Squares";
 
 // Animated Counter Component
-function AnimatedCounter({ value, duration = 2 }) {
+function AnimatedCounter({ value, duration = 2 }: { value: string | number; duration?: number }) {
 	const [count, setCount] = useState(0);
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true });
 
 	useEffect(() => {
 		if (!isInView) return;
-		let startTime;
+		let startTime: DOMHighResTimeStamp | undefined;
 		const targetValue = parseInt(value);
-		const animate = (currentTime) => {
+		const animate = (currentTime: DOMHighResTimeStamp) => {
 			if (!startTime) startTime = currentTime;
 			const progress = Math.min(
 				(currentTime - startTime) / (duration * 1000),
@@ -726,7 +727,7 @@ export default function AboutPage() {
 }
 
 // Purpose Card Component
-function PurposeCard({ icon: Icon, title, description, number }) {
+function PurposeCard({ icon: Icon, title, description, number }: { icon: LucideIcon; title: string; description: string; number: string | number }) {
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true });
 
@@ -816,7 +817,7 @@ function PurposeCard({ icon: Icon, title, description, number }) {
 }
 
 // Activity Card Component
-function ActivityCard({ icon: Icon, title, description, index }) {
+function ActivityCard({ icon: Icon, title, description, index }: { icon: LucideIcon; title: string; description: string; index: number }) {
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true });
 
@@ -881,7 +882,7 @@ function ActivityCard({ icon: Icon, title, description, index }) {
 }
 
 // Stat Card Component
-function StatCard({ number, label, icon: Icon, index }) {
+function StatCard({ number, label, icon: Icon, index }: { number: string | number; label: string; icon: LucideIcon; index: number }) {
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true });
 
@@ -1067,7 +1068,7 @@ function LogoSlider() {
 
 // FAQ Accordion Component
 function FAQAccordion() {
-	const [openIndex, setOpenIndex] = useState(null);
+	const [openIndex, setOpenIndex] = useState<number | null>(null);
 
 	const faqs = [
 		{
@@ -1119,7 +1120,7 @@ function FAQAccordion() {
 }
 
 // FAQ Item Component
-function FAQItem({ question, answer, isOpen, onClick, index }) {
+function FAQItem({ question, answer, isOpen, onClick, index }: { question: string; answer: string; isOpen: boolean; onClick: () => void; index: number }) {
 	const ref = useRef(null);
 	const isInView = useInView(ref, { once: true, margin: "-100px" });
 
