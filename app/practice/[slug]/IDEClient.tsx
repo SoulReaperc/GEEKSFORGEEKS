@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import CodeEditor from "@/components/CodeEditor";
-import ConsoleOutput from "@/components/ConsoleOutput";
+import ConsoleOutput, { type TestResult, type SubmissionResult } from "@/components/ConsoleOutput";
 import UserLoginModal from "@/components/UserLoginModal";
 import { supabase } from "@/lib/supabase";
 
@@ -42,7 +42,7 @@ const IDEClient = ({ problem, initialCode }: IDEClientProps) => {
 	const [code, setCode] = useState(initialCode);
 	const [language, setLanguage] = useState("javascript");
 	const [isRunning, setIsRunning] = useState(false);
-	const [executionResult, setExecutionResult] = useState<unknown[] | null>(null);
+	const [executionResult, setExecutionResult] = useState<TestResult[] | null>(null);
 	const [executionStatus, setExecutionStatus] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [activeTab, setActiveTab] = useState("description"); // description | hints | submissions
@@ -50,7 +50,7 @@ const IDEClient = ({ problem, initialCode }: IDEClientProps) => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [submissionResult, setSubmissionResult] = useState<unknown | null>(null);
+	const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
 
 	// Check authentication status
 	useEffect(() => {
@@ -467,7 +467,7 @@ const IDEClient = ({ problem, initialCode }: IDEClientProps) => {
 								<CodeEditor
 									code={code}
 									language={language === "c++" ? "cpp" : language}
-									onChange={setCode}
+									onChange={(val) => setCode(val ?? "")}
 								/>
 							</div>
 						</div>

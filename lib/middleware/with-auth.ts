@@ -7,19 +7,20 @@ import {
 	requireAuth,
 } from "@/lib/services/auth.service";
 
-export type RouteContext = { params: Record<string, string> };
+/** Next.js 16 route context — params is a Promise */
+export type RouteContext = { params: Promise<Record<string, string>> };
 
 type AuthHandler = (
 	req: Request,
 	user: AuthenticatedUser,
-	ctx?: RouteContext,
+	ctx: RouteContext,
 ) => Promise<Response>;
 
 /**
  * HOF that wraps a route handler requiring authentication.
  */
 export function withAuth(handler: AuthHandler) {
-	return async (req: Request, ctx?: RouteContext): Promise<Response> => {
+	return async (req: Request, ctx: RouteContext): Promise<Response> => {
 		try {
 			const user = await requireAuth();
 			return await handler(req, user, ctx);
@@ -33,7 +34,7 @@ export function withAuth(handler: AuthHandler) {
  * HOF that wraps a route handler requiring admin role.
  */
 export function withAdmin(handler: AuthHandler) {
-	return async (req: Request, ctx?: RouteContext): Promise<Response> => {
+	return async (req: Request, ctx: RouteContext): Promise<Response> => {
 		try {
 			const user = await requireAdmin();
 			return await handler(req, user, ctx);
@@ -47,7 +48,7 @@ export function withAdmin(handler: AuthHandler) {
  * HOF that wraps a route handler requiring super-admin access.
  */
 export function withSuperAdmin(handler: AuthHandler) {
-	return async (req: Request, ctx?: RouteContext): Promise<Response> => {
+	return async (req: Request, ctx: RouteContext): Promise<Response> => {
 		try {
 			const user = await requireAuth();
 			if (!isSuperAdmin(user.email)) {

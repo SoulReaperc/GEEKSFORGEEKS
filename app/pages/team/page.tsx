@@ -18,8 +18,8 @@ import TiltedCard from "../../components/TiltedCard";
 
 // Contentful Client
 const client = createClient({
-	space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-	accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
+	space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID!,
+	accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN!,
 	environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID,
 });
 
@@ -74,19 +74,21 @@ export default function TeamPage() {
 			try {
 				const response = await client.getEntries({
 					content_type: "memberProfile",
-					order: "fields.order",
+					order: ["fields.order" as `fields.${string}`],
 				});
 
 				const formatted = response.items.map((item) => {
-					const imgUrl = item.fields.photo?.fields?.file?.url;
-					const slug = createSlug(item.fields.name);
+					const fields = item.fields as Record<string, unknown>;
+					const photo = fields.photo as { fields?: { file?: { url?: string } } } | undefined;
+					const imgUrl = photo?.fields?.file?.url;
+					const slug = createSlug(fields.name as string);
 
 					let orderValue = 999;
-					if (item.fields.order !== undefined && item.fields.order !== null) {
+					if (fields.order !== undefined && fields.order !== null) {
 						orderValue =
-							typeof item.fields.order === "number"
-								? item.fields.order
-								: parseInt(item.fields.order, 10);
+							typeof fields.order === "number"
+								? fields.order
+								: parseInt(fields.order as string, 10);
 
 						if (isNaN(orderValue)) {
 							orderValue = 999;
@@ -96,22 +98,22 @@ export default function TeamPage() {
 					return {
 						id: item.sys.id,
 						slug: slug,
-						name: item.fields.name,
-						role: item.fields.role,
-						team: item.fields.team,
+						name: fields.name,
+						role: fields.role,
+						team: fields.team,
 						image: imgUrl
 							? imgUrl.startsWith("//")
 								? `https:${imgUrl}`
 								: imgUrl
 							: null,
-						generalMembers: item.fields.generalMembers,
-						coLead: item.fields.coLead,
+						generalMembers: fields.generalMembers,
+						coLead: fields.coLead,
 						order: orderValue,
 						socials: {
-							linkedin: item.fields.linkedin,
-							github: item.fields.github,
-							instagram: item.fields.instagram,
-							email: item.fields.email,
+							linkedin: fields.linkedin,
+							github: fields.github,
+							instagram: fields.instagram,
+							email: fields.email,
 						},
 					};
 				});
@@ -120,12 +122,12 @@ export default function TeamPage() {
 				const faculty = formatted
 					.filter(
 						(m) =>
-							m.role?.toLowerCase().includes("faculty") ||
-							m.role?.toLowerCase().includes("coordinator"),
+							String(m.role ?? "").toLowerCase().includes("faculty") ||
+							String(m.role ?? "").toLowerCase().includes("coordinator"),
 					)
 					.sort((a, b) => a.order - b.order);
 
-				setFacultyMembers(faculty);
+				setFacultyMembers(faculty as Member[]);
 			} catch (err) {
 				console.error("Error fetching faculty members:", err);
 			}
@@ -151,9 +153,9 @@ export default function TeamPage() {
 					response.items.length,
 				);
 
-				const yearsSet = new Set();
+				const yearsSet = new Set<number>();
 				response.items.forEach((item) => {
-					const y = item.fields.year;
+					const y = (item.fields as Record<string, unknown>).year;
 					if (y) {
 						yearsSet.add(Number(y));
 					}
@@ -171,7 +173,7 @@ export default function TeamPage() {
 
 				// Set default selected year to the most recent one if not already set
 				if (!selectedYear && sortedYears.length > 0) {
-					setSelectedYear(sortedYears[0]);
+					setSelectedYear(sortedYears[0]!);
 				}
 			} catch (err) {
 				console.error("Error fetching years:", err);
@@ -191,7 +193,7 @@ export default function TeamPage() {
 				const response = await client.getEntries({
 					content_type: "memberProfile",
 					"fields.year": selectedYear,
-					order: "fields.order",
+					order: ["fields.order" as `fields.${string}`],
 				});
 
 				console.log(
@@ -199,16 +201,18 @@ export default function TeamPage() {
 				);
 
 				const formatted = response.items.map((item) => {
-					const imgUrl = item.fields.photo?.fields?.file?.url;
-					const slug = createSlug(item.fields.name);
+					const f = item.fields as Record<string, unknown>;
+					const photo = f.photo as { fields?: { file?: { url?: string } } } | undefined;
+					const imgUrl = photo?.fields?.file?.url;
+					const slug = createSlug(f.name as string);
 
 					// Parse order field properly
 					let orderValue = 999;
-					if (item.fields.order !== undefined && item.fields.order !== null) {
+					if (f.order !== undefined && f.order !== null) {
 						orderValue =
-							typeof item.fields.order === "number"
-								? item.fields.order
-								: parseInt(item.fields.order, 10);
+							typeof f.order === "number"
+								? f.order
+								: parseInt(f.order as string, 10);
 
 						if (isNaN(orderValue)) {
 							orderValue = 999;
@@ -218,22 +222,22 @@ export default function TeamPage() {
 					return {
 						id: item.sys.id,
 						slug: slug,
-						name: item.fields.name,
-						role: item.fields.role,
-						team: item.fields.team,
+						name: f.name,
+						role: f.role,
+						team: f.team,
 						image: imgUrl
 							? imgUrl.startsWith("//")
 								? `https:${imgUrl}`
 								: imgUrl
 							: null,
-						generalMembers: item.fields.generalMembers,
-						coLead: item.fields.coLead,
+						generalMembers: f.generalMembers,
+						coLead: f.coLead,
 						order: orderValue,
 						socials: {
-							linkedin: item.fields.linkedin,
-							github: item.fields.github,
-							instagram: item.fields.instagram,
-							email: item.fields.email,
+							linkedin: f.linkedin,
+							github: f.github,
+							instagram: f.instagram,
+							email: f.email,
 						},
 					};
 				});
@@ -245,7 +249,7 @@ export default function TeamPage() {
 					return orderA - orderB;
 				});
 
-				setMembers(sortedMembers);
+				setMembers(sortedMembers as Member[]);
 			} catch (err) {
 				console.error("Error fetching members:", err);
 			} finally {
@@ -263,20 +267,20 @@ export default function TeamPage() {
 	const leadership = members
 		.filter(
 			(m) =>
-				(m.role?.toLowerCase().includes("chair") ||
-					m.role?.toLowerCase().includes("president")) &&
-				!m.role?.toLowerCase().includes("faculty") &&
-				!m.role?.toLowerCase().includes("coordinator"),
+				(String(m.role ?? "").toLowerCase().includes("chair") ||
+					String(m.role ?? "").toLowerCase().includes("president")) &&
+				!String(m.role ?? "").toLowerCase().includes("faculty") &&
+				!String(m.role ?? "").toLowerCase().includes("coordinator"),
 		)
 		.sort((a, b) => a.order - b.order);
 
 	const coreTeam = members
 		.filter(
 			(m) =>
-				!m.role?.toLowerCase().includes("chair") &&
-				!m.role?.toLowerCase().includes("president") &&
-				!m.role?.toLowerCase().includes("faculty") &&
-				!m.role?.toLowerCase().includes("coordinator"),
+				!String(m.role ?? "").toLowerCase().includes("chair") &&
+				!String(m.role ?? "").toLowerCase().includes("president") &&
+				!String(m.role ?? "").toLowerCase().includes("faculty") &&
+				!String(m.role ?? "").toLowerCase().includes("coordinator"),
 		)
 		.sort((a, b) => a.order - b.order);
 
@@ -286,11 +290,11 @@ export default function TeamPage() {
 			teamName: m.team,
 			leadName: m.name,
 			coLeadName: m.coLead,
-			memberList: m.generalMembers.split(",").map((s) => s.trim()),
+			memberList: (m.generalMembers as string | undefined)?.split(",").map((s) => s.trim()) ?? [],
 		}));
 
 	// Team member photo mapping - placeholder images (replace with actual photos)
-	const memberPhotoMap = {
+	const memberPhotoMap: Record<string, string> = {
 		"Aryan Sharma":
 			"/Users/sahilrajdubey/.gemini/antigravity/brain/cd18f689-c26a-4455-9649-16cdb8fce8d0/team_member_1_1765724493945.png",
 		"Priya Patel":
@@ -534,7 +538,7 @@ export default function TeamPage() {
 											>
 												{/* Team Header - Clickable */}
 												<button
-													onClick={() => toggleTeam(team.teamName)}
+													onClick={() => toggleTeam(team.teamName ?? "")}
 													className="w-full flex items-center justify-between p-8 text-left hover:bg-white/5 transition-all duration-200"
 												>
 													<div className="flex-1">
@@ -569,7 +573,7 @@ export default function TeamPage() {
 														{/* Chevron Icon */}
 														<motion.div
 															animate={{
-																rotate: openTeams[team.teamName] ? 180 : 0,
+																rotate: openTeams[team.teamName ?? ""] ? 180 : 0,
 															}}
 															transition={{ duration: 0.3 }}
 															className="text-white"
@@ -581,7 +585,7 @@ export default function TeamPage() {
 
 												{/* Collapsible Team Members Grid */}
 												<AnimatePresence>
-													{openTeams[team.teamName] && (
+													{openTeams[team.teamName ?? ""] && (
 														<motion.div
 															initial={{ height: 0, opacity: 0 }}
 															animate={{ height: "auto", opacity: 1 }}

@@ -24,7 +24,7 @@ export default function GlassyNavbar() {
 	const router = useRouter();
 
 	// Use refs to track animation states
-	const animationStatesRef = useRef<Record<number, unknown>>({});
+	const animationStatesRef = useRef<Record<number, { timeout?: ReturnType<typeof setTimeout>; [key: string]: unknown }>>({});
 	const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const lastHoverTimeRef = useRef<Record<number, number>>({});
 

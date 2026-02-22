@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
 	type Control,
 	Controller,
+	type FieldPath,
 	type FieldValues,
 	type RegisterOptions,
 } from "react-hook-form";
@@ -14,23 +15,24 @@ interface SelectOption {
 	label: string;
 }
 
-interface CustomSelectProps {
-	control: Control<FieldValues>;
-	name: string;
+interface CustomSelectProps<T extends FieldValues = FieldValues> {
+	control: Control<T>;
+	name: FieldPath<T>;
 	options: SelectOption[];
 	placeholder: string;
 	className?: string;
-	rules?: RegisterOptions;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	rules?: RegisterOptions<any, any>;
 }
 
-export default function CustomSelect({
+export default function CustomSelect<T extends FieldValues = FieldValues>({
 	control,
 	name,
 	options,
 	placeholder,
 	className,
 	rules,
-}: CustomSelectProps) {
+}: CustomSelectProps<T>) {
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +53,8 @@ export default function CustomSelect({
 		<Controller
 			control={control}
 			name={name}
-			rules={rules}
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			rules={rules as any}
 			render={({ field: { onChange, value }, fieldState: { error } }) => {
 				const selectedOption = options.find(
 					(opt: SelectOption) => opt.value === value,

@@ -29,13 +29,16 @@ export const POST = withSuperAdmin(async (request) => {
 		let result;
 
 		switch (action) {
-			case "create":
+			case "create": {
 				if (!contentType) throw new Error("ContentType is required for create");
-				result = await environment.createEntry(contentType, { fields: data });
+				if (!data) throw new Error("Data is required for create");
+				result = await environment.createEntry(contentType, { fields: data as Record<string, unknown> });
 				break;
+			}
 
 			case "update": {
 				if (!entryId) throw new Error("EntryId is required for update");
+				if (!data) throw new Error("Data is required for update");
 				const entryToUpdate = await environment.getEntry(entryId);
 				Object.keys(data).forEach((key) => {
 					entryToUpdate.fields[key] = data[key];

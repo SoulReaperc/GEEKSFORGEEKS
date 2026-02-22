@@ -35,7 +35,7 @@ function BlogContent() {
 					content_type: "blogPost",
 					order: ["-fields.publishDate"],
 				});
-				setPosts(response.items);
+				setPosts(response.items as unknown as BlogPostEntry[]);
 			} catch (error) {
 				console.error("Error fetching blog posts:", error);
 			} finally {

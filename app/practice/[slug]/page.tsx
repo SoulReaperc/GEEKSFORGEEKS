@@ -39,7 +39,7 @@ export default async function ProblemPage({ params }: { params: Promise<{ slug: 
 
 	return (
 		<div className="min-h-screen">
-			<IDEClient problem={problem as Parameters<typeof IDEClient>[0]["problem"]} initialCode={defaultCode} />
+			<IDEClient problem={problem as unknown as Parameters<typeof IDEClient>[0]["problem"]} initialCode={defaultCode} />
 		</div>
 	);
 }

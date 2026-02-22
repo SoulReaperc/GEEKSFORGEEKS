@@ -60,7 +60,7 @@ export const POST = withAdmin(async (request, user) => {
 			});
 
 			// Clean up deleted optional fields
-			const optionalFields = ["email", "github", "linkedin", "instagram"];
+			const optionalFields = ["email", "github", "linkedin", "instagram"] as const;
 			optionalFields.forEach((field) => {
 				if (Object.hasOwn(member, field) && !member[field]) {
 					delete entry.fields[field];

@@ -185,7 +185,7 @@ export default function EventRegistrationForm({
 								/>
 								{(errors.members?.[index] as { regNumber?: FieldError })?.regNumber && (
 									<span className="text-red-500 text-xs mt-1 ml-1">
-										{(errors.members[index] as { regNumber?: FieldError })?.regNumber?.message}
+										{(errors.members?.[index] as { regNumber?: FieldError })?.regNumber?.message}
 									</span>
 								)}
 							</div>

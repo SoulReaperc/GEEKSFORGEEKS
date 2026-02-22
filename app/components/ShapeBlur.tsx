@@ -231,9 +231,9 @@ const ShapeBlur = ({
 			lastTime = time;
 
 			["x", "y"].forEach((k: string) => {
-				(vMouseDamp as Record<string, number>)[k] = THREE.MathUtils.damp(
-					(vMouseDamp as Record<string, number>)[k]!,
-					(vMouse as Record<string, number>)[k]!,
+				(vMouseDamp as unknown as Record<string, number>)[k] = THREE.MathUtils.damp(
+					(vMouseDamp as unknown as Record<string, number>)[k]!,
+					(vMouse as unknown as Record<string, number>)[k]!,
 					8,
 					dt,
 				);

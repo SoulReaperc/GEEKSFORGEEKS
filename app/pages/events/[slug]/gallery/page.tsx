@@ -39,7 +39,7 @@ export default function EventGalleryPage() {
 					limit: 1,
 				});
 				if (response.items.length > 0) {
-					setEvent(response.items[0]);
+					setEvent(response.items[0] as unknown as EventWithGallery ?? null);
 				}
 			} catch (error) {
 				console.error("Error fetching event:", error);

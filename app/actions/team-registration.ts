@@ -1,7 +1,27 @@
 "use server";
 import { createAdminClient } from "@/lib/supabase-server";
 
-export async function submitTeamRegistration(data) {
+interface TeamMember {
+	name: string;
+	reg_no: string;
+	year: string;
+	branch: string;
+	section: string;
+	email_id: string;
+	phone_number: string;
+}
+
+interface TeamRegistrationData {
+	leader: TeamMember;
+	teamMembers: TeamMember[];
+	team_name: string;
+	college_name?: string;
+	event_name?: string;
+	project_idea?: string;
+	project_description?: string;
+}
+
+export async function submitTeamRegistration(data: TeamRegistrationData) {
 	try {
 		const supabase = await createAdminClient();
 

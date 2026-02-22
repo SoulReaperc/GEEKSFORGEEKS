@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import React from "react";
 
-interface TestResult {
+export interface TestResult {
 	passed: boolean;
 	input: string;
 	expected: string;
@@ -29,7 +29,7 @@ interface GradingResult {
 	details: Record<string, GradingDetail>;
 }
 
-interface SubmissionResult {
+export interface SubmissionResult {
 	status: string;
 	message: string;
 	gradingResult?: GradingResult;

@@ -9,7 +9,14 @@ import Squares from "../../components/Squares";
 
 interface EventEntry {
 	sys: { id: string };
-	fields: { date: string };
+	fields: {
+		date: string;
+		title: string;
+		slug?: string;
+		venue: string;
+		coverImage?: { fields: { file: { url: string } } };
+		registrationLink?: string;
+	};
 }
 
 export default function EventsPage() {
@@ -24,7 +31,7 @@ export default function EventsPage() {
 					content_type: "event",
 					order: ["-fields.date"], // Changed to descending order for initial fetch
 				});
-				setEvents(response.items);
+				setEvents(response.items as unknown as EventEntry[]);
 			} catch (error) {
 				console.error("Error fetching events:", error);
 			} finally {

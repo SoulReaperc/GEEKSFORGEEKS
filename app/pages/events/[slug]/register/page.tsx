@@ -31,7 +31,7 @@ export default function EventRegistrationPage() {
 					limit: 1,
 				});
 				if (response.items.length > 0) {
-					setEvent(response.items[0]);
+					setEvent(response.items[0] as unknown as EventEntry ?? null);
 				}
 			} catch (error) {
 				console.error("Error fetching event:", error);
@@ -97,7 +97,7 @@ export default function EventRegistrationPage() {
 					</h1>
 					<p className="text-gray-400">
 						{isEventPast
-							? `This event has already concluded on ${new Date(date).toLocaleDateString()}.`
+							? `This event has already concluded on ${new Date(date ?? '').toLocaleDateString()}.`
 							: `We are no longer accepting registrations for `}
 						{!isEventPast && (
 							<span className="text-white font-semibold">{title}</span>

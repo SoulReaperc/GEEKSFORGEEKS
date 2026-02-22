@@ -71,7 +71,7 @@ export default function EventDetailsPage() {
 					limit: 1,
 				});
 				if (response.items.length > 0) {
-					setEvent(response.items[0]);
+					setEvent(response.items[0] as unknown as EventEntry ?? null);
 				}
 			} catch (error) {
 				console.error("Error fetching event:", error);

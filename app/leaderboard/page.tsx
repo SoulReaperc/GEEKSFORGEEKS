@@ -68,7 +68,7 @@ async function getFullLeaderboard() {
 
 		// Filter out blacklisted users
 		const filteredData = (data || []).filter(
-			(user) => !blacklistedEmails.has(user.college_email || user.email),
+			(user) => !blacklistedEmails.has(user.college_email),
 		);
 
 		// Add dynamic ranking based on current position (after filtering)

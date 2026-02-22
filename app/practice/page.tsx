@@ -111,7 +111,7 @@ export default async function PracticePage() {
 	const usingMock = problems.length === 0;
 	if (problems.length === 0) {
 		console.log("No problems found, using scenarios.");
-		problems = MOCK_PROBLEMS as typeof problems;
+		problems = MOCK_PROBLEMS as unknown as typeof problems;
 	}
 
 	// Calculate stats
@@ -261,7 +261,7 @@ export default async function PracticePage() {
 							{problems.map((problem, index) => (
 								<div key={problem.sys.id}>
 									<ProblemCard
-										problem={problem}
+										problem={problem as unknown as Parameters<typeof ProblemCard>[0]["problem"]}
 										isSolved={solvedProblems.has(problem.fields.slug as string)}
 										index={index}
 									/>

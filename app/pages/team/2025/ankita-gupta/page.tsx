@@ -54,23 +54,19 @@ export default function AnkitaGuptaProfile() {
 				});
 
 				if (response.items.length > 0) {
-					const member = response.items[0].fields;
+					const member = response.items[0]!.fields as Record<string, unknown>;
 					setProfileData((prev) => ({
 						...prev,
-						name: member.name || prev.name,
-						role: member.role || prev.role,
-						memberId: member.memberId || prev.memberId,
-						location: member.location || prev.location,
-						email: member.email || prev.email,
-						linkedin: member.linkedin || prev.linkedin,
-						github: member.github || prev.github,
-						about: member.about || prev.about,
-						profileImage: member.photo?.fields?.file?.url
-							? member.photo.fields.file.url.startsWith("//")
-								? `https:${member.photo.fields.file.url}`
-								: member.photo.fields.file.url
-							: prev.profileImage,
-						skills: member.skills || prev.skills,
+						name: (member.name as string) || prev.name,
+						role: (member.role as string) || prev.role,
+						memberId: (member.memberId as string) || prev.memberId,
+						location: (member.location as string) || prev.location,
+						email: (member.email as string) || prev.email,
+						linkedin: (member.linkedin as string) || prev.linkedin,
+						github: (member.github as string) || prev.github,
+						about: (member.about as string) || prev.about,
+						profileImage: (() => { const p = member.photo as { fields?: { file?: { url?: string } } } | null | undefined; const url = p?.fields?.file?.url; return url ? (url.startsWith("//") ? `https:` : url) : prev.profileImage; })(),
+						skills: (member.skills as typeof prev.skills) || prev.skills,
 					}));
 				}
 			} catch (error) {

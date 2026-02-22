@@ -37,7 +37,7 @@ export default function BlogPostPage() {
 					limit: 1,
 				});
 				if (response.items.length > 0) {
-					setPost(response.items[0]);
+					setPost(response.items[0] as unknown as BlogPost ?? null);
 				}
 			} catch (error) {
 				console.error("Error fetching blog post:", error);

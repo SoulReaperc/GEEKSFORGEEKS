@@ -455,7 +455,7 @@ export default function LeaderboardClient({
 										/>
 										<div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 overflow-hidden">
 											<img
-												src={getAvatar(topPerformers[0])}
+												src={getAvatar(topPerformers[0]!)}
 												alt="1st place"
 												className="w-full h-full object-cover"
 											/>
@@ -463,10 +463,10 @@ export default function LeaderboardClient({
 										<div className="bg-gradient-to-b from-yellow-400/40 to-yellow-600/40 backdrop-blur-md border border-yellow-400/60 rounded-2xl px-6 py-8 text-center w-full max-w-[280px]">
 											<div className="text-6xl mb-3">🥇</div>
 											<h3 className="text-white font-bold text-xl mb-2 truncate">
-												{getDisplayName(topPerformers[0])}
+												{getDisplayName(topPerformers[0]!)}
 											</h3>
 											<div className="text-3xl font-bold text-white mb-2">
-												{topPerformers[0].total_points}
+												{topPerformers[0]!.total_points}
 											</div>
 											<p className="text-base text-yellow-100 mb-2">points</p>
 											<div className="mt-2 px-4 py-1 bg-yellow-600/50 rounded-full text-sm font-bold text-yellow-50">
@@ -482,7 +482,7 @@ export default function LeaderboardClient({
 												<Medal className="text-gray-400 mb-3" size={24} />
 												<div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 overflow-hidden">
 													<img
-														src={getAvatar(topPerformers[1])}
+														src={getAvatar(topPerformers[1]!)}
 														alt="2nd place"
 														className="w-full h-full object-cover"
 													/>
@@ -490,14 +490,14 @@ export default function LeaderboardClient({
 												<div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-2xl px-4 py-6 text-center w-full">
 													<div className="text-4xl mb-2">🥈</div>
 													<h3 className="text-white font-bold text-base mb-1 truncate">
-														{getDisplayName(topPerformers[1])}
+														{getDisplayName(topPerformers[1]!)}
 													</h3>
 													<div className="text-xl font-bold text-white mb-1">
-														{topPerformers[1].total_points}
+														{topPerformers[1]!.total_points}
 													</div>
 													<p className="text-xs text-gray-300 mb-2">points</p>
 													<div className="mt-2 px-2 py-1 bg-gray-600/50 rounded-full text-xs text-gray-200">
-														Rank #{topPerformers[1].currentRank}
+														Rank #{topPerformers[1]!.currentRank}
 													</div>
 												</div>
 											</div>
@@ -509,7 +509,7 @@ export default function LeaderboardClient({
 												<Award className="text-amber-600 mb-3" size={24} />
 												<div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-xl font-bold mb-4 shadow-2xl border-4 border-amber-700/40 overflow-hidden">
 													<img
-														src={getAvatar(topPerformers[2])}
+														src={getAvatar(topPerformers[2]!)}
 														alt="3rd place"
 														className="w-full h-full object-cover"
 													/>
@@ -517,14 +517,14 @@ export default function LeaderboardClient({
 												<div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-2xl px-4 py-6 text-center w-full">
 													<div className="text-4xl mb-2">🥉</div>
 													<h3 className="text-white font-bold text-base mb-1 truncate">
-														{getDisplayName(topPerformers[2])}
+														{getDisplayName(topPerformers[2]!)}
 													</h3>
 													<div className="text-xl font-bold text-white mb-1">
-														{topPerformers[2].total_points}
+														{topPerformers[2]!.total_points}
 													</div>
 													<p className="text-xs text-amber-200 mb-2">points</p>
 													<div className="mt-2 px-2 py-1 bg-amber-700/50 rounded-full text-xs text-amber-100">
-														Rank #{topPerformers[2].currentRank}
+														Rank #{topPerformers[2]!.currentRank}
 													</div>
 												</div>
 											</div>
@@ -540,7 +540,7 @@ export default function LeaderboardClient({
 											<Medal className="text-gray-400 mb-3" size={36} />
 											<div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-gray-400/40 overflow-hidden">
 												<img
-													src={getAvatar(topPerformers[1])}
+													src={getAvatar(topPerformers[1]!)}
 													alt="2nd place"
 													className="w-full h-full object-cover"
 												/>
@@ -548,14 +548,14 @@ export default function LeaderboardClient({
 											<div className="bg-gradient-to-b from-gray-400/30 to-gray-500/30 backdrop-blur-md border border-gray-400/40 rounded-t-2xl px-6 py-10 text-center min-w-[160px]">
 												<div className="text-6xl mb-3">🥈</div>
 												<h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">
-													{getDisplayName(topPerformers[1])}
+													{getDisplayName(topPerformers[1]!)}
 												</h3>
 												<div className="text-3xl font-bold text-white mb-2">
-													{topPerformers[1].total_points}
+													{topPerformers[1]!.total_points}
 												</div>
 												<p className="text-sm text-gray-300 mb-2">points</p>
 												<div className="mt-3 px-3 py-1 bg-gray-600/50 rounded-full text-xs text-gray-200">
-													Rank #{topPerformers[1].currentRank}
+													Rank #{topPerformers[1]!.currentRank}
 												</div>
 											</div>
 										</div>
@@ -569,7 +569,7 @@ export default function LeaderboardClient({
 										/>
 										<div className="w-36 h-36 lg:w-40 lg:h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-white text-4xl lg:text-5xl font-bold mb-4 shadow-2xl border-4 border-yellow-400/60 overflow-hidden">
 											<img
-												src={getAvatar(topPerformers[0])}
+												src={getAvatar(topPerformers[0]!)}
 												alt="1st place"
 												className="w-full h-full object-cover"
 											/>
@@ -579,10 +579,10 @@ export default function LeaderboardClient({
 												🥇
 											</div>
 											<h3 className="text-white font-bold text-xl lg:text-2xl mb-2 lg:mb-3 truncate max-w-[140px] lg:max-w-[160px]">
-												{getDisplayName(topPerformers[0])}
+												{getDisplayName(topPerformers[0]!)}
 											</h3>
 											<div className="text-3xl lg:text-4xl font-bold text-white mb-2">
-												{topPerformers[0].total_points}
+												{topPerformers[0]!.total_points}
 											</div>
 											<p className="text-sm lg:text-base text-yellow-100 mb-2">
 												points
@@ -599,7 +599,7 @@ export default function LeaderboardClient({
 											<Award className="text-amber-600 mb-3" size={36} />
 											<div className="w-28 h-28 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-2xl border-4 border-amber-700/40 overflow-hidden">
 												<img
-													src={getAvatar(topPerformers[2])}
+													src={getAvatar(topPerformers[2]!)}
 													alt="3rd place"
 													className="w-full h-full object-cover"
 												/>
@@ -607,14 +607,14 @@ export default function LeaderboardClient({
 											<div className="bg-gradient-to-b from-amber-600/30 to-amber-800/30 backdrop-blur-md border border-amber-700/40 rounded-t-2xl px-6 py-10 text-center min-w-[160px]">
 												<div className="text-6xl mb-3">🥉</div>
 												<h3 className="text-white font-bold text-xl mb-2 truncate max-w-[140px]">
-													{getDisplayName(topPerformers[2])}
+													{getDisplayName(topPerformers[2]!)}
 												</h3>
 												<div className="text-3xl font-bold text-white mb-2">
-													{topPerformers[2].total_points}
+													{topPerformers[2]!.total_points}
 												</div>
 												<p className="text-sm text-amber-200 mb-2">points</p>
 												<div className="mt-3 px-3 py-1 bg-amber-700/50 rounded-full text-xs text-amber-100">
-													Rank #{topPerformers[2].currentRank}
+													Rank #{topPerformers[2]!.currentRank}
 												</div>
 											</div>
 										</div>
@@ -649,8 +649,8 @@ export default function LeaderboardClient({
 										// effectively reserving ranks 1, 2, 3 for >0 point users only
 										const actualRank =
 											user.total_points > 0
-												? user.currentRank
-												: user.currentRank + (3 - topPerformers.length);
+												? (user.currentRank ?? 0)
+												: (user.currentRank ?? 0) + (3 - topPerformers.length);
 
 										const isCurrentUser =
 											currentUserRank && user.id === currentUserRank.user_id;
