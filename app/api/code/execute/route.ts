@@ -4,7 +4,7 @@ import {
 	NotFoundError,
 	ValidationError,
 } from "@/lib/middleware/error.middleware";
-import { requireAuth } from "@/lib/services/auth.service";
+import { withAuth } from "@/lib/middleware/with-auth";
 import { getProblemBySlug } from "@/lib/services/contentful.service";
 import {
 	executeTestCases,
@@ -12,12 +12,9 @@ import {
 } from "@/lib/services/execution.service";
 import { codeRequestSchema } from "@/lib/validation/code.schema";
 
-export async function POST(request: Request) {
+export const POST = withAuth(async (request) => {
 	try {
 		const body = await request.json();
-
-		// 1. Authentication
-		await requireAuth();
 
 		// 2. Input Validation (Zod)
 		const parsed = codeRequestSchema.safeParse(body);
@@ -65,4 +62,4 @@ export async function POST(request: Request) {
 	} catch (error: unknown) {
 		return handleApiError(error);
 	}
-}
+});

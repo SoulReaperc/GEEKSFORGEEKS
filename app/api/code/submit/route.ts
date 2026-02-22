@@ -4,13 +4,13 @@ import {
 	NotFoundError,
 	ValidationError,
 } from "@/lib/middleware/error.middleware";
+import { withAuth } from "@/lib/middleware/with-auth";
 import { handlePointsUpdate } from "@/lib/repositories/profile.repository";
 import {
 	createSubmission,
 	findSubmission,
 	updateSubmission,
 } from "@/lib/repositories/submission.repository";
-import { validateSession } from "@/lib/services/auth.service";
 import { getProblemBySlug } from "@/lib/services/contentful.service";
 import {
 	getLanguageConfig,
@@ -19,7 +19,7 @@ import {
 import { calculateScore } from "@/lib/services/grading.service";
 import { codeRequestSchema } from "@/lib/validation/code.schema";
 
-export async function POST(request: Request) {
+export const POST = withAuth(async (request, user) => {
 	try {
 		const body = await request.json();
 
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Grade submission
+		// Save submission
 		const mockExecutionTime = Math.floor(Math.random() * 5);
 
 		const gradingResult = await calculateScore({
@@ -81,9 +81,7 @@ export async function POST(request: Request) {
 			optimal_loc: problem.optimalLOC,
 		});
 
-		// Save submission (if authenticated)
-		const user = await validateSession();
-
+		// Save submission
 		if (user) {
 			const newPoints = Math.floor(gradingResult.total_score || 0);
 			const existing = await findSubmission(user.id, problemSlug);
@@ -122,4 +120,4 @@ export async function POST(request: Request) {
 	} catch (error: unknown) {
 		return handleApiError(error);
 	}
-}
+});
