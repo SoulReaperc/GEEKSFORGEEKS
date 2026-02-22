@@ -1,3 +1,4 @@
+import { withCache } from "@/lib/cache/contentful.cache";
 import { contentfulClient } from "@/lib/contentful";
 import type { CodingTestCase } from "@/types";
 
@@ -21,28 +22,30 @@ export interface FetchedProblem {
 export async function getProblemBySlug(
 	slug: string,
 ): Promise<FetchedProblem | null> {
-	const response = await contentfulClient.getEntries({
-		content_type: "codingProblem",
-		"fields.slug": slug,
-		limit: 1,
+	return withCache(`contentful:problem:${slug}`, 300, async () => {
+		const response = await contentfulClient.getEntries({
+			content_type: "codingProblem",
+			"fields.slug": slug,
+			limit: 1,
+		});
+
+		if (response.items.length === 0) {
+			return null;
+		}
+
+		const entry = response.items[0]!;
+		const fields = entry.fields;
+
+		return {
+			id: entry.sys.id,
+			title: (fields.title as string) ?? "",
+			slug: (fields.slug as string) ?? "",
+			difficulty: (fields.difficulty as string) ?? "Medium",
+			testCases: (fields.testCases as unknown as CodingTestCase[]) ?? [],
+			expectedComplexity: (fields.expectedComplexity as string) ?? "O(n)",
+			optimalLOC: (fields.optimalLOC as number) ?? 20,
+		};
 	});
-
-	if (response.items.length === 0) {
-		return null;
-	}
-
-	const entry = response.items[0]!;
-	const fields = entry.fields;
-
-	return {
-		id: entry.sys.id,
-		title: (fields.title as string) ?? "",
-		slug: (fields.slug as string) ?? "",
-		difficulty: (fields.difficulty as string) ?? "Medium",
-		testCases: (fields.testCases as unknown as CodingTestCase[]) ?? [],
-		expectedComplexity: (fields.expectedComplexity as string) ?? "O(n)",
-		optimalLOC: (fields.optimalLOC as number) ?? 20,
-	};
 }
 
 /**
@@ -50,15 +53,17 @@ export async function getProblemBySlug(
  * Returns the raw entry for management API operations.
  */
 export async function getMemberByEmail(email: string) {
-	const response = await contentfulClient.getEntries({
-		content_type: "memberProfile",
-		"fields.email": email,
-		limit: 1,
+	return withCache(`contentful:member:${email}`, 600, async () => {
+		const response = await contentfulClient.getEntries({
+			content_type: "memberProfile",
+			"fields.email": email,
+			limit: 1,
+		});
+
+		if (response.items.length === 0) {
+			return null;
+		}
+
+		return response.items[0]!;
 	});
-
-	if (response.items.length === 0) {
-		return null;
-	}
-
-	return response.items[0]!;
 }
