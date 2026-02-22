@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { withCache } from "@/lib/cache/contentful.cache";
 import { contentfulClient } from "@/lib/contentful";
 import type { CodingTestCase } from "@/types";
@@ -19,9 +20,9 @@ export interface FetchedProblem {
  * Fetches a coding problem by slug from Contentful.
  * Returns null if not found.
  */
-export async function getProblemBySlug(
+export const getProblemBySlug = cache(async (
 	slug: string,
-): Promise<FetchedProblem | null> {
+): Promise<FetchedProblem | null> => {
 	return withCache(`contentful:problem:${slug}`, 300, async () => {
 		const response = await contentfulClient.getEntries({
 			content_type: "codingProblem",
@@ -46,13 +47,13 @@ export async function getProblemBySlug(
 			optimalLOC: (fields.optimalLOC as number) ?? 20,
 		};
 	});
-}
+})
 
 /**
  * Fetches a member profile by email from Contentful.
  * Returns the raw entry for management API operations.
  */
-export async function getMemberByEmail(email: string) {
+export const getMemberByEmail = cache(async (email: string) => {
 	return withCache(`contentful:member:${email}`, 600, async () => {
 		const response = await contentfulClient.getEntries({
 			content_type: "memberProfile",
@@ -66,4 +67,4 @@ export async function getMemberByEmail(email: string) {
 
 		return response.items[0]!;
 	});
-}
+})

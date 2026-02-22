@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import {
 	handleApiError,
 	NotFoundError,
@@ -113,7 +113,9 @@ export const POST = withAuth(async (request, user) => {
 				});
 			}
 
-			await handlePointsUpdate(user.id, problemSlug, newPoints, existingPoints);
+			after(async () => {
+				await handlePointsUpdate(user.id, problemSlug, newPoints, existingPoints);
+			});
 		}
 
 		return NextResponse.json({
