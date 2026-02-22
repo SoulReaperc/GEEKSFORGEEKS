@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
-import { handleApiError } from "@/lib/middleware/error.middleware";
+import {
+	handleApiError,
+	ValidationError,
+} from "@/lib/middleware/error.middleware";
+import { withAdmin } from "@/lib/middleware/with-auth";
 import {
 	getEnvironment,
 	mapMemberFields,
 	processAndPublishAsset,
 } from "@/lib/services/contentful-admin.service";
+import { memberSchema } from "@/lib/validation/admin.schema";
 
-export async function POST(request: Request) {
+export const POST = withAdmin(async (request) => {
 	try {
 		const formData = await request.formData();
 		const action = formData.get("action") as string;
@@ -14,7 +19,15 @@ export async function POST(request: Request) {
 		const file = formData.get("file") as File | null;
 
 		if (!memberData) throw new Error("Missing member data");
-		const member = JSON.parse(memberData);
+		const rawMember = JSON.parse(memberData);
+
+		const parsed = memberSchema.safeParse(rawMember);
+		if (!parsed.success) {
+			throw new ValidationError(
+				parsed.error.issues[0]?.message ?? "Invalid member data",
+			);
+		}
+		const member = { ...parsed.data, id: rawMember.id as string | undefined };
 
 		const environment = await getEnvironment();
 
@@ -72,4 +85,4 @@ export async function POST(request: Request) {
 	} catch (error: unknown) {
 		return handleApiError(error);
 	}
-}
+});

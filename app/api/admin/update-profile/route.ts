@@ -4,15 +4,24 @@ import {
 	ENVIRONMENT_ID,
 	SPACE_ID,
 } from "@/lib/contentful-admin";
-import { handleApiError } from "@/lib/middleware/error.middleware";
-import { requireAuth } from "@/lib/services/auth.service";
+import {
+	handleApiError,
+	ValidationError,
+} from "@/lib/middleware/error.middleware";
+import { withAuth } from "@/lib/middleware/with-auth";
+import { updateProfileSchema } from "@/lib/validation/admin.schema";
 
-export async function POST(request: Request) {
+export const POST = withAuth(async (request, user) => {
 	try {
-		const user = await requireAuth();
-
 		const body = await request.json();
-		const { bio, socialLinks } = body;
+
+		const parsed = updateProfileSchema.safeParse(body);
+		if (!parsed.success) {
+			throw new ValidationError(
+				parsed.error.issues[0]?.message ?? "Invalid request",
+			);
+		}
+		const { bio, socialLinks } = parsed.data;
 
 		const space = await contentfulManagementClient.getSpace(SPACE_ID);
 		const environment = await space.getEnvironment(ENVIRONMENT_ID);
@@ -48,4 +57,4 @@ export async function POST(request: Request) {
 	} catch (error: unknown) {
 		return handleApiError(error);
 	}
-}
+});

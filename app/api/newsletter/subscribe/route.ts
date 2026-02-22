@@ -8,16 +8,21 @@ import {
 	createSubscriber,
 	findSubscriberByEmail,
 } from "@/lib/repositories/newsletter.repository";
+import { subscribeSchema } from "@/lib/validation/newsletter.schema";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
 	try {
-		const { email } = await request.json();
+		const body = await request.json();
 
-		if (!email || !email.includes("@")) {
-			throw new ValidationError("Valid email is required");
+		const parsed = subscribeSchema.safeParse(body);
+		if (!parsed.success) {
+			throw new ValidationError(
+				parsed.error.issues[0]?.message ?? "Valid email is required",
+			);
 		}
+		const { email } = parsed.data;
 
 		// Check if already subscribed
 		const existing = await findSubscriberByEmail(email);

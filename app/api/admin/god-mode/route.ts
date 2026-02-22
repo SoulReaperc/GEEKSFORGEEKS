@@ -4,23 +4,24 @@ import {
 	ENVIRONMENT_ID,
 	SPACE_ID,
 } from "@/lib/contentful-admin";
-import { handleApiError } from "@/lib/middleware/error.middleware";
 import {
-	AuthError,
-	isSuperAdmin,
-	requireAuth,
-} from "@/lib/services/auth.service";
+	handleApiError,
+	ValidationError,
+} from "@/lib/middleware/error.middleware";
+import { withSuperAdmin } from "@/lib/middleware/with-auth";
+import { godModeSchema } from "@/lib/validation/admin.schema";
 
-export async function POST(request: Request) {
+export const POST = withSuperAdmin(async (request) => {
 	try {
-		const user = await requireAuth();
-
-		if (!isSuperAdmin(user.email)) {
-			throw new AuthError("Forbidden: God Mode Access Denied", 403);
-		}
-
 		const body = await request.json();
-		const { action, contentType, entryId, data } = body;
+
+		const parsed = godModeSchema.safeParse(body);
+		if (!parsed.success) {
+			throw new ValidationError(
+				parsed.error.issues[0]?.message ?? "Invalid request",
+			);
+		}
+		const { action, contentType, entryId, data } = parsed.data;
 
 		const space = await contentfulManagementClient.getSpace(SPACE_ID);
 		const environment = await space.getEnvironment(ENVIRONMENT_ID);
@@ -69,4 +70,4 @@ export async function POST(request: Request) {
 	} catch (error: unknown) {
 		return handleApiError(error);
 	}
-}
+});
