@@ -1,53 +1,53 @@
-'use server'
+"use server";
 
-import { createAdminClient } from '@/lib/supabase-server'
+import { createAdminClient } from "@/lib/supabase-server";
 
 export async function fetchRegistrations(startDate?: string, endDate?: string) {
-    try {
-        const supabase = await createAdminClient()
-        
-        let query = supabase
-            .from('registrations')
-            .select('*')
-            .order('created_at', { ascending: false })
+	try {
+		const supabase = await createAdminClient();
 
-        if (startDate) {
-            query = query.gte('created_at', startDate)
-        }
-        if (endDate) {
-            query = query.lte('created_at', endDate)
-        }
+		let query = supabase
+			.from("registrations")
+			.select("*")
+			.order("created_at", { ascending: false });
 
-        const { data, error } = await query
+		if (startDate) {
+			query = query.gte("created_at", startDate);
+		}
+		if (endDate) {
+			query = query.lte("created_at", endDate);
+		}
 
-        if (error) {
-            console.error('Error fetching registrations:', error)
-            return []
-        }
+		const { data, error } = await query;
 
-        return data || []
-    } catch (error) {
-        console.error('Error in fetchRegistrations:', error)
-        return []
-    }
+		if (error) {
+			console.error("Error fetching registrations:", error);
+			return [];
+		}
+
+		return data || [];
+	} catch (error) {
+		console.error("Error in fetchRegistrations:", error);
+		return [];
+	}
 }
 
 export async function deleteRegistration(id: string) {
-    try {
-        const supabase = await createAdminClient()
-        
-        const { error } = await supabase
-            .from('registrations')
-            .delete()
-            .eq('id', id)
+	try {
+		const supabase = await createAdminClient();
 
-        if (error) {
-            return { error: error.message }
-        }
+		const { error } = await supabase
+			.from("registrations")
+			.delete()
+			.eq("id", id);
 
-        return { success: true }
-    } catch (error) {
-        console.error('Error deleting registration:', error)
-        return { error: 'Failed to delete registration' }
-    }
+		if (error) {
+			return { error: error.message };
+		}
+
+		return { success: true };
+	} catch (error) {
+		console.error("Error deleting registration:", error);
+		return { error: "Failed to delete registration" };
+	}
 }

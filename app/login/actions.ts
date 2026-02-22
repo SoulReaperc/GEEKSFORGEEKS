@@ -1,59 +1,69 @@
-'use server'
+"use server";
 
-import { createClient } from '@/lib/supabase-server'
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase-server";
+import type { ActionState } from "@/types";
 
-export async function sendOtp(previousState: any, formData: FormData) {
-    const email = formData.get('email') as string
+export async function sendOtp(
+	previousState: ActionState | null,
+	formData: FormData,
+) {
+	const email = formData.get("email") as string;
 
-    if (!email) {
-        return { success: false, message: 'Email is required' }
-    }
+	if (!email) {
+		return { success: false, message: "Email is required" };
+	}
 
-    // Security Check: Allowlist
-    const allowedEmails = process.env.ALLOWED_ADMIN_EMAILS?.split(',') || []
-    if (!allowedEmails.includes(email.trim())) {
-        return { success: false, message: 'This email is not authorized to access the admin panel.' }
-    }
+	// Security Check: Allowlist
+	const allowedEmails = process.env.ALLOWED_ADMIN_EMAILS?.split(",") || [];
+	if (!allowedEmails.includes(email.trim())) {
+		return {
+			success: false,
+			message: "This email is not authorized to access the admin panel.",
+		};
+	}
 
-    const supabase = await createClient()
+	const supabase = await createClient();
 
-    const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-            shouldCreateUser: false,
-        },
-    })
+	const { error } = await supabase.auth.signInWithOtp({
+		email,
+		options: {
+			shouldCreateUser: false,
+		},
+	});
 
-    if (error) {
-        return { success: false, message: error.message }
-    }
+	if (error) {
+		return { success: false, message: error.message };
+	}
 
-    return {
-        success: true,
-        message: 'OTP sent to your email.'
-    }
+	return {
+		success: true,
+		message: "OTP sent to your email.",
+	};
 }
 
-export async function verifyOtp(previousState: any, formData: FormData) {
-    const email = formData.get('email') as string
-    const otp = formData.get('otp') as string
+export async function verifyOtp(
+	previousState: ActionState | null,
+	formData: FormData,
+) {
+	const email = formData.get("email") as string;
+	const otp = formData.get("otp") as string;
 
-    if (!email || !otp) {
-        return { success: false, message: 'Email and OTP are required' }
-    }
+	if (!email || !otp) {
+		return { success: false, message: "Email and OTP are required" };
+	}
 
-    const supabase = await createClient()
+	const supabase = await createClient();
 
-    const { error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'email',
-    })
+	const { error } = await supabase.auth.verifyOtp({
+		email,
+		token: otp,
+		type: "email",
+	});
 
-    if (error) {
-        return { success: false, message: error.message }
-    }
+	if (error) {
+		return { success: false, message: error.message };
+	}
 
-    redirect('/admin')
+	redirect("/admin");
 }
