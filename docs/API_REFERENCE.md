@@ -457,6 +457,96 @@ Removes an image from the event gallery (unlinks, does not delete asset).
 
 ---
 
+### Code Execution & Submission
+
+All code routes require a valid user session (enforced by `withAuth`).
+
+#### `POST /api/code/execute`
+
+**Location:** `/app/api/code/execute/route.ts`  
+**Auth:** `withAuth` — valid Supabase user session required  
+**Rate limit:** `codeRatelimit` (per user email, sliding window)
+
+Executes code against a problem's test cases via the Piston API without persisting a submission.
+
+**Request Body:**
+```json
+{
+  "code": "def solve(): return 42",
+  "language": "python",
+  "problemSlug": "two-sum"
+}
+```
+
+**Supported languages:** `javascript`, `python`, `cpp`, `js`, `py`, `c++`, `java`
+
+**Success Response:**
+```json
+{
+  "status": "Success",
+  "message": "All test cases passed."
+}
+```
+
+**Failure Response (wrong answer):**
+```json
+{
+  "status": "Failed",
+  "message": "Your solution did not pass all test cases."
+}
+```
+
+**Rate-Limit Headers:**
+```
+X-RateLimit-Limit: <n>
+X-RateLimit-Remaining: <n>
+X-RateLimit-Reset: <timestamp>
+```
+
+**Error Responses:**
+
+| Status | Cause |
+|--------|-------|
+| 400 | Zod validation failed (invalid language, empty code, bad slug) |
+| 401 | No valid session |
+| 404 | Problem slug not found in Contentful |
+| 429 | Rate limit exceeded |
+| 500 | Piston API or internal error |
+
+---
+
+#### `POST /api/code/submit`
+
+**Location:** `/app/api/code/submit/route.ts`  
+**Auth:** `withAuth` — valid Supabase user session required  
+**Rate limit:** `codeRatelimit` (per user email, sliding window)
+
+Runs all test cases, grades the submission, persists it, and defers ranking recalculation via `after()`.
+
+**Request Body:** same shape as `/api/code/execute`
+
+**Success Response:**
+```json
+{
+  "status": "Success",
+  "message": "Congratulations! Your solution passed all test cases.",
+  "gradingResult": {
+    "total_score": 8.5,
+    "max_marks": 10,
+    "details": {
+      "execution_speed": { "score": 4.5, "max": 6.0 },
+      "lines_of_code":   { "score": 4.0, "max": 4.0 }
+    }
+  }
+}
+```
+
+**Notes:**
+- Submission is only saved/updated when `newPoints > existingPoints`.
+- Ranking recalculation (`handlePointsUpdate`) runs **after** the response is sent via `after()` to reduce response latency.
+
+---
+
 ### Recruitment Management
 
 #### Server Actions: `/app/admin/recruitment/actions.ts`

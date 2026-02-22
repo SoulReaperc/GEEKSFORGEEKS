@@ -487,4 +487,73 @@ When onboarding as a new maintainer:
 
 ---
 
+## Service & Repository Layer
+
+### Service Layer
+
+All external-integration and business logic lives in `lib/services/`:
+
+| Service | File | Responsibility |
+|---------|------|----------------|
+| **AuthService** | `lib/services/auth.service.ts` | Session validation, `requireAuth`, `requireAdmin`, `isSuperAdmin` |
+| **ContentfulService** | `lib/services/contentful.service.ts` | Typed Contentful reads, React `cache()` deduplication |
+| **GradingService** | `lib/services/grading.service.ts` | Pure-TS port of the Python grading algorithm — `countEffectiveLOC`, `calculateScore` |
+| **ExecutionService** | `lib/services/execution.service.ts` | Piston API integration, test-case verification |
+
+### Repository Layer
+
+Database access is isolated in `lib/repositories/`:
+
+| Repository | File | Responsibility |
+|------------|------|----------------|
+| **SubmissionRepository** | `lib/repositories/submission.repository.ts` | Create / find / update user code submissions |
+| **ProfileRepository** | `lib/repositories/profile.repository.ts` | Read / update user total_points |
+| **NewsletterRepository** | `lib/repositories/newsletter.repository.ts` | Subscriber CRUD, token management |
+
+### Middleware HOFs
+
+Route handlers are composed using Higher-Order Functions in `lib/middleware/`:
+
+| HOF | Requirement |
+|-----|-------------|
+| `withAuth` | Valid Supabase session |
+| `withAdmin` | Session + email in `ALLOWED_ADMIN_EMAILS` |
+| `withSuperAdmin` | Session + email in `SUPER_ADMINS` |
+
+Error handling is centralised in `lib/middleware/error.middleware.ts` — `AuthError`, `ValidationError`, and `NotFoundError` map to structured JSON responses.
+
+### Rate Limiting
+
+Upstash Redis is used for sliding-window rate limiting via `lib/middleware/rate-limit.ts`.  
+Code-execution endpoints are protected by a dedicated `codeRatelimit` limiter.  
+All other sensitive routes use the default limiter. Limits are enforced per user email.
+
+### Circuit Breaker
+
+`lib/utils/circuit-breaker.ts` wraps Piston API calls to prevent cascading failures.  
+Default: 5 failures open the circuit for 30 s. Throws `CircuitOpenError` when open.
+
+### Caching Strategy
+
+| Layer | Technology | TTL |
+|-------|-----------|-----|
+| React render deduplication | `React.cache()` | Per-request |
+| Contentful problem data | Upstash Redis | 300 s |
+| Contentful member profiles | Upstash Redis | 600 s |
+
+Cache misses fall back to Contentful transparently (graceful degradation).
+
+### Validation
+
+All API route bodies are validated with **Zod** before processing:
+
+| Schema | File | Covers |
+|--------|------|--------|
+| `codeRequestSchema` | `lib/validation/code.schema.ts` | Code execution/submission payload (language whitelist, 50 KB limit, slug format) |
+| `updateProfileSchema` | `lib/validation/admin.schema.ts` | Profile bio + social links |
+| `godModeSchema` | `lib/validation/admin.schema.ts` | Super-admin CRUD actions |
+| `subscribeSchema` | `lib/validation/newsletter.schema.ts` | Newsletter email address |
+
+---
+
 *Document maintained by Ayaan Mirza Baig*
