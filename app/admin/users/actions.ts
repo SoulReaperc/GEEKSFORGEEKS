@@ -134,3 +134,48 @@ export async function isUserBlacklisted(email: string) {
         return false
     }
 }
+
+// Add user to whitelist
+export async function addToWhitelist(email: string) {
+    if (!email) return { error: 'Email is required' }
+
+    const supabase = await createAdminClient()
+
+    try {
+        const { error } = await supabase
+            .from('whitelist')
+            .insert([{ email, created_at: new Date().toISOString() }])
+
+        if (error) {
+            return { error: error.message }
+        }
+
+        revalidatePath('/admin/users')
+        return { success: true }
+    } catch (error) {
+        console.error('Error in addToWhitelist:', error)
+        return { error: 'Failed to add to whitelist' }
+    }
+}
+
+// Remove user from whitelist
+export async function removeFromWhitelist(email: string) {
+    const supabase = await createAdminClient()
+
+    try {
+        const { error } = await supabase
+            .from('whitelist')
+            .delete()
+            .eq('email', email)
+
+        if (error) {
+            return { error: error.message }
+        }
+
+        revalidatePath('/admin/users')
+        return { success: true }
+    } catch (error) {
+        console.error('Error in removeFromWhitelist:', error)
+        return { error: 'Failed to remove from whitelist' }
+    }
+}
