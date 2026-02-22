@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState, useEffect } from 'react'
+import React, { useActionState, useState, useEffect } from 'react'
 import { sendOtp, verifyOtp } from './actions'
 import { Mail, Loader2, ArrowRight, KeyRound, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
@@ -29,11 +29,11 @@ export default function LoginPage() {
         }
     }, [sendState])
 
-    const handleSendOtp = (e) => {
+    const handleSendOtp = (_e: React.FormEvent<HTMLButtonElement>) => {
         vibrateLightClick();
     }
 
-    const handleVerifyOtp = (e) => {
+    const handleVerifyOtp = (_e: React.FormEvent<HTMLButtonElement>) => {
         vibrateLightClick();
     }
 

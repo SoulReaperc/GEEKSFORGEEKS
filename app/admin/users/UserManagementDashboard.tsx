@@ -5,17 +5,34 @@ import { addToBlacklist, removeFromBlacklist } from './actions'
 import { Shield, ShieldOff, Users, Search, Ban, CheckCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export default function UserManagementDashboard({ initialUsers = [], initialBlacklist = [] }) {
-    const [users, setUsers] = useState(initialUsers)
-    const [blacklist, setBlacklist] = useState(initialBlacklist)
-    const [searchTerm, setSearchTerm] = useState('')
-    const [activeTab, setActiveTab] = useState('users') // 'users' | 'blacklist'
-    const [isLoading, setIsLoading] = useState(false)
+interface RegisteredUser {
+    full_name: string
+    email: string
+    created_at: string
+}
+
+interface BlacklistEntry {
+    email: string
+    blocked_at?: string
+    created_at?: string
+}
+
+interface UserManagementDashboardProps {
+    initialUsers?: RegisteredUser[]
+    initialBlacklist?: BlacklistEntry[]
+}
+
+export default function UserManagementDashboard({ initialUsers = [], initialBlacklist = [] }: UserManagementDashboardProps) {
+    const [users, setUsers] = useState<RegisteredUser[]>(initialUsers)
+    const [blacklist, setBlacklist] = useState<BlacklistEntry[]>(initialBlacklist)
+    const [searchTerm, setSearchTerm] = useState<string>('')
+    const [activeTab, setActiveTab] = useState<'users' | 'blacklist'>('users')
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const router = useRouter()
 
     const blacklistedEmails = new Set(blacklist.map(b => b.email))
 
-    const handleBlacklist = async (email) => {
+    const handleBlacklist = async (email: string) => {
         if (!confirm(`Are you sure you want to blacklist ${email}? This will:\n\n- Block them from logging in\n- Remove them from leaderboard\n- Prevent challenge access\n\nThis action can be reversed.`)) return
 
         setIsLoading(true)
@@ -27,14 +44,14 @@ export default function UserManagementDashboard({ initialUsers = [], initialBlac
                 setBlacklist(prev => [...prev, { email, blocked_at: new Date().toISOString() }])
                 router.refresh()
             }
-        } catch (error) {
+        } catch (error: unknown) {
             alert('Failed to blacklist user')
         } finally {
             setIsLoading(false)
         }
     }
 
-    const handleUnblacklist = async (email) => {
+    const handleUnblacklist = async (email: string) => {
         if (!confirm(`Remove ${email} from blacklist? They will regain full access.`)) return
 
         setIsLoading(true)
@@ -46,7 +63,7 @@ export default function UserManagementDashboard({ initialUsers = [], initialBlac
                 setBlacklist(prev => prev.filter(item => item.email !== email))
                 router.refresh()
             }
-        } catch (error) {
+        } catch (error: unknown) {
             alert('Failed to remove from blacklist')
         } finally {
             setIsLoading(false)
@@ -173,7 +190,7 @@ export default function UserManagementDashboard({ initialUsers = [], initialBlac
                             <tbody className="divide-y divide-white/5">
                                 {filteredUsers.length === 0 ? (
                                     <tr>
-                                        <td colSpan="4" className="px-6 py-12 text-center">
+                                        <td colSpan={4} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center gap-4">
                                                 <Users className="w-16 h-16 text-white/20" />
                                                 <div>
@@ -258,7 +275,7 @@ export default function UserManagementDashboard({ initialUsers = [], initialBlac
                             <tbody className="divide-y divide-white/5">
                                 {filteredBlacklist.length === 0 ? (
                                     <tr>
-                                        <td colSpan="3" className="px-6 py-12 text-center">
+                                        <td colSpan={3} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center gap-4">
                                                 <div className="w-16 h-16 rounded-2xl bg-green-500/20 flex items-center justify-center border border-green-500/30">
                                                     <CheckCircle className="w-8 h-8 text-green-400" />
@@ -288,11 +305,11 @@ export default function UserManagementDashboard({ initialUsers = [], initialBlac
                                                     day: 'numeric',
                                                     hour: '2-digit',
                                                     minute: '2-digit'
-                                                }) : new Date(item.created_at).toLocaleDateString('en-US', {
+                                                }) : item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', {
                                                     year: 'numeric',
                                                     month: 'short',
                                                     day: 'numeric'
-                                                })}
+                                                }) : 'N/A'}
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <button

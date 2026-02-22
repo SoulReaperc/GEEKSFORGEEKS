@@ -4,7 +4,12 @@ import { useState, useTransition } from 'react'
 import { unpublishEventAction, deleteEventAction, publishEventAction } from '../actions'
 import { ActionModal } from './ActionModal'
 
-export default function EventActions({ eventId, isPublished }) {
+interface EventActionsProps {
+    eventId: string
+    isPublished: boolean
+}
+
+export default function EventActions({ eventId, isPublished }: EventActionsProps) {
     const [isPending, startTransition] = useTransition()
 
     // Modal states
@@ -17,7 +22,7 @@ export default function EventActions({ eventId, isPublished }) {
         startTransition(async () => {
             try {
                 await unpublishEventAction(eventId)
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Failed to unpublish', error)
                 alert('Failed to unpublish event')
             }
@@ -29,7 +34,7 @@ export default function EventActions({ eventId, isPublished }) {
         startTransition(async () => {
             try {
                 await publishEventAction(eventId)
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Failed to publish', error)
                 alert('Failed to publish event')
             }
@@ -41,7 +46,7 @@ export default function EventActions({ eventId, isPublished }) {
         startTransition(async () => {
             try {
                 await deleteEventAction(eventId)
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Failed to delete', error)
                 alert('Failed to delete event')
             }
@@ -51,12 +56,12 @@ export default function EventActions({ eventId, isPublished }) {
     return (
         <div
             className="flex gap-2 z-10 w-full justify-end"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={(e: React.MouseEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); }}
         >
             {isPublished ? (
                 <button
                     disabled={isPending}
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setUnpublishModalOpen(true) }}
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); e.stopPropagation(); setUnpublishModalOpen(true) }}
                     className="p-2 text-yellow-500 hover:text-yellow-400 bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/5 hover:border-yellow-500/30"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +71,7 @@ export default function EventActions({ eventId, isPublished }) {
             ) : (
                 <button
                     disabled={isPending}
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPublishModalOpen(true) }}
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); e.stopPropagation(); setPublishModalOpen(true) }}
                     className="p-2 text-emerald-500 hover:text-emerald-400 bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/5 hover:border-emerald-500/30"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +83,7 @@ export default function EventActions({ eventId, isPublished }) {
 
             <button
                 disabled={isPending}
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteModalOpen(true) }}
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); e.stopPropagation(); setDeleteModalOpen(true) }}
                 className="p-2 text-red-500 hover:text-red-400 bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/5 hover:border-red-500/30"
             >
                 {isPending ? (

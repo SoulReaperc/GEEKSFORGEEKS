@@ -5,10 +5,24 @@ import Image from 'next/image'
 import { deleteCoverImage } from '../actions' // Keep delete for existing images if needed, or handle via parent
 // Note: We are removing uploadCoverImage import as strict upload happens in parent now
 
-export default function CoverImageManager({ eventId, coverImage, onImageSelect, selectedFile }) {
-    const [isDragging, setIsDragging] = useState(false)
-    const [previewUrl, setPreviewUrl] = useState(null)
-    const [isPending, setIsPending] = useState(false) // Keep for UI consistency, though mostly local now
+interface CoverImageAsset {
+    fields: {
+        title?: string
+        file?: { url: string }
+    }
+}
+
+interface CoverImageManagerProps {
+    eventId: string
+    coverImage: CoverImageAsset | null
+    onImageSelect: (file: File | null) => void
+    selectedFile: File | null
+}
+
+export default function CoverImageManager({ eventId, coverImage, onImageSelect, selectedFile }: CoverImageManagerProps) {
+    const [isDragging, setIsDragging] = useState<boolean>(false)
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+    const [isPending, setIsPending] = useState<boolean>(false) // Keep for UI consistency, though mostly local now
 
     // Create preview URL when a new file is selected
     useEffect(() => {
@@ -24,26 +38,26 @@ export default function CoverImageManager({ eventId, coverImage, onImageSelect, 
         return () => URL.revokeObjectURL(objectUrl)
     }, [selectedFile])
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setIsDragging(true)
     }
 
-    const handleDragLeave = (e) => {
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setIsDragging(false)
     }
 
-    const handleDrop = (e) => {
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setIsDragging(false)
 
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            handleFileSelect({ target: { files: e.dataTransfer.files } })
+            handleFileSelect({ target: { files: e.dataTransfer.files } } as React.ChangeEvent<HTMLInputElement>)
         }
     }
 
-    const handleFileSelect = (e) => {
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0]
             if (onImageSelect) {
@@ -86,7 +100,7 @@ export default function CoverImageManager({ eventId, coverImage, onImageSelect, 
                 // Note: This refreshes the page, so it might conflict with unsaved form changes!, 
                 // but EditEvent handles refresh via router.refresh(). 
                 // Ideally we should warn user.
-            } catch (e) {
+            } catch (e: unknown) {
                 console.error(e)
                 alert("Failed to delete")
             } finally {

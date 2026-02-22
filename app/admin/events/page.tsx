@@ -5,7 +5,12 @@ import EventActions from './components/EventActions'
 // Disable caching so data is always fresh
 export const dynamic = 'force-dynamic'
 
-async function getEvents() {
+interface ContentfulEventEntry {
+    sys: { id: string; publishedVersion?: number }
+    fields: Record<string, Record<string, unknown>>
+}
+
+async function getEvents(): Promise<ContentfulEventEntry[]> {
     const space = await contentfulManagementClient.getSpace(SPACE_ID)
     const environment = await space.getEnvironment(ENVIRONMENT_ID)
     const entries = await environment.getEntries({
@@ -79,9 +84,9 @@ export default async function EventsDashboard() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {events.map((event) => {
-                        const title = event.fields.title?.['en-US'] || 'Untitled Event'
-                        const date = event.fields.date?.['en-US']
-                        const venue = event.fields.venue?.['en-US']
+                        const title = (event.fields.title?.['en-US'] as string | undefined) || 'Untitled Event'
+                        const date = event.fields.date?.['en-US'] as string | undefined
+                        const venue = event.fields.venue?.['en-US'] as string | undefined
                         const isPublished = !!event.sys.publishedVersion
 
                         return (

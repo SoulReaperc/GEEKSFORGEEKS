@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 
 export default function AdminSmoothScroll() {
-    const lenisRef = useRef(null)
+    const lenisRef = useRef<Lenis | null>(null)
 
     useEffect(() => {
 
@@ -15,9 +15,9 @@ export default function AdminSmoothScroll() {
 
         const lenis = new Lenis({
             wrapper: scrollContainer,
-            content: scrollContainer.firstElementChild,
+            content: scrollContainer.firstElementChild ?? undefined,
             duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             orientation: 'vertical',
             gestureOrientation: 'vertical',
             smoothWheel: true,
@@ -29,7 +29,7 @@ export default function AdminSmoothScroll() {
         lenisRef.current = lenis
 
 
-        function raf(time) {
+        function raf(time: number) {
             lenis.raf(time)
             requestAnimationFrame(raf)
         }

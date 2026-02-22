@@ -4,21 +4,34 @@ import { useState, useTransition } from 'react'
 import { uploadEventImage, deleteEventImage } from '../actions'
 import Image from 'next/image'
 
-export default function GalleryManager({ eventId, images = [] }) {
+interface GalleryImage {
+    sys: { id: string }
+    fields: {
+        title?: string
+        file?: { url: string }
+    }
+}
+
+interface GalleryManagerProps {
+    eventId: string
+    images?: GalleryImage[]
+}
+
+export default function GalleryManager({ eventId, images = [] }: GalleryManagerProps) {
     const [isPending, startTransition] = useTransition()
     const [isDragging, setIsDragging] = useState(false)
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setIsDragging(true)
     }
 
-    const handleDragLeave = (e) => {
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setIsDragging(false)
     }
 
-    const handleDrop = (e) => {
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setIsDragging(false)
 
@@ -27,33 +40,33 @@ export default function GalleryManager({ eventId, images = [] }) {
         }
     }
 
-    const handleFileSelect = (e) => {
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             handleUpload(e.target.files[0])
         }
     }
 
-    const handleUpload = (file) => {
+    const handleUpload = (file: File) => {
         const formData = new FormData()
         formData.append('file', file)
 
         startTransition(async () => {
             try {
                 await uploadEventImage(eventId, formData)
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Upload failed:', error)
                 alert('Upload failed. Please try again.')
             }
         })
     }
 
-    const handleDelete = (imageId) => {
+    const handleDelete = (imageId: string) => {
         if (!confirm('Are you sure you want to remove this image?')) return
 
         startTransition(async () => {
             try {
                 await deleteEventImage(eventId, imageId)
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Delete failed:', error)
                 alert('Delete failed. Please try again.')
             }

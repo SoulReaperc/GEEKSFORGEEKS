@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Key, Loader2, ArrowLeft } from 'lucide-react';
 import { sendOtp, verifyOtp } from '@/app/actions/user-auth';
 import { useRouter } from 'next/navigation';
@@ -27,7 +27,7 @@ export default function UserLogin() {
     }
   }, []);
 
-  async function handleSendOtp(e) {
+  async function handleSendOtp(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email) return;
 
@@ -49,7 +49,7 @@ export default function UserLogin() {
     }
   }
 
-  async function handleVerifyOtp(e) {
+  async function handleVerifyOtp(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!otp) return;
 

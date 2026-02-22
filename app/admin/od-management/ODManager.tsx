@@ -5,11 +5,31 @@ import { Search, FileSpreadsheet, CheckSquare, Square, Download, ChevronDown } f
 import { motion, AnimatePresence } from 'framer-motion'
 import { exportODListExcel } from '@/lib/exportODList'
 
-export default function ODManager({ registrations, events }) {
-    const [selectedEventId, setSelectedEventId] = useState('')
-    const [searchTerm, setSearchTerm] = useState('')
-    const [selectedTeamIds, setSelectedTeamIds] = useState(new Set())
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+interface ContentfulEvent {
+    sys: { id: string }
+    fields: Record<string, Record<string, unknown>>
+}
+
+interface Registration {
+    id: string
+    event_name?: string
+    team_name?: string
+    college_name?: string
+    leader_name?: string
+    leader_email?: string
+    members?: { name?: string; reg_no?: string; email_id?: string; phone_number?: string; branch?: string; year?: string; section?: string; role?: string }[]
+}
+
+interface ODManagerProps {
+    registrations: Registration[]
+    events: ContentfulEvent[]
+}
+
+export default function ODManager({ registrations, events }: ODManagerProps) {
+    const [selectedEventId, setSelectedEventId] = useState<string>('')
+    const [searchTerm, setSearchTerm] = useState<string>('')
+    const [selectedTeamIds, setSelectedTeamIds] = useState<Set<string>>(new Set())
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
     // 0) Filter events to only active/upcoming or max 1 week old
     const filteredEvents = useMemo(() => {
@@ -17,7 +37,7 @@ export default function ODManager({ registrations, events }) {
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
         return events.filter(ev => {
-            const dateStr = ev.fields?.date?.['en-US'];
+            const dateStr = ev.fields?.date?.['en-US'] as string | undefined;
             if (!dateStr) return true; // Keep if no date assigned
             const evDate = new Date(dateStr);
             return evDate >= oneWeekAgo;
@@ -28,7 +48,7 @@ export default function ODManager({ registrations, events }) {
     const activeEventName = useMemo(() => {
         if (!selectedEventId) return '';
         const ev = events.find(e => e.sys.id === selectedEventId);
-        return ev?.fields?.title?.['en-US'] || '';
+        return (ev?.fields?.title?.['en-US'] as string) || '';
     }, [selectedEventId, events]);
 
     // 2) Filter teams to only those registered for the selected event name
@@ -52,7 +72,7 @@ export default function ODManager({ registrations, events }) {
     }, [teamsForEvent, searchTerm]);
 
     // Toggle a single team
-    const toggleTeam = (teamId) => {
+    const toggleTeam = (teamId: string) => {
         const next = new Set(selectedTeamIds);
         if (next.has(teamId)) {
             next.delete(teamId);
@@ -69,7 +89,7 @@ export default function ODManager({ registrations, events }) {
             setSelectedTeamIds(new Set());
         } else {
             // Select all visible
-            const next = new Set(displayedTeams.map(t => t.id));
+            const next = new Set<string>(displayedTeams.map(t => t.id));
             setSelectedTeamIds(next);
         }
     }
@@ -127,7 +147,7 @@ export default function ODManager({ registrations, events }) {
                                         -- Clear Selection --
                                     </div>
                                     {filteredEvents.map(ev => {
-                                        const title = ev.fields?.title?.['en-US'] || 'Untitled Event';
+                                        const title = (ev.fields?.title?.['en-US'] as string | undefined) || 'Untitled Event';
                                         const isSelected = selectedEventId === ev.sys.id;
                                         return (
                                             <div
@@ -163,7 +183,7 @@ export default function ODManager({ registrations, events }) {
                                 type="text"
                                 placeholder="Search by team name, leader, email..."
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                                 minLength={2}
                                 className="w-full pl-12 pr-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-white/20 focus:bg-white/5 transition-colors"
                             />

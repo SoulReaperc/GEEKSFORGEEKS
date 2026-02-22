@@ -5,14 +5,36 @@ import { toggleRecruitmentStatus, fetchRecruitments } from './actions'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
-export default function RecruitmentManager({ initialRecruitmentStatus, initialData = [] }) {
-    const [isRecruitmentOpen, setIsRecruitmentOpen] = useState(initialRecruitmentStatus)
+interface Recruitment {
+    name?: string
+    reg_no?: string
+    email_personal?: string
+    email_college?: string
+    phone?: string
+    year?: number
+    branch?: string
+    section?: string
+    team_preference?: string
+    techincal_skills?: string
+    design_skills?: string
+    description?: string
+    resume_link?: string
+    created_at?: string
+}
+
+interface RecruitmentManagerProps {
+    initialRecruitmentStatus: boolean
+    initialData?: Recruitment[]
+}
+
+export default function RecruitmentManager({ initialRecruitmentStatus, initialData = [] }: RecruitmentManagerProps) {
+    const [isRecruitmentOpen, setIsRecruitmentOpen] = useState<boolean>(initialRecruitmentStatus)
     const [isPending, startTransition] = useTransition()
 
-    const [recruitments, setRecruitments] = useState(initialData)
-    const [loading, setLoading] = useState(false)
-    const [searchTerm, setSearchTerm] = useState('')
-    const [activeDomain, setActiveDomain] = useState('All Domains')
+    const [recruitments, setRecruitments] = useState<Recruitment[]>(initialData)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [searchTerm, setSearchTerm] = useState<string>('')
+    const [activeDomain, setActiveDomain] = useState<string>('All Domains')
 
     const handleToggle = async () => {
         const newState = !isRecruitmentOpen
@@ -21,7 +43,7 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
         startTransition(async () => {
             try {
                 await toggleRecruitmentStatus(newState)
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Failed to toggle status:', error)
                 setIsRecruitmentOpen(!newState)
                 alert('Failed to update recruitment status')
@@ -29,7 +51,7 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
         })
     }
 
-    const DOMAIN_MAP = {
+    const DOMAIN_MAP: Record<string, string[]> = {
         'Creative': ['Creative', 'Creatives', 'Photography'],
         'Event Management': ['Events', 'Event Management'],
         'PR & Marketing': ['Corporate', 'PR', 'Marketing', 'PR & Marketing'],
@@ -37,7 +59,7 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
         'Technical': ['Technical']
     }
 
-    const getMappedDomain = (preference) => {
+    const getMappedDomain = (preference: string | undefined): string => {
         if (!preference) return 'Other'
         const pref = preference.toLowerCase()
         for (const [domain, aliases] of Object.entries(DOMAIN_MAP)) {
@@ -48,8 +70,8 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
         return 'Other'
     }
 
-    const stats = useMemo(() => {
-        const counts = {
+    const stats = useMemo((): Record<string, number> => {
+        const counts: Record<string, number> = {
             'All Domains': recruitments.length
         }
 
@@ -119,7 +141,7 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
         doc.save(`recruitment-export-${activeDomain}-${new Date().toISOString().split('T')[0]}.pdf`)
     }
 
-    const exportSinglePDF = (applicant) => {
+    const exportSinglePDF = (applicant: Recruitment) => {
         const doc = new jsPDF()
         doc.setFontSize(20)
         doc.text('Applicant Details', 14, 20)
@@ -138,22 +160,22 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
             ['Design Skills', applicant.design_skills || 'N/A'],
             ['Description', applicant.description || 'N/A'],
             ['Resume Link', applicant.resume_link || 'N/A'],
-            ['Applied Date', new Date(applicant.created_at).toLocaleString()]
+            ['Applied Date', applicant.created_at ? new Date(applicant.created_at).toLocaleString() : 'N/A']
         ]
 
         autoTable(doc, {
             startY: 30,
-            body: details,
+            body: details as unknown as import('jspdf-autotable').RowInput[],
             theme: 'plain',
             styles: { fontSize: 10, cellPadding: 2 }
         })
 
-        doc.save(`${applicant.name.replace(/\s+/g, '_')}_application.pdf`)
+        doc.save(`${(applicant.name || 'applicant').replace(/\s+/g, '_')}_application.pdf`)
     }
 
     const availableDomains = useMemo(() => {
         const base = ['All Domains', ...Object.keys(DOMAIN_MAP)]
-        if (stats['Other'] > 0) base.push('Other')
+        if ((stats['Other'] ?? 0) > 0) base.push('Other')
         return base
     }, [stats])
 
@@ -171,7 +193,7 @@ export default function RecruitmentManager({ initialRecruitmentStatus, initialDa
                         type="text"
                         placeholder="Search by name, email, reg no, or domain..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                         className="w-full bg-[#111111]/80 backdrop-blur-xl border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder-white/20 focus:outline-none focus:border-white/30 focus:bg-[#111111] transition-all"
                     />
                 </div>

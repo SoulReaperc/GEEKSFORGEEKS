@@ -4,6 +4,17 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, Trash2, EyeOff, Eye, Save, X } from 'lucide-react'
 
+interface ActionModalProps {
+    isOpen: boolean
+    onClose: () => void
+    onConfirm: () => void
+    title: string
+    message: string
+    confirmText: string
+    isDestructive?: boolean
+    requireDoubleConfirm?: boolean
+}
+
 export function ActionModal({
     isOpen,
     onClose,
@@ -13,8 +24,8 @@ export function ActionModal({
     confirmText,
     isDestructive = false,
     requireDoubleConfirm = false
-}) {
-    const [step, setStep] = useState(1)
+}: ActionModalProps) {
+    const [step, setStep] = useState<number>(1)
 
     // Reset step when opened
     if (!isOpen && step !== 1) {

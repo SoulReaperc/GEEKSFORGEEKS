@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import Squares from "./components/Squares";
 
-export default function Error({ error, reset }) {
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
     useEffect(() => {
         console.error("Application Error:", error);
     }, [error]);

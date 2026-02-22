@@ -6,17 +6,23 @@ import EditEventClient from './EditEventClient'
 export const dynamic = 'force-dynamic'
 
 // Helper function to extract plain text from RichText document
-function extractTextFromRichText(richText) {
+interface RichTextNode {
+    nodeType?: string
+    value?: string
+    content?: RichTextNode[]
+}
+
+function extractTextFromRichText(richText: string | RichTextNode | null | undefined): string {
     if (!richText || typeof richText === 'string') {
         return richText || ''
     }
 
     if (richText.content && Array.isArray(richText.content)) {
         return richText.content
-            .map(node => {
+            .map((node: RichTextNode) => {
                 if (node.content && Array.isArray(node.content)) {
                     return node.content
-                        .map(textNode => textNode.value || '')
+                        .map((textNode: RichTextNode) => textNode.value || '')
                         .join('')
                 }
                 return ''
@@ -27,44 +33,58 @@ function extractTextFromRichText(richText) {
     return ''
 }
 
-async function getEventWithAssets(id) {
+interface ContentfulAssetData {
+    sys: { id: string }
+    fields: {
+        title?: string
+        file?: { url?: string }
+    }
+}
+
+interface EventWithAssets {
+    entry: Record<string, unknown> & { fields: Record<string, Record<string, unknown>> }
+    coverImageAsset: ContentfulAssetData | null
+    galleryImageAssets: ContentfulAssetData[]
+}
+
+async function getEventWithAssets(id: string): Promise<EventWithAssets | null> {
     try {
         const space = await contentfulManagementClient.getSpace(SPACE_ID)
         const environment = await space.getEnvironment(ENVIRONMENT_ID)
         const entry = await environment.getEntry(id)
 
-        let coverImageAsset = null;
+        let coverImageAsset: ContentfulAssetData | null = null;
         if (entry.fields.coverImage?.['en-US']?.sys?.id) {
             try {
                 const asset = await environment.getAsset(entry.fields.coverImage['en-US'].sys.id)
                 coverImageAsset = {
-                    sys: asset.sys,
+                    sys: { id: asset.sys.id },
                     fields: {
                         title: asset.fields.title?.['en-US'],
                         file: asset.fields.file?.['en-US']
                     }
                 }
-            } catch (e) {
+            } catch (e: unknown) {
                 console.error("Cover image fetch error", e)
             }
         }
 
-        let galleryImageAssets = [];
+        let galleryImageAssets: ContentfulAssetData[] = [];
         const galleryLinks = entry.fields.galleryImages?.['en-US'] || [];
 
         galleryImageAssets = (await Promise.all(
-            galleryLinks.map(async (link) => {
+            galleryLinks.map(async (link: { sys?: { id?: string } }) => {
                 if (link.sys?.id) {
                     try {
                         const asset = await environment.getAsset(link.sys.id)
                         return {
-                            sys: asset.sys,
+                            sys: { id: asset.sys.id },
                             fields: {
                                 title: asset.fields.title?.['en-US'],
                                 file: asset.fields.file?.['en-US']
                             }
                         }
-                    } catch (e) {
+                    } catch (e: unknown) {
                         return null
                     }
                 }
@@ -72,14 +92,14 @@ async function getEventWithAssets(id) {
             })
         )).filter(Boolean)
 
-        return { entry, coverImageAsset, galleryImageAssets }
-    } catch (error) {
+        return { entry: entry as unknown as Record<string, unknown> & { fields: Record<string, Record<string, unknown>> }, coverImageAsset, galleryImageAssets }
+    } catch (error: unknown) {
         console.error("Error fetching event for edit:", error)
         return null
     }
 }
 
-export default async function EditEventPage({ params }) {
+export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
     const eventData = await getEventWithAssets(id)
 
@@ -91,21 +111,21 @@ export default async function EditEventPage({ params }) {
     const { title, date, venue, registrationLink, description, isRegOpen, noMembers } = entry.fields
 
     // Extract plain text from RichText fields
-    const registrationLinkText = extractTextFromRichText(registrationLink?.['en-US'])
-    const descriptionText = extractTextFromRichText(description?.['en-US'])
+    const registrationLinkText = extractTextFromRichText(registrationLink?.['en-US'] as string | RichTextNode | null | undefined)
+    const descriptionText = extractTextFromRichText(description?.['en-US'] as string | RichTextNode | null | undefined)
 
     // Format date for input (YYYY-MM-DD)
-    const rawDate = date?.['en-US']
-    const formattedDate = rawDate ? new Date(rawDate).toISOString().split('T')[0] : ''
+    const rawDate = date?.['en-US'] as string | undefined
+    const formattedDate = rawDate ? (new Date(rawDate).toISOString().split('T')[0] ?? '') : ''
 
     const initialData = {
-        title: title?.['en-US'] || '',
+        title: (title?.['en-US'] as string) || '',
         date: formattedDate,
-        venue: venue?.['en-US'] || '',
+        venue: (venue?.['en-US'] as string) || '',
         registrationLink: registrationLinkText,
         description: descriptionText,
-        isRegOpen: isRegOpen?.['en-US'] || false,
-        noMembers: noMembers?.['en-US'] || '',
+        isRegOpen: (isRegOpen?.['en-US'] as boolean) || false,
+        noMembers: noMembers?.['en-US'] as number | '',
     }
 
     return (

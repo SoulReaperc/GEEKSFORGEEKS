@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { fetchRegistrations, deleteRegistration } from './actions'
+import { exportODListExcel } from '@/lib/exportODList'
 import { Download, Search, Filter, Trash2, Users, FileText, Eye, Calendar, Building2, FileDown, ClipboardList } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import jsPDF from 'jspdf'
@@ -9,13 +10,43 @@ import autoTable from 'jspdf-autotable'
 
 import { createPortal } from 'react-dom'
 
-export default function RegistrationsManager({ initialData = [] }) {
-    const [registrations, setRegistrations] = useState(initialData)
-    const [loading, setLoading] = useState(false)
-    const [startDate, setStartDate] = useState('')
-    const [endDate, setEndDate] = useState('')
-    const [searchTerm, setSearchTerm] = useState('')
-    const [selectedRegistration, setSelectedRegistration] = useState(null)
+interface TeamMember {
+    name?: string
+    reg_no?: string
+    email_id?: string
+    phone_number?: string
+    branch?: string
+    year?: string
+    section?: string
+    role?: string
+}
+
+interface Registration {
+    id: string
+    event_name?: string
+    team_name?: string
+    college_name?: string
+    member_count?: number
+    leader_name?: string
+    leader_email?: string
+    project_idea?: string
+    project_description?: string
+    members?: TeamMember[]
+    created_at?: string
+}
+
+interface RegistrationsManagerProps {
+    initialData?: Registration[]
+}
+
+export default function RegistrationsManager({ initialData = [] }: RegistrationsManagerProps) {
+    const [registrations, setRegistrations] = useState<Registration[]>(initialData)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [startDate, setStartDate] = useState<string>('')
+    const [endDate, setEndDate] = useState<string>('')
+    const [searchTerm, setSearchTerm] = useState<string>('')
+    const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null)
+    const [selectedEventFilter, setSelectedEventFilter] = useState<string>('')
     const router = useRouter()
 
     useEffect(() => {
@@ -38,7 +69,7 @@ export default function RegistrationsManager({ initialData = [] }) {
         try {
             const data = await fetchRegistrations(startDate, endDate)
             setRegistrations(data)
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error fetching registrations:', error)
             alert('Failed to fetch registration data')
         } finally {
@@ -46,7 +77,7 @@ export default function RegistrationsManager({ initialData = [] }) {
         }
     }
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this registration?')) return
 
         try {
@@ -57,7 +88,7 @@ export default function RegistrationsManager({ initialData = [] }) {
                 setRegistrations(prev => prev.filter(item => item.id !== id))
                 router.refresh()
             }
-        } catch (error) {
+        } catch (error: unknown) {
             alert('Failed to delete registration')
         }
     }
@@ -161,7 +192,7 @@ export default function RegistrationsManager({ initialData = [] }) {
         })
 
         // Add page numbers
-        const pageCount = doc.internal.getNumberOfPages()
+        const pageCount = (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages()
         for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i)
             doc.setFontSize(10)
@@ -471,7 +502,7 @@ export default function RegistrationsManager({ initialData = [] }) {
                             )}
 
                             <div className="pt-4 border-t border-white/10">
-                                <p className="text-white/40 text-sm">Registered on {new Date(selectedRegistration.created_at).toLocaleString()}</p>
+                                <p className="text-white/40 text-sm">Registered on {selectedRegistration.created_at ? new Date(selectedRegistration.created_at).toLocaleString() : 'N/A'}</p>
                             </div>
                         </div>
                     </div>

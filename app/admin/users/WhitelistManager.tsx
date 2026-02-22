@@ -5,14 +5,23 @@ import { addToWhitelist, removeFromWhitelist } from './actions';
 import { Trash2, Plus, UserCheck, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export default function WhitelistManager({ initialData }) {
-    const [whitelist, setWhitelist] = useState(initialData || []);
-    const [newEmail, setNewEmail] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+interface WhitelistEntry {
+    email: string;
+    created_at: string;
+}
+
+interface WhitelistManagerProps {
+    initialData: WhitelistEntry[];
+}
+
+export default function WhitelistManager({ initialData }: WhitelistManagerProps) {
+    const [whitelist, setWhitelist] = useState<WhitelistEntry[]>(initialData || []);
+    const [newEmail, setNewEmail] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
     const router = useRouter();
 
-    const handleAdd = async (e) => {
+    const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!newEmail) return;
 
@@ -31,14 +40,14 @@ export default function WhitelistManager({ initialData }) {
                 // We'll also update local state to feel instant
                 setWhitelist(prev => [{ email: newEmail, created_at: new Date().toISOString() }, ...prev]);
             }
-        } catch (err) {
+        } catch (err: unknown) {
             setError('Failed to add email');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleRemove = async (email) => {
+    const handleRemove = async (email: string) => {
         if (!confirm(`Remove ${email} from whitelist?`)) return;
 
         try {
@@ -49,7 +58,7 @@ export default function WhitelistManager({ initialData }) {
                 setWhitelist(prev => prev.filter(item => item.email !== email));
                 router.refresh();
             }
-        } catch (err) {
+        } catch (err: unknown) {
             alert('Failed to remove email');
         }
     };
@@ -140,7 +149,7 @@ export default function WhitelistManager({ initialData }) {
                         <tbody className="divide-y divide-white/5">
                             {whitelist.length === 0 ? (
                                 <tr>
-                                    <td colSpan="3" className="px-6 py-12 text-center">
+                                    <td colSpan={3} className="px-6 py-12 text-center">
                                         <div className="flex flex-col items-center gap-4">
                                             <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
                                                 <UserCheck className="w-8 h-8 text-white/20" />
