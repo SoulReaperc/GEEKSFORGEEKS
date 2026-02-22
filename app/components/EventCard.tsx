@@ -1,135 +1,145 @@
-import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react';
-import moment from 'moment';
-import Link from 'next/link';
-import TiltedCard from './TiltedCard';
-import PixelCard from './PixelCard';
-import ShapeBlur from './ShapeBlur';
+import { ArrowRight, Calendar, Clock, MapPin } from "lucide-react";
+import moment from "moment";
+import Link from "next/link";
+import PixelCard from "./PixelCard";
+import ShapeBlur from "./ShapeBlur";
+import TiltedCard from "./TiltedCard";
 
 // Helper function to extract plain text from RichText document
 function extractTextFromRichText(richText: any) {
-    if (!richText || typeof richText === 'string') {
-        return richText || '';
-    }
+	if (!richText || typeof richText === "string") {
+		return richText || "";
+	}
 
-    if (richText.content && Array.isArray(richText.content)) {
-        return richText.content
-            .map((node: any) => {
-                if (node.content && Array.isArray(node.content)) {
-                    return node.content
-                        .map((textNode: any) => textNode.value || '')
-                        .join('');
-                }
-                return '';
-            })
-            .join('\n');
-    }
+	if (richText.content && Array.isArray(richText.content)) {
+		return richText.content
+			.map((node: any) => {
+				if (node.content && Array.isArray(node.content)) {
+					return node.content
+						.map((textNode: any) => textNode.value || "")
+						.join("");
+				}
+				return "";
+			})
+			.join("\n");
+	}
 
-    return '';
+	return "";
 }
 
 // Helper function to generate slug from title
 function generateSlug(title: string) {
-    return title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+	return title
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
 }
 
 export default function EventCard({ event }: { event: any }) {
-    const { title, slug, date, venue, coverImage, registrationLink } = event.fields;
-    const imageUrl = coverImage?.fields?.file?.url ? `https:${coverImage.fields.file.url}` : '/placeholder.jpg';
+	const { title, slug, date, venue, coverImage, registrationLink } =
+		event.fields;
+	const imageUrl = coverImage?.fields?.file?.url
+		? `https:${coverImage.fields.file.url}`
+		: "/placeholder.jpg";
 
-    const isCompleted = moment(date).isBefore(moment());
-    const isUpcoming = moment(date).isAfter(moment());
+	const isCompleted = moment(date).isBefore(moment());
+	const isUpcoming = moment(date).isAfter(moment());
 
-    // Generate slug if it doesn't exist (for old events)
-    const eventSlug = slug || generateSlug(title);
+	// Generate slug if it doesn't exist (for old events)
+	const eventSlug = slug || generateSlug(title);
 
-    // Extract registration link from RichText
-    const regLink = extractTextFromRichText(registrationLink);
-    const hasExternalLink = regLink && regLink.trim() !== '';
-    const registrationUrl = hasExternalLink
-        ? regLink
-        : `/pages/events/team-register?event=${encodeURIComponent(title)}&slug=${eventSlug}`;
+	// Extract registration link from RichText
+	const regLink = extractTextFromRichText(registrationLink);
+	const hasExternalLink = regLink && regLink.trim() !== "";
+	const registrationUrl = hasExternalLink
+		? regLink
+		: `/pages/events/team-register?event=${encodeURIComponent(title)}&slug=${eventSlug}`;
 
-    return (
-        <div className="block relative group w-full" style={{ maxWidth: '380px', minWidth: '320px' }}>
-            <div className="relative w-full">
-                {/* ShapeBlur Background Effect */}
-                <div className="absolute -inset-4 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl">
+	return (
+		<div
+			className="block relative group w-full"
+			style={{ maxWidth: "380px", minWidth: "320px" }}
+		>
+			<div className="relative w-full">
+				{/* ShapeBlur Background Effect */}
+				<div className="absolute -inset-4 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
 
-                </div>
+				<TiltedCard
+					containerHeight="auto"
+					containerWidth="100%"
+					imageHeight="auto"
+					imageWidth="100%"
+					rotateAmplitude={8}
+					scaleOnHover={1.02}
+					showMobileWarning={false}
+					showTooltip={false}
+					displayOverlayContent={false}
+				>
+					<div className="flex flex-col h-full bg-[#0a0a0a] border border-white/10 rounded-[25px] overflow-hidden">
+						{/* Fixed height banner */}
+						<Link
+							href={`/pages/events/${eventSlug}`}
+							className="relative w-full block h-[240px]"
+						>
+							<PixelCard
+								variant="default"
+								gap={8}
+								speed={30}
+								colors="#46b94e,#2f8d46,#1a5c2e"
+								noFocus={true}
+								className="w-full h-full !rounded-b-none"
+							>
+								<img
+									src={imageUrl}
+									alt={title}
+									className="w-full h-full object-cover"
+								/>
+							</PixelCard>
+						</Link>
 
-                <TiltedCard
-                    containerHeight="auto"
-                    containerWidth="100%"
-                    imageHeight="auto"
-                    imageWidth="100%"
-                    rotateAmplitude={8}
-                    scaleOnHover={1.02}
-                    showMobileWarning={false}
-                    showTooltip={false}
-                    displayOverlayContent={false}
-                >
-                    <div className="flex flex-col h-full bg-[#0a0a0a] border border-white/10 rounded-[25px] overflow-hidden">
-                        {/* Fixed height banner */}
-                        <Link href={`/pages/events/${eventSlug}`} className="relative w-full block h-[240px]">
-                            <PixelCard
-                                variant="default"
-                                gap={8}
-                                speed={30}
-                                colors="#46b94e,#2f8d46,#1a5c2e"
-                                noFocus={true}
-                                className="w-full h-full !rounded-b-none"
-                            >
-                                <img
-                                    src={imageUrl}
-                                    alt={title}
-                                    className="w-full h-full object-cover"
-                                />
-                            </PixelCard>
-                        </Link>
+						<div className="p-6 flex flex-col gap-4">
+							<Link href={`/pages/events/${eventSlug}`}>
+								<h3 className="text-2xl font-bold text-white font-sf-pro leading-tight hover:text-[#46b94e] transition-colors">
+									{title}
+								</h3>
+							</Link>
 
-                        <div className="p-6 flex flex-col gap-4">
-                            <Link href={`/pages/events/${eventSlug}`}>
-                                <h3 className="text-2xl font-bold text-white font-sf-pro leading-tight hover:text-[#46b94e] transition-colors">{title}</h3>
-                            </Link>
+							<div className="space-y-2">
+								<div className="flex items-center gap-2 text-gray-300 font-sf-pro text-sm">
+									<Calendar size={14} className="text-[#46b94e]" />
+									{moment(date).format("MMM D, YYYY")}
+								</div>
+								<div className="flex items-center gap-2 text-gray-300 font-sf-pro text-sm">
+									<Clock size={14} className="text-[#46b94e]" />
+									{moment(date).format("h:mm A")}
+								</div>
+								<div className="flex items-center gap-2 text-gray-300 font-sf-pro text-sm">
+									<MapPin size={14} className="text-[#46b94e]" />
+									{venue}
+								</div>
+							</div>
 
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-gray-300 font-sf-pro text-sm">
-                                    <Calendar size={14} className="text-[#46b94e]" />
-                                    {moment(date).format('MMM D, YYYY')}
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-300 font-sf-pro text-sm">
-                                    <Clock size={14} className="text-[#46b94e]" />
-                                    {moment(date).format('h:mm A')}
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-300 font-sf-pro text-sm">
-                                    <MapPin size={14} className="text-[#46b94e]" />
-                                    {venue}
-                                </div>
-                            </div>
+							<div className="mt-auto flex flex-col gap-3">
+								<Link
+									href={`/pages/events/${eventSlug}`}
+									className="flex items-center gap-2 text-[#46b94e] font-medium font-sf-pro text-sm group-hover:translate-x-1 transition-transform"
+								>
+									View Details <ArrowRight size={16} />
+								</Link>
 
-                            <div className="mt-auto flex flex-col gap-3">
-                                <Link href={`/pages/events/${eventSlug}`} className="flex items-center gap-2 text-[#46b94e] font-medium font-sf-pro text-sm group-hover:translate-x-1 transition-transform">
-                                    View Details <ArrowRight size={16} />
-                                </Link>
-
-
-
-                                {isCompleted && (
-                                    <Link
-                                        href={`/pages/events/${eventSlug}/gallery`}
-                                        className="w-full flex items-center justify-center gap-2 bg-white/10 text-white font-bold py-2.5 rounded-xl hover:bg-white/20 transition-all border border-white/20 hover:border-white/40 font-sf-pro text-sm"
-                                    >
-                                        View Gallery
-                                    </Link>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </TiltedCard>
-            </div>
-        </div>
-    );
+								{isCompleted && (
+									<Link
+										href={`/pages/events/${eventSlug}/gallery`}
+										className="w-full flex items-center justify-center gap-2 bg-white/10 text-white font-bold py-2.5 rounded-xl hover:bg-white/20 transition-all border border-white/20 hover:border-white/40 font-sf-pro text-sm"
+									>
+										View Gallery
+									</Link>
+								)}
+							</div>
+						</div>
+					</div>
+				</TiltedCard>
+			</div>
+		</div>
+	);
 }

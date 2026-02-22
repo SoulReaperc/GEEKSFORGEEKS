@@ -1,4 +1,4 @@
-declare module '*.jsx' {
-    const Component: React.ComponentType;
-    export default Component;
+declare module "*.jsx" {
+	const Component: React.ComponentType;
+	export default Component;
 }

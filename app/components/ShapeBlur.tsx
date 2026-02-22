@@ -1,6 +1,6 @@
 "use client";
-import { useRef, useEffect } from 'react';
-import * as THREE from 'three';
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 const vertexShader = /* glsl */ `
 varying vec2 v_texcoord;
@@ -127,130 +127,143 @@ void main() {
 `;
 
 const ShapeBlur = ({
-  className = '',
-  variation = 0,
-  pixelRatioProp = 2,
-  shapeSize = 1.2,
-  roundness = 0.4,
-  borderSize = 0.05,
-  circleSize = 0.3,
-  circleEdge = 0.5
+	className = "",
+	variation = 0,
+	pixelRatioProp = 2,
+	shapeSize = 1.2,
+	roundness = 0.4,
+	borderSize = 0.05,
+	circleSize = 0.3,
+	circleEdge = 0.5,
 }: {
-  className?: string;
-  variation?: number;
-  pixelRatioProp?: number;
-  shapeSize?: number;
-  roundness?: number;
-  borderSize?: number;
-  circleSize?: number;
-  circleEdge?: number;
+	className?: string;
+	variation?: number;
+	pixelRatioProp?: number;
+	shapeSize?: number;
+	roundness?: number;
+	borderSize?: number;
+	circleSize?: number;
+	circleEdge?: number;
 }) => {
-  const mountRef = useRef<HTMLDivElement>(null);
+	const mountRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const mount = mountRef.current;
-    let animationFrameId: number;
-    let time = 0,
-      lastTime = 0;
+	useEffect(() => {
+		const mount = mountRef.current;
+		let animationFrameId: number;
+		let time = 0,
+			lastTime = 0;
 
-    const vMouse = new THREE.Vector2();
-    const vMouseDamp = new THREE.Vector2();
-    const vResolution = new THREE.Vector2();
+		const vMouse = new THREE.Vector2();
+		const vMouseDamp = new THREE.Vector2();
+		const vResolution = new THREE.Vector2();
 
-    let w = 1,
-      h = 1;
+		let w = 1,
+			h = 1;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera();
-    camera.position.z = 1;
+		const scene = new THREE.Scene();
+		const camera = new THREE.OrthographicCamera();
+		camera.position.z = 1;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setClearColor(0x000000, 0);
-    if (!mount) return;
-    mount.appendChild(renderer.domElement);
+		const renderer = new THREE.WebGLRenderer({ alpha: true });
+		renderer.setClearColor(0x000000, 0);
+		if (!mount) return;
+		mount.appendChild(renderer.domElement);
 
-    const geo = new THREE.PlaneGeometry(1, 1);
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms: {
-        u_mouse: { value: vMouseDamp },
-        u_resolution: { value: vResolution },
-        u_pixelRatio: { value: pixelRatioProp },
-        u_shapeSize: { value: shapeSize },
-        u_roundness: { value: roundness },
-        u_borderSize: { value: borderSize },
-        u_circleSize: { value: circleSize },
-        u_circleEdge: { value: circleEdge }
-      },
-      defines: { VAR: variation },
-      transparent: true
-    });
+		const geo = new THREE.PlaneGeometry(1, 1);
+		const material = new THREE.ShaderMaterial({
+			vertexShader,
+			fragmentShader,
+			uniforms: {
+				u_mouse: { value: vMouseDamp },
+				u_resolution: { value: vResolution },
+				u_pixelRatio: { value: pixelRatioProp },
+				u_shapeSize: { value: shapeSize },
+				u_roundness: { value: roundness },
+				u_borderSize: { value: borderSize },
+				u_circleSize: { value: circleSize },
+				u_circleEdge: { value: circleEdge },
+			},
+			defines: { VAR: variation },
+			transparent: true,
+		});
 
-    const quad = new THREE.Mesh(geo, material);
-    scene.add(quad);
+		const quad = new THREE.Mesh(geo, material);
+		scene.add(quad);
 
-    const onPointerMove = (e: MouseEvent) => {
-      const rect = mount!.getBoundingClientRect();
-      vMouse.set(e.clientX - rect.left, e.clientY - rect.top);
-    };
+		const onPointerMove = (e: MouseEvent) => {
+			const rect = mount!.getBoundingClientRect();
+			vMouse.set(e.clientX - rect.left, e.clientY - rect.top);
+		};
 
-    document.addEventListener('mousemove', onPointerMove);
-    document.addEventListener('pointermove', onPointerMove);
+		document.addEventListener("mousemove", onPointerMove);
+		document.addEventListener("pointermove", onPointerMove);
 
-    const resize = () => {
-      const container = mountRef.current;
-      if (!container) return;
-      w = container.clientWidth;
-      h = container.clientHeight;
-      const dpr = Math.min(window.devicePixelRatio, 2);
+		const resize = () => {
+			const container = mountRef.current;
+			if (!container) return;
+			w = container.clientWidth;
+			h = container.clientHeight;
+			const dpr = Math.min(window.devicePixelRatio, 2);
 
-      renderer.setSize(w, h);
-      renderer.setPixelRatio(dpr);
+			renderer.setSize(w, h);
+			renderer.setPixelRatio(dpr);
 
-      camera.left = -w / 2;
-      camera.right = w / 2;
-      camera.top = h / 2;
-      camera.bottom = -h / 2;
-      camera.updateProjectionMatrix();
+			camera.left = -w / 2;
+			camera.right = w / 2;
+			camera.top = h / 2;
+			camera.bottom = -h / 2;
+			camera.updateProjectionMatrix();
 
-      quad.scale.set(w, h, 1);
-      vResolution.set(w, h).multiplyScalar(dpr);
-      material.uniforms.u_pixelRatio!.value = dpr;
-    };
+			quad.scale.set(w, h, 1);
+			vResolution.set(w, h).multiplyScalar(dpr);
+			material.uniforms.u_pixelRatio!.value = dpr;
+		};
 
-    resize();
-    window.addEventListener('resize', resize);
+		resize();
+		window.addEventListener("resize", resize);
 
-    const ro = new ResizeObserver(() => resize());
-    if (mountRef.current) ro.observe(mountRef.current);
+		const ro = new ResizeObserver(() => resize());
+		if (mountRef.current) ro.observe(mountRef.current);
 
-    const update = () => {
-      time = performance.now() * 0.001;
-      const dt = time - lastTime;
-      lastTime = time;
+		const update = () => {
+			time = performance.now() * 0.001;
+			const dt = time - lastTime;
+			lastTime = time;
 
-      ['x', 'y'].forEach((k: string) => {
-        (vMouseDamp as any)[k] = THREE.MathUtils.damp((vMouseDamp as any)[k], (vMouse as any)[k], 8, dt);
-      });
+			["x", "y"].forEach((k: string) => {
+				(vMouseDamp as any)[k] = THREE.MathUtils.damp(
+					(vMouseDamp as any)[k],
+					(vMouse as any)[k],
+					8,
+					dt,
+				);
+			});
 
-      renderer.render(scene, camera);
-      animationFrameId = requestAnimationFrame(update);
-    };
-    update();
+			renderer.render(scene, camera);
+			animationFrameId = requestAnimationFrame(update);
+		};
+		update();
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', resize);
-      if (ro) ro.disconnect();
-      document.removeEventListener('mousemove', onPointerMove);
-      document.removeEventListener('pointermove', onPointerMove);
-      mount!.removeChild(renderer.domElement);
-      renderer.dispose();
-    };
-  }, [variation, pixelRatioProp, shapeSize, roundness, borderSize, circleSize, circleEdge]);
+		return () => {
+			cancelAnimationFrame(animationFrameId);
+			window.removeEventListener("resize", resize);
+			if (ro) ro.disconnect();
+			document.removeEventListener("mousemove", onPointerMove);
+			document.removeEventListener("pointermove", onPointerMove);
+			mount!.removeChild(renderer.domElement);
+			renderer.dispose();
+		};
+	}, [
+		variation,
+		pixelRatioProp,
+		shapeSize,
+		roundness,
+		borderSize,
+		circleSize,
+		circleEdge,
+	]);
 
-  return <div ref={mountRef} className={`w-full h-full ${className}`} />;
+	return <div ref={mountRef} className={`w-full h-full ${className}`} />;
 };
 
 export default ShapeBlur;

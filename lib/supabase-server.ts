@@ -1,55 +1,61 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function createClient() {
-    const cookieStore = await cookies()
+	const cookieStore = await cookies();
 
-    return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return cookieStore.getAll()
-                },
-                setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
-                    try {
-                        cookiesToSet.forEach(({ name, value, options }) =>
-                            cookieStore.set(name, value, options)
-                        )
-                    } catch {
-                        // The `setAll` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
-                    }
-                },
-            },
-            cookieOptions:{
-                maxAge: 60 * 60 * 24 // 1 day
-            }
-        }
-    )
+	return createServerClient(
+		process.env.NEXT_PUBLIC_SUPABASE_URL!,
+		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+		{
+			cookies: {
+				getAll() {
+					return cookieStore.getAll();
+				},
+				setAll(
+					cookiesToSet: Array<{
+						name: string;
+						value: string;
+						options?: CookieOptions;
+					}>,
+				) {
+					try {
+						cookiesToSet.forEach(({ name, value, options }) =>
+							cookieStore.set(name, value, options),
+						);
+					} catch {
+						// The `setAll` method was called from a Server Component.
+						// This can be ignored if you have middleware refreshing
+						// user sessions.
+					}
+				},
+			},
+			cookieOptions: {
+				maxAge: 60 * 60 * 24, // 1 day
+			},
+		},
+	);
 }
 
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export async function createAdminClient() {
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+	const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!serviceRoleKey) {
-        console.error('SUPABASE_SERVICE_ROLE_KEY is missing')
-        throw new Error('SUPABASE_SERVICE_ROLE_KEY is not defined')
-    }
+	if (!serviceRoleKey) {
+		console.error("SUPABASE_SERVICE_ROLE_KEY is missing");
+		throw new Error("SUPABASE_SERVICE_ROLE_KEY is not defined");
+	}
 
-    return createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        serviceRoleKey,
-        {
-            auth: {
-                persistSession: false,
-                autoRefreshToken: false,
-                detectSessionInUrl: false
-            }
-        }
-    )
+	return createSupabaseClient(
+		process.env.NEXT_PUBLIC_SUPABASE_URL!,
+		serviceRoleKey,
+		{
+			auth: {
+				persistSession: false,
+				autoRefreshToken: false,
+				detectSessionInUrl: false,
+			},
+		},
+	);
 }

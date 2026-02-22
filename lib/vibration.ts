@@ -9,45 +9,41 @@ type VibrationPattern = number | number[];
  * Trigger a vibration effect on the device
  */
 export function triggerVibration(pattern: VibrationPattern = 50): void {
-  // Check if Vibration API is supported
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    try {
-      navigator.vibrate(pattern);
-    } catch (error) {
-      console.warn('Vibration API error:', error);
-    }
-  }
+	// Check if Vibration API is supported
+	if (typeof navigator !== "undefined" && navigator.vibrate) {
+		try {
+			navigator.vibrate(pattern);
+		} catch (error) {
+			console.warn("Vibration API error:", error);
+		}
+	}
 }
 
-
 export function vibrateLightClick() {
-  triggerVibration(30);
+	triggerVibration(30);
 }
 
 export function vibrateMediumClick() {
-  triggerVibration(50);
+	triggerVibration(50);
 }
-
 
 export function vibrateHeavyClick() {
-  triggerVibration([50, 50, 50]);
+	triggerVibration([50, 50, 50]);
 }
-
 
 export function vibrateSuccess() {
-  triggerVibration([50, 100, 50]);
+	triggerVibration([50, 100, 50]);
 }
 
-
 export function vibrateWarning() {
-  triggerVibration([100, 50, 100]);
+	triggerVibration([100, 50, 100]);
 }
 
 export default {
-  triggerVibration,
-  vibrateLightClick,
-  vibrateMediumClick,
-  vibrateHeavyClick,
-  vibrateSuccess,
-  vibrateWarning,
+	triggerVibration,
+	vibrateLightClick,
+	vibrateMediumClick,
+	vibrateHeavyClick,
+	vibrateSuccess,
+	vibrateWarning,
 };

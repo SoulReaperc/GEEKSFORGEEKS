@@ -1,56 +1,61 @@
-import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
-import { findSubscriberByEmail, createSubscriber } from '@/lib/repositories/newsletter.repository';
-import { handleApiError, ValidationError } from '@/lib/middleware/error.middleware';
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
+import {
+	handleApiError,
+	ValidationError,
+} from "@/lib/middleware/error.middleware";
+import {
+	createSubscriber,
+	findSubscriberByEmail,
+} from "@/lib/repositories/newsletter.repository";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(request:  Request) {
-    try {
-        const { email } = await request.json();
+export async function POST(request: Request) {
+	try {
+		const { email } = await request.json();
 
-        if (!email || ! email.includes('@')) {
-            throw new ValidationError('Valid email is required');
-        }
+		if (!email || !email.includes("@")) {
+			throw new ValidationError("Valid email is required");
+		}
 
-        // Check if already subscribed
-        const existing = await findSubscriberByEmail(email);
+		// Check if already subscribed
+		const existing = await findSubscriberByEmail(email);
 
-        if (existing) {
-            if (existing.is_active && existing.confirmed) {
-                return NextResponse.json(
-                    { error: 'This email is already subscribed!' },
-                    { status: 400 }
-                );
-            } else if (existing.is_active && !existing.confirmed) {
-                await sendConfirmationEmail(email, existing.unsubscribe_token);
-                return NextResponse.json({
-                    message: 'Confirmation email resent!  Please check your inbox.',
-                });
-            }
-        }
+		if (existing) {
+			if (existing.is_active && existing.confirmed) {
+				return NextResponse.json(
+					{ error: "This email is already subscribed!" },
+					{ status: 400 },
+				);
+			} else if (existing.is_active && !existing.confirmed) {
+				await sendConfirmationEmail(email, existing.unsubscribe_token);
+				return NextResponse.json({
+					message: "Confirmation email resent!  Please check your inbox.",
+				});
+			}
+		}
 
-        const newSubscriber = await createSubscriber(email);
-        await sendConfirmationEmail(email, newSubscriber.unsubscribe_token);
+		const newSubscriber = await createSubscriber(email);
+		await sendConfirmationEmail(email, newSubscriber.unsubscribe_token);
 
-        return NextResponse.json({
-            message: 'Success! Please check your email to confirm your subscription.',
-        });
-
-    } catch (error: unknown) {
-        return handleApiError(error);
-    }
+		return NextResponse.json({
+			message: "Success! Please check your email to confirm your subscription.",
+		});
+	} catch (error: unknown) {
+		return handleApiError(error);
+	}
 }
 
-async function sendConfirmationEmail(email:  string, token: string) {
-    const confirmUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/newsletter/confirm? token=${token}`;
-    
-    try {
-        await resend.emails.send({
-            from: `${process.env.NEWSLETTER_FROM_NAME || 'GFG SRMIST'} <${process.env.NEWSLETTER_FROM_EMAIL || 'newsletter@gfgsrmist.com'}>`,
-            to: email,
-            subject: 'Confirm Your Newsletter Subscription',
-            html: `
+async function sendConfirmationEmail(email: string, token: string) {
+	const confirmUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/newsletter/confirm? token=${token}`;
+
+	try {
+		await resend.emails.send({
+			from: `${process.env.NEWSLETTER_FROM_NAME || "GFG SRMIST"} <${process.env.NEWSLETTER_FROM_EMAIL || "newsletter@gfgsrmist.com"}>`,
+			to: email,
+			subject: "Confirm Your Newsletter Subscription",
+			html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -87,9 +92,9 @@ async function sendConfirmationEmail(email:  string, token: string) {
                 </body>
                 </html>
             `,
-        });
-    } catch (error) {
-        console.error('Failed to send confirmation email:', error);
-        throw error;
-    }
+		});
+	} catch (error) {
+		console.error("Failed to send confirmation email:", error);
+		throw error;
+	}
 }

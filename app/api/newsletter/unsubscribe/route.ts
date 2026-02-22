@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server';
-import { unsubscribe } from '@/lib/repositories/newsletter.repository';
+import { NextResponse } from "next/server";
+import { unsubscribe } from "@/lib/repositories/newsletter.repository";
 
 export async function GET(request: Request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const token = searchParams.get('token');
+	try {
+		const { searchParams } = new URL(request.url);
+		const token = searchParams.get("token");
 
-        if (!token) {
-            return new NextResponse(
-                `<! DOCTYPE html>
+		if (!token) {
+			return new NextResponse(
+				`<! DOCTYPE html>
                 <html>
                 <head><title>Unsubscribe Error</title></head>
                 <body style="font-family: sans-serif; text-align: center; padding: 50px;">
@@ -16,14 +16,14 @@ export async function GET(request: Request) {
                     <p>Please use the link from your newsletter email. </p>
                 </body>
                 </html>`,
-                { headers: { 'Content-Type':  'text/html' } }
-            );
-        }
+				{ headers: { "Content-Type": "text/html" } },
+			);
+		}
 
-        await unsubscribe(token);
+		await unsubscribe(token);
 
-        return new NextResponse(
-            `<!DOCTYPE html>
+		return new NextResponse(
+			`<!DOCTYPE html>
             <html>
             <head>
                 <title>Unsubscribed</title>
@@ -39,17 +39,16 @@ export async function GET(request: Request) {
                     <h1>✓ Successfully Unsubscribed</h1>
                     <p>You've been unsubscribed from our newsletter.</p>
                     <p>We're sorry to see you go! If you change your mind, you can always subscribe again from our blog page.</p>
-                    <p style="margin-top: 40px;"><a href="${process.env. NEXT_PUBLIC_SITE_URL}/pages/blog">← Back to Blog</a></p>
+                    <p style="margin-top: 40px;"><a href="${process.env.NEXT_PUBLIC_SITE_URL}/pages/blog">← Back to Blog</a></p>
                 </div>
             </body>
             </html>`,
-            { headers: { 'Content-Type': 'text/html' } }
-        );
-
-    } catch (error) {
-        console.error('Unsubscribe error:', error);
-        return new NextResponse(
-            `<!DOCTYPE html>
+			{ headers: { "Content-Type": "text/html" } },
+		);
+	} catch (error) {
+		console.error("Unsubscribe error:", error);
+		return new NextResponse(
+			`<!DOCTYPE html>
             <html>
             <head><title>Error</title></head>
             <body style="font-family: sans-serif; text-align: center; padding: 50px;">
@@ -57,7 +56,7 @@ export async function GET(request: Request) {
                 <p>Something went wrong. Please try again later.</p>
             </body>
             </html>`,
-            { headers: { 'Content-Type': 'text/html' } }
-        );
-    }
+			{ headers: { "Content-Type": "text/html" } },
+		);
+	}
 }

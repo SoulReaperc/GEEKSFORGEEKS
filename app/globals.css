@@ -45,169 +45,169 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0 0 0);
-  --foreground: oklch(87.829% 0.02798 17.502);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+	--radius: 0.625rem;
+	--background: oklch(0 0 0);
+	--foreground: oklch(87.829% 0.02798 17.502);
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.145 0 0);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.145 0 0);
+	--primary: oklch(0.205 0 0);
+	--primary-foreground: oklch(0.985 0 0);
+	--secondary: oklch(0.97 0 0);
+	--secondary-foreground: oklch(0.205 0 0);
+	--muted: oklch(0.97 0 0);
+	--muted-foreground: oklch(0.556 0 0);
+	--accent: oklch(0.97 0 0);
+	--accent-foreground: oklch(0.205 0 0);
+	--destructive: oklch(0.577 0.245 27.325);
+	--border: oklch(0.922 0 0);
+	--input: oklch(0.922 0 0);
+	--ring: oklch(0.708 0 0);
+	--chart-1: oklch(0.646 0.222 41.116);
+	--chart-2: oklch(0.6 0.118 184.704);
+	--chart-3: oklch(0.398 0.07 227.392);
+	--chart-4: oklch(0.828 0.189 84.429);
+	--chart-5: oklch(0.769 0.188 70.08);
+	--sidebar: oklch(0.985 0 0);
+	--sidebar-foreground: oklch(0.145 0 0);
+	--sidebar-primary: oklch(0.205 0 0);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.97 0 0);
+	--sidebar-accent-foreground: oklch(0.205 0 0);
+	--sidebar-border: oklch(0.922 0 0);
+	--sidebar-ring: oklch(0.708 0 0);
 }
 
 /* Add these styles to prevent button width changes */
 .all-letters {
-  font-family: 'SF Pro', monospace !important;
-  letter-spacing: 0.02em !important;
-  display: inline-block !important;
-  min-width: max-content !important;
+	font-family: "SF Pro", monospace !important;
+	letter-spacing: 0.02em !important;
+	display: inline-block !important;
+	min-width: max-content !important;
 }
 
 .encrypted,
 .revealed {
-  font-family: 'SF Pro', monospace !important;
-  letter-spacing: 0.02em !important;
-  display: inline-block !important;
-  transition: none !important;
-  width: auto !important;
+	font-family: "SF Pro", monospace !important;
+	letter-spacing: 0.02em !important;
+	display: inline-block !important;
+	transition: none !important;
+	width: auto !important;
 }
 
 /* Make the logo link look clickable */
 a .logo-container {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 /* added a subtle scale effect on logo hover */
 a:hover .logo-container {
-  transform: scale(1.05);
-  transition: transform 0.2s ease;
+	transform: scale(1.05);
+	transition: transform 0.2s ease;
 }
 
 /* ensure that the logo link doesn't have underline */
 a[href="/"] {
-  text-decoration: none !important;
+	text-decoration: none !important;
 }
 
 /* so it wont flickering*/
 .font-sf-pro {
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: "tnum";
 }
 
 /* Custom breakpoint for 1100px */
 @media (min-width: 1100px) {
-  .custom-desktop\:flex {
-    display: flex !important;
-  }
+	.custom-desktop\:flex {
+		display: flex !important;
+	}
 
-  .custom-desktop\:hidden {
-    display: none !important;
-  }
+	.custom-desktop\:hidden {
+		display: none !important;
+	}
 }
 
 @media (max-width: 1100px) {
-  .custom-desktop\:flex {
-    display: none !important;
-  }
+	.custom-desktop\:flex {
+		display: none !important;
+	}
 
-  .custom-desktop\:hidden {
-    display: flex !important;
-  }
+	.custom-desktop\:hidden {
+		display: flex !important;
+	}
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+	--background: oklch(0.145 0 0);
+	--foreground: oklch(0.985 0 0);
+	--card: oklch(0.205 0 0);
+	--card-foreground: oklch(0.985 0 0);
+	--popover: oklch(0.205 0 0);
+	--popover-foreground: oklch(0.985 0 0);
+	--primary: oklch(0.922 0 0);
+	--primary-foreground: oklch(0.205 0 0);
+	--secondary: oklch(0.269 0 0);
+	--secondary-foreground: oklch(0.985 0 0);
+	--muted: oklch(0.269 0 0);
+	--muted-foreground: oklch(0.708 0 0);
+	--accent: oklch(0.269 0 0);
+	--accent-foreground: oklch(0.985 0 0);
+	--destructive: oklch(0.704 0.191 22.216);
+	--border: oklch(1 0 0 / 10%);
+	--input: oklch(1 0 0 / 15%);
+	--ring: oklch(0.556 0 0);
+	--chart-1: oklch(0.488 0.243 264.376);
+	--chart-2: oklch(0.696 0.17 162.48);
+	--chart-3: oklch(0.769 0.188 70.08);
+	--chart-4: oklch(0.627 0.265 303.9);
+	--chart-5: oklch(0.645 0.246 16.439);
+	--sidebar: oklch(0.205 0 0);
+	--sidebar-foreground: oklch(0.985 0 0);
+	--sidebar-primary: oklch(0.488 0.243 264.376);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.269 0 0);
+	--sidebar-accent-foreground: oklch(0.985 0 0);
+	--sidebar-border: oklch(1 0 0 / 10%);
+	--sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+	* {
+		@apply border-border outline-ring/50;
+	}
 
-  body {
-    @apply bg-background text-foreground;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
+	body {
+		@apply bg-background text-foreground;
+		-webkit-text-size-adjust: 100%;
+		text-size-adjust: 100%;
+	}
 
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: #333 transparent;
-  }
+	/* Smooth scrolling */
+	html {
+		scroll-behavior: smooth;
+		scrollbar-width: thin;
+		scrollbar-color: #333 transparent;
+	}
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+	/* Custom Scrollbar */
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
 
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
 
-  ::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-  }
+	::-webkit-scrollbar-thumb {
+		background: #333;
+		border-radius: 4px;
+		transition: background 0.2s ease;
+	}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
+	::-webkit-scrollbar-thumb:hover {
+		background: #555;
+	}
 }

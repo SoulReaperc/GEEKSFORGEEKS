@@ -6,22 +6,22 @@
  * Standard API response wrapper
  */
 export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
+	success: boolean;
+	data?: T;
+	message?: string;
+	error?: string;
 }
 
 /**
  * Paginated response wrapper
  */
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  pagination: {
-    page: number;
-    perPage: number;
-    total: number;
-    totalPages: number;
-  };
+	pagination: {
+		page: number;
+		perPage: number;
+		total: number;
+		totalPages: number;
+	};
 }
 
 // ============================================
@@ -29,17 +29,17 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 // ============================================
 
 export interface ExecuteCodeRequest {
-  code: string;
-  language: string;
-  problemSlug: string;
-  complexity?: string;
+	code: string;
+	language: string;
+	problemSlug: string;
+	complexity?: string;
 }
 
 export interface SubmitCodeRequest {
-  code: string;
-  language: string;
-  problemSlug: string;
-  complexity?: string;
+	code: string;
+	language: string;
+	problemSlug: string;
+	complexity?: string;
 }
 
 // ============================================
@@ -47,14 +47,14 @@ export interface SubmitCodeRequest {
 // ============================================
 
 export interface AuthenticatedUser {
-  id: string;
-  email: string;
+	id: string;
+	email: string;
 }
 
 /**
  * Server action form state
  */
 export interface ActionState {
-  success: boolean;
-  message: string;
+	success: boolean;
+	message: string;
 }
