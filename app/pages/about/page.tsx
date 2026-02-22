@@ -34,7 +34,7 @@ function AnimatedCounter({ value, duration = 2 }: { value: string | number; dura
 	useEffect(() => {
 		if (!isInView) return;
 		let startTime: DOMHighResTimeStamp | undefined;
-		const targetValue = parseInt(value);
+		const targetValue = parseInt(String(value), 10);
 		const animate = (currentTime: DOMHighResTimeStamp) => {
 			if (!startTime) startTime = currentTime;
 			const progress = Math.min(

@@ -91,7 +91,7 @@ export default function BlogPostPage() {
 			<div className="min-h-screen bg-black flex justify-center items-center text-white">
 				<div className="text-center">
 					<h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
-					<Link href="/pages/blog" className="text-[#46b94e] hover: underline">
+					<Link href="/pages/blog" className="text-[#46b94e] hover:underline">
 						← Back to Blog
 					</Link>
 				</div>
