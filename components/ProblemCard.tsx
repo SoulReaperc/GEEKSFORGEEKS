@@ -12,13 +12,19 @@ import {
 import Link from "next/link";
 import React from "react";
 
+type RichTextNode = {
+	nodeType?: string;
+	value?: string;
+	content?: RichTextNode[];
+};
+
 interface ProblemCardProps {
 	problem: {
 		fields: {
 			title: string;
 			slug: string;
 			difficulty: string;
-			description: any;
+			description: RichTextNode | string | null;
 		};
 	};
 	isSolved: boolean;
@@ -29,16 +35,16 @@ const ProblemCard = ({ problem, isSolved, index }: ProblemCardProps) => {
 	const { title, slug, difficulty, description } = problem.fields;
 
 	// Safely extract text from description (could be Rich Text object or string)
-	const getDescriptionText = (desc: any): string | null => {
+	const getDescriptionText = (desc: RichTextNode | string | null): string | null => {
 		if (!desc) return null;
 		if (typeof desc === "string") return desc;
 
 		// If it's a Rich Text object from Contentful
 		if (desc.content && Array.isArray(desc.content)) {
 			const texts: string[] = [];
-			const extractText = (node: any) => {
+			const extractText = (node: RichTextNode) => {
 				if (node.nodeType === "text") {
-					texts.push(node.value);
+					if (node.value) texts.push(node.value);
 				} else if (node.content && Array.isArray(node.content)) {
 					node.content.forEach(extractText);
 				}

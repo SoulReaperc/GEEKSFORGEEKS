@@ -75,6 +75,7 @@ export default function RecruitmentManager({
 		return "Other";
 	};
 
+	// eslint-disable-next-line react-hooks/preserve-manual-memoization
 	const stats = useMemo((): Record<string, number> => {
 		const counts: Record<string, number> = {
 			"All Domains": recruitments.length,
@@ -93,6 +94,7 @@ export default function RecruitmentManager({
 		return counts;
 	}, [recruitments]);
 
+	// eslint-disable-next-line react-hooks/preserve-manual-memoization
 	const filteredRecruitments = useMemo(() => {
 		return recruitments.filter((r) => {
 			const matchesSearch =

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FiArrowLeft, FiMenu, FiX } from "react-icons/fi";
 import { supabase } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 import { vibrateLightClick } from "@/lib/vibration";
 import UserLoginModal from "../../components/UserLoginModal";
 import { Logo } from "../logo/logo";
@@ -15,7 +16,7 @@ export default function GlassyNavbar() {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	// showLoginOptions state removed
-	const [user, setUser] = useState<any>(null);
+	const [user, setUser] = useState<User | null>(null);
 	const desktopDropdownRef = useRef<HTMLDivElement>(null);
 	const mobileDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +24,7 @@ export default function GlassyNavbar() {
 	const router = useRouter();
 
 	// Use refs to track animation states
-	const animationStatesRef = useRef<Record<number, any>>({});
+	const animationStatesRef = useRef<Record<number, unknown>>({});
 	const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const lastHoverTimeRef = useRef<Record<number, number>>({});
 
