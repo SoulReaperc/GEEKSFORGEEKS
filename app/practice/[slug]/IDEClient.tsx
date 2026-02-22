@@ -21,19 +21,36 @@ import ConsoleOutput from "@/components/ConsoleOutput";
 import UserLoginModal from "@/components/UserLoginModal";
 import { supabase } from "@/lib/supabase";
 
-const IDEClient = ({ problem, initialCode }) => {
+interface ProblemFields {
+	title: string;
+	slug: string;
+	difficulty: string;
+	description?: unknown;
+	starterCode?: Record<string, string>;
+}
+
+interface Problem {
+	fields: ProblemFields;
+}
+
+interface IDEClientProps {
+	problem: Problem;
+	initialCode: string;
+}
+
+const IDEClient = ({ problem, initialCode }: IDEClientProps) => {
 	const [code, setCode] = useState(initialCode);
 	const [language, setLanguage] = useState("javascript");
 	const [isRunning, setIsRunning] = useState(false);
-	const [executionResult, setExecutionResult] = useState(null);
-	const [executionStatus, setExecutionStatus] = useState(null);
-	const [error, setError] = useState(null);
+	const [executionResult, setExecutionResult] = useState<unknown[] | null>(null);
+	const [executionStatus, setExecutionStatus] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null);
 	const [activeTab, setActiveTab] = useState("description"); // description | hints | submissions
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [submissionResult, setSubmissionResult] = useState(null);
+	const [submissionResult, setSubmissionResult] = useState<unknown | null>(null);
 
 	// Check authentication status
 	useEffect(() => {
@@ -62,7 +79,7 @@ const IDEClient = ({ problem, initialCode }) => {
 
 	const starterCodes = problem.fields.starterCode || {};
 
-	const handleLanguageChange = (e) => {
+	const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const newLang = e.target.value;
 		setLanguage(newLang);
 		if (starterCodes[newLang]) {
@@ -146,7 +163,7 @@ const IDEClient = ({ problem, initialCode }) => {
 			setExecutionResult(data.results);
 			setExecutionStatus(data.passed ? "Passed" : "Failed");
 		} catch (err) {
-			setError(err.message);
+			setError((err as Error).message);
 		} finally {
 			setIsRunning(false);
 		}
@@ -178,13 +195,13 @@ const IDEClient = ({ problem, initialCode }) => {
 			setExecutionResult(null);
 			setExecutionStatus(data.status);
 		} catch (err) {
-			setError(err.message);
+			setError((err as Error).message);
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
-	const difficultyConfig = {
+	const difficultyConfig: Record<string, { color: string; bg: string; border: string }> = {
 		Easy: {
 			color: "text-green-400",
 			bg: "bg-green-500/20",
@@ -209,21 +226,23 @@ const IDEClient = ({ problem, initialCode }) => {
 	};
 
 	// Safe description extraction
-	const getDescriptionText = (desc) => {
+	const getDescriptionText = (desc: unknown) => {
 		if (!desc)
 			return "Solve this problem by implementing the required algorithm.";
 		if (typeof desc === "string") return desc;
 
-		if (desc.content && Array.isArray(desc.content)) {
-			const texts = [];
-			const extractText = (node) => {
-				if (node.nodeType === "text") {
-					texts.push(node.value);
-				} else if (node.content && Array.isArray(node.content)) {
-					node.content.forEach(extractText);
+		const richText = desc as { content?: unknown[]; nodeType?: string };
+		if (richText.content && Array.isArray(richText.content)) {
+			const texts: string[] = [];
+			const extractText = (node: unknown) => {
+				const n = node as { nodeType?: string; value?: string; content?: unknown[] };
+				if (n.nodeType === "text") {
+					texts.push(n.value ?? "");
+				} else if (n.content && Array.isArray(n.content)) {
+					n.content.forEach(extractText);
 				}
 			};
-			desc.content.forEach(extractText);
+			richText.content.forEach(extractText);
 			return (
 				texts.join(" ").trim() ||
 				"Solve this problem by implementing the required algorithm."
@@ -320,8 +339,8 @@ const IDEClient = ({ problem, initialCode }) => {
 									</h2>
 									<div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap rich-text-content">
 										{typeof problem.fields.description === "object" &&
-										problem.fields.description.nodeType === "document"
-											? documentToReactComponents(problem.fields.description)
+										(problem.fields.description as { nodeType?: string })?.nodeType === "document"
+											? documentToReactComponents(problem.fields.description as Parameters<typeof documentToReactComponents>[0])
 											: descriptionText}
 									</div>
 								</div>

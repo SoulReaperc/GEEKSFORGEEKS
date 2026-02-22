@@ -35,6 +35,38 @@ const PROFILE_PHOTOS = {
 	3: "https://randomuser.me/api/portraits/men/52.jpg",
 };
 
+interface LeaderboardUser {
+	id?: string;
+	username?: string;
+	full_name?: string;
+	total_points?: number;
+	avatar_url?: string;
+}
+
+interface UserProfile {
+	id?: string;
+	username?: string;
+	full_name?: string;
+	avatar_url?: string;
+	total_points?: number;
+	rank?: string;
+}
+
+interface CurrentUser {
+	photo: string | null;
+	username: string;
+	password?: string;
+}
+
+interface PracticeClientProps {
+	totalProblems: number;
+	solvedCount: number;
+	progressPercentage: number;
+	leaderboard: LeaderboardUser[];
+	userRank: number | string;
+	initialUserProfile: UserProfile | null;
+}
+
 export default function PracticeClient({
 	totalProblems,
 	solvedCount,
@@ -42,22 +74,22 @@ export default function PracticeClient({
 	leaderboard,
 	userRank,
 	initialUserProfile,
-}) {
+}: PracticeClientProps) {
 	const router = useRouter();
 	const [isLoggedIn, setIsLoggedIn] = useState(!!initialUserProfile);
 	const [showLoginModal, setShowLoginModal] = useState(false);
 	const [loginForm, setLoginForm] = useState({ username: "", password: "" });
 	const [loginError, setLoginError] = useState("");
-	const [currentUser, setCurrentUser] = useState(null);
-	const [userProfile, setUserProfile] = useState(initialUserProfile);
-	const [liveLeaderboard, setLiveLeaderboard] = useState(leaderboard);
+	const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+	const [userProfile, setUserProfile] = useState<UserProfile | null>(initialUserProfile);
+	const [liveLeaderboard, setLiveLeaderboard] = useState<LeaderboardUser[]>(leaderboard);
 	const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
 	// Settings state
 	const [showSettings, setShowSettings] = useState(false);
 	const [settingsTab, setSettingsTab] = useState("profile"); // 'profile', 'username', 'password'
-	const [profilePhoto, setProfilePhoto] = useState(null);
-	const [tempProfilePhoto, setTempProfilePhoto] = useState(null); // Temporary storage for preview
+	const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+	const [tempProfilePhoto, setTempProfilePhoto] = useState<string | null>(null); // Temporary storage for preview
 	const [newUsername, setNewUsername] = useState("");
 	const [passwordForm, setPasswordForm] = useState({
 		currentPassword: "",
@@ -99,7 +131,7 @@ export default function PracticeClient({
 		}
 	}, []);
 
-	const fetchProfileFromDB = async (userId) => {
+	const fetchProfileFromDB = async (userId: string) => {
 		const { data: profile, error } = await supabase
 			.from("profiles")
 			.select("username, full_name, avatar_url, total_points, rank")
@@ -264,16 +296,16 @@ export default function PracticeClient({
 		router.push("/practice/profile");
 	};
 
-	const getUserInitials = (username) => {
+	const getUserInitials = (username: string) => {
 		return username.charAt(0).toUpperCase();
 	};
 
-	const handleProfilePhotoChange = (e) => {
-		const file = e.target.files[0];
+	const handleProfilePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
 		if (file) {
 			const reader = new FileReader();
 			reader.onloadend = () => {
-				setTempProfilePhoto(reader.result);
+				setTempProfilePhoto(reader.result as string);
 			};
 			reader.readAsDataURL(file);
 		}
@@ -282,7 +314,7 @@ export default function PracticeClient({
 	const handleSaveProfilePhoto = () => {
 		if (tempProfilePhoto) {
 			setProfilePhoto(tempProfilePhoto);
-			setCurrentUser({ ...currentUser, photo: tempProfilePhoto });
+			setCurrentUser(currentUser ? { ...currentUser, photo: tempProfilePhoto } : { photo: tempProfilePhoto, username: "" });
 			setSettingsSuccess("Profile photo updated successfully!");
 			setTimeout(() => setSettingsSuccess(""), 3000);
 		}
@@ -293,7 +325,7 @@ export default function PracticeClient({
 			setSettingsError("Username cannot be empty");
 			return;
 		}
-		setCurrentUser({ ...currentUser, username: newUsername });
+		setCurrentUser(currentUser ? { ...currentUser, username: newUsername } : { photo: null, username: newUsername });
 		setSettingsSuccess("Username updated successfully!");
 		setNewUsername("");
 		setTimeout(() => setSettingsSuccess(""), 3000);
@@ -311,7 +343,7 @@ export default function PracticeClient({
 			return;
 		}
 
-		if (passwordForm.currentPassword !== currentUser.password) {
+		if (passwordForm.currentPassword !== currentUser?.password) {
 			setSettingsError("Current password is incorrect");
 			return;
 		}
@@ -326,7 +358,7 @@ export default function PracticeClient({
 			return;
 		}
 
-		setCurrentUser({ ...currentUser, password: passwordForm.newPassword });
+		setCurrentUser(currentUser ? { ...currentUser, password: passwordForm.newPassword } : { photo: null, username: "", password: passwordForm.newPassword });
 		setSettingsSuccess("Password changed successfully!");
 		setPasswordForm({
 			currentPassword: "",
@@ -740,14 +772,14 @@ export default function PracticeClient({
 													alt="Profile Preview"
 													className="w-full h-full object-cover"
 												/>
-											) : currentUser.photo ? (
+											) : currentUser?.photo ? (
 												<img
 													src={currentUser.photo}
 													alt="Profile"
 													className="w-full h-full object-cover"
 												/>
 											) : (
-												getUserInitials(currentUser.username)
+												currentUser ? getUserInitials(currentUser.username) : null
 											)}
 										</div>
 										<div className="flex gap-3">
@@ -780,7 +812,7 @@ export default function PracticeClient({
 										</div>
 										{tempProfilePhoto && (
 											<p className="text-gray-400 text-sm mt-2">
-												Click "Save" to confirm your new profile photo
+												Click &quot;Save&quot; to confirm your new profile photo
 											</p>
 										)}
 									</div>
@@ -796,7 +828,7 @@ export default function PracticeClient({
 										</label>
 										<input
 											type="text"
-											value={currentUser.username}
+											value={currentUser?.username ?? ""}
 											disabled
 											className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400"
 										/>
