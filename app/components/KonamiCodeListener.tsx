@@ -54,6 +54,7 @@ export default function KonamiCodeListener() {
 
 	useEffect(() => {
 		if (JSON.stringify(keys) === JSON.stringify(konamiCode)) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setTriggered(true);
 			vibrateLightClick();
 		}

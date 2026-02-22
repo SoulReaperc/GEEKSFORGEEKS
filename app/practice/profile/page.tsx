@@ -15,23 +15,33 @@ import { useEffect, useState } from "react";
 import { vibrateLightClick } from "@/lib/vibration";
 import { getProfile, updateProfile, uploadAvatar } from "./actions";
 
+interface Profile {
+	username?: string;
+	full_name?: string;
+	avatar_url?: string;
+	total_points?: number;
+	rank?: string;
+	college_email?: string;
+}
+
+interface MessageState {
+	type: string;
+	text: string;
+}
+
 export default function ProfilePage() {
 	const router = useRouter();
-	const [profile, setProfile] = useState(null);
+	const [profile, setProfile] = useState<Profile | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [uploading, setUploading] = useState(false);
-	const [message, setMessage] = useState({ type: "", text: "" });
+	const [message, setMessage] = useState<MessageState>({ type: "", text: "" });
 
 	// Form state
 	const [formData, setFormData] = useState({
 		username: "",
 		fullName: "",
 	});
-
-	useEffect(() => {
-		loadProfile();
-	}, []);
 
 	async function loadProfile() {
 		const { data, error } = await getProfile();
@@ -45,7 +55,12 @@ export default function ProfilePage() {
 		setLoading(false);
 	}
 
-	async function handleUpdate(e) {
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		void loadProfile();
+	}, []);
+
+	async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setSaving(true);
 		setMessage({ type: "", text: "" });
@@ -59,14 +74,14 @@ export default function ProfilePage() {
 		if (res.error) {
 			setMessage({ type: "error", text: res.error });
 		} else {
-			setMessage({ type: "success", text: res.success });
+			setMessage({ type: "success", text: res.success ?? "" });
 			loadProfile(); // Refresh data
 		}
 		setSaving(false);
 	}
 
-	async function handleAvatarChange(e) {
-		const file = e.target.files[0];
+	async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const file = e.target.files?.[0];
 		if (!file) return;
 
 		setUploading(true);

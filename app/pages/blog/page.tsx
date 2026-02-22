@@ -10,10 +10,22 @@ import GlassyNavbar from "../../components/GlassyNavbar";
 import NewsletterSubscribe from "../../components/NewsletterSubscribe";
 import Squares from "../../components/Squares";
 
+interface BlogPostEntry {
+	sys: { id: string };
+	fields: {
+		title: string;
+		slug: string;
+		excerpt?: string;
+		author?: string;
+		publishDate: string;
+		featuredImage?: { fields: { file: { url: string } } };
+	};
+}
+
 function BlogContent() {
-	const [posts, setPosts] = useState([]);
+	const [posts, setPosts] = useState<BlogPostEntry[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [notification, setNotification] = useState(null);
+	const [notification, setNotification] = useState<{ type: string; message: string } | null>(null);
 	const searchParams = useSearchParams();
 
 	useEffect(() => {
@@ -21,7 +33,7 @@ function BlogContent() {
 			try {
 				const response = await contentfulClient.getEntries({
 					content_type: "blogPost",
-					order: "-fields.publishDate",
+					order: ["-fields.publishDate"],
 				});
 				setPosts(response.items);
 			} catch (error) {
@@ -151,7 +163,7 @@ export default function BlogPage() {
 	);
 }
 
-function BlogCard({ post }) {
+function BlogCard({ post }: { post: BlogPostEntry }) {
 	const { title, slug, excerpt, author, publishDate, featuredImage } =
 		post.fields;
 	const imageUrl = featuredImage?.fields?.file?.url

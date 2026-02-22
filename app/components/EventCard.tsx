@@ -5,18 +5,24 @@ import PixelCard from "./PixelCard";
 import ShapeBlur from "./ShapeBlur";
 import TiltedCard from "./TiltedCard";
 
+type RichTextNode = {
+	nodeType?: string;
+	value?: string;
+	content?: RichTextNode[];
+};
+
 // Helper function to extract plain text from RichText document
-function extractTextFromRichText(richText: any) {
+function extractTextFromRichText(richText: RichTextNode | string | null | undefined) {
 	if (!richText || typeof richText === "string") {
 		return richText || "";
 	}
 
 	if (richText.content && Array.isArray(richText.content)) {
 		return richText.content
-			.map((node: any) => {
+			.map((node) => {
 				if (node.content && Array.isArray(node.content)) {
 					return node.content
-						.map((textNode: any) => textNode.value || "")
+						.map((textNode) => textNode.value || "")
 						.join("");
 				}
 				return "";
@@ -35,7 +41,20 @@ function generateSlug(title: string) {
 		.replace(/^-+|-+$/g, "");
 }
 
-export default function EventCard({ event }: { event: any }) {
+type EventCardProps = {
+	event: {
+		fields: {
+			title: string;
+			slug?: string;
+			date: string;
+			venue: string;
+			coverImage?: { fields: { file: { url: string } } };
+			registrationLink?: RichTextNode | string;
+		};
+	};
+};
+
+export default function EventCard({ event }: EventCardProps) {
 	const { title, slug, date, venue, coverImage, registrationLink } =
 		event.fields;
 	const imageUrl = coverImage?.fields?.file?.url

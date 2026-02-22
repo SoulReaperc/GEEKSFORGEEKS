@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
 	type Control,
 	Controller,
+	type FieldValues,
 	type RegisterOptions,
 } from "react-hook-form";
 
@@ -14,7 +15,7 @@ interface SelectOption {
 }
 
 interface CustomSelectProps {
-	control: Control<any>;
+	control: Control<FieldValues>;
 	name: string;
 	options: SelectOption[];
 	placeholder: string;

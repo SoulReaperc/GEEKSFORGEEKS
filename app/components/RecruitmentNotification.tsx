@@ -14,6 +14,7 @@ export default function RecruitmentNotification({
 	const pathname = usePathname();
 
 	useEffect(() => {
+		/* eslint-disable react-hooks/set-state-in-effect */
 		if (isRecruitmentOpen) {
 			const hasSeenIntro = sessionStorage.getItem("hasSeenRecruitmentIntro");
 			const isHomePage = pathname === "/";
@@ -31,6 +32,7 @@ export default function RecruitmentNotification({
 				return () => clearTimeout(timer);
 			}
 		}
+		/* eslint-enable react-hooks/set-state-in-effect */
 		return undefined;
 	}, [isRecruitmentOpen, pathname]);
 

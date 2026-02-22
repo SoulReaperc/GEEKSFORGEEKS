@@ -1,7 +1,9 @@
 "use client";
 
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import type { Options } from "@contentful/rich-text-react-renderer";
 import { BLOCKS } from "@contentful/rich-text-types";
+import type { Document } from "@contentful/rich-text-types";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
@@ -11,9 +13,19 @@ import { contentfulClient } from "@/lib/contentful";
 import GlassyNavbar from "../../../components/GlassyNavbar";
 import Squares from "../../../components/Squares";
 
+interface BlogPost {
+	fields: {
+		title: string;
+		content: Document;
+		author?: string;
+		publishDate: string;
+		featuredImage?: { fields: { file: { url: string } } };
+	};
+}
+
 export default function BlogPostPage() {
 	const { slug } = useParams();
-	const [post, setPost] = useState(null);
+	const [post, setPost] = useState<BlogPost | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -39,26 +51,26 @@ export default function BlogPostPage() {
 		}
 	}, [slug]);
 
-	const renderOptions = {
+	const renderOptions: Options = {
 		renderNode: {
-			[BLOCKS.PARAGRAPH]: (node, children) => (
+			[BLOCKS.PARAGRAPH]: (_node, children) => (
 				<p className="text-white/80 leading-relaxed mb-6">{children}</p>
 			),
-			[BLOCKS.HEADING_1]: (node, children) => (
+			[BLOCKS.HEADING_1]: (_node, children) => (
 				<h1 className="text-4xl font-bold text-white mb-6 mt-8">{children}</h1>
 			),
-			[BLOCKS.HEADING_2]: (node, children) => (
+			[BLOCKS.HEADING_2]: (_node, children) => (
 				<h2 className="text-3xl font-bold text-white mb-4 mt-6">{children}</h2>
 			),
-			[BLOCKS.HEADING_3]: (node, children) => (
+			[BLOCKS.HEADING_3]: (_node, children) => (
 				<h3 className="text-2xl font-bold text-white mb-3 mt-4">{children}</h3>
 			),
-			[BLOCKS.UL_LIST]: (node, children) => (
+			[BLOCKS.UL_LIST]: (_node, children) => (
 				<ul className="list-disc list-inside text-white/80 mb-6 space-y-2">
 					{children}
 				</ul>
 			),
-			[BLOCKS.OL_LIST]: (node, children) => (
+			[BLOCKS.OL_LIST]: (_node, children) => (
 				<ol className="list-decimal list-inside text-white/80 mb-6 space-y-2">
 					{children}
 				</ol>
@@ -79,7 +91,7 @@ export default function BlogPostPage() {
 			<div className="min-h-screen bg-black flex justify-center items-center text-white">
 				<div className="text-center">
 					<h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
-					<Link href="/pages/blog" className="text-[#46b94e] hover: underline">
+					<Link href="/pages/blog" className="text-[#46b94e] hover:underline">
 						← Back to Blog
 					</Link>
 				</div>

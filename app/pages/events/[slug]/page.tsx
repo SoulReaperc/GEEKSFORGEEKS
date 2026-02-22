@@ -1,5 +1,6 @@
 "use client";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import type { Document } from "@contentful/rich-text-types";
 import { motion } from "framer-motion";
 import {
 	ArrowLeft,
@@ -19,13 +20,18 @@ import ShapeBlur from "../../../components/ShapeBlur";
 import Squares from "../../../components/Squares";
 
 // Helper function to extract plain text from RichText document
-function extractTextFromRichText(richText) {
+interface RichTextNode {
+	content?: Array<{ content?: Array<{ value?: string }> }>;
+}
+
+function extractTextFromRichText(richText: unknown): string {
 	if (!richText || typeof richText === "string") {
-		return richText || "";
+		return (richText as string) || "";
 	}
 
-	if (richText.content && Array.isArray(richText.content)) {
-		return richText.content
+	const rt = richText as RichTextNode;
+	if (rt.content && Array.isArray(rt.content)) {
+		return rt.content
 			.map((node) => {
 				if (node.content && Array.isArray(node.content)) {
 					return node.content.map((textNode) => textNode.value || "").join("");
@@ -38,9 +44,22 @@ function extractTextFromRichText(richText) {
 	return "";
 }
 
+interface EventEntry {
+	fields: {
+		title: string;
+		date: string;
+		venue: string;
+		coverImage?: { fields: { file: { url: string } } };
+		description?: Document;
+		galleryImages?: unknown[];
+		isRegOpen?: boolean;
+		registrationLink?: unknown;
+	};
+}
+
 export default function EventDetailsPage() {
 	const { slug } = useParams();
-	const [event, setEvent] = useState(null);
+	const [event, setEvent] = useState<EventEntry | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {

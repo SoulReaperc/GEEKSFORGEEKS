@@ -1,13 +1,29 @@
 "use client";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { type FieldError, useFieldArray, useForm } from "react-hook-form";
 import CustomSelect, {
 	branchOptions,
 	sectionOptions,
 	yearOptions,
 } from "@/app/components/CustomSelect";
 import { supabase } from "@/lib/supabase";
+
+type MemberFields = {
+	name: string;
+	year: string;
+	section: string;
+	branch: string;
+	email: string;
+	regNumber: string;
+	phone: string;
+};
+
+type RegistrationFormValues = {
+	team_name: string;
+	college_name: string;
+	members: MemberFields[];
+};
 
 export default function EventRegistrationForm({
 	eventName,
@@ -43,7 +59,7 @@ export default function EventRegistrationForm({
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<any>({
+	} = useForm<RegistrationFormValues>({
 		defaultValues: {
 			members: initialMembers,
 		},
@@ -54,7 +70,7 @@ export default function EventRegistrationForm({
 		name: "members",
 	});
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: RegistrationFormValues) => {
 		setSubmitting(true);
 		try {
 			const payload = {
@@ -165,11 +181,11 @@ export default function EventRegistrationForm({
 										const numbers = val.substring(2).replace(/[^0-9]/g, "");
 										target.value = "RA" + numbers.substring(0, 13);
 									}}
-									className={`p-3 w-full bg-white/10 rounded-lg border outline-none placeholder:text-gray-500 ${(errors as any)?.members?.[index]?.regNumber ? "border-red-500" : "border-white/20"}`}
+									className={`p-3 w-full bg-white/10 rounded-lg border outline-none placeholder:text-gray-500 ${(errors.members?.[index] as { regNumber?: FieldError })?.regNumber ? "border-red-500" : "border-white/20"}`}
 								/>
-								{(errors as any)?.members?.[index]?.regNumber && (
+								{(errors.members?.[index] as { regNumber?: FieldError })?.regNumber && (
 									<span className="text-red-500 text-xs mt-1 ml-1">
-										{(errors as any).members[index].regNumber.message}
+										{(errors.members[index] as { regNumber?: FieldError })?.regNumber?.message}
 									</span>
 								)}
 							</div>

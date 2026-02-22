@@ -4,7 +4,7 @@
  * This script creates the blogPost content type for the blog/newsletter system.
  * Run with: node scripts/setup-blogpost.js
  */
-
+/* eslint-disable @typescript-eslint/no-require-imports */
 require("dotenv").config();
 const contentful = require("contentful-management");
 

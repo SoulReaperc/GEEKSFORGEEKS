@@ -3,7 +3,7 @@ import { contentfulClient } from "@/lib/contentful";
 import { createClient } from "@/lib/supabase-server";
 import IDEClient from "./IDEClient";
 
-async function getProblem(slug) {
+async function getProblem(slug: string) {
 	const response = await contentfulClient.getEntries({
 		content_type: "codingProblem",
 		"fields.slug": slug,
@@ -12,7 +12,7 @@ async function getProblem(slug) {
 	return response.items[0];
 }
 
-export default async function ProblemPage({ params }) {
+export default async function ProblemPage({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params; // Await params in newer Next.js versions (e.g. 15+, or ensure handled)
 	// Check Next.js version in package.json: "16.0.7".
 	// Next 15+ params are async.
@@ -34,12 +34,12 @@ export default async function ProblemPage({ params }) {
 	} = await supabase.auth.getUser();
 
 	// Pick starter code based on default language (likely JS)
-	const starterCode = problem.fields.starterCode || {};
+	const starterCode = (problem.fields.starterCode as Record<string, string>) || {};
 	const defaultCode = starterCode.javascript || "// Start coding here...";
 
 	return (
 		<div className="min-h-screen">
-			<IDEClient problem={problem} initialCode={defaultCode} />
+			<IDEClient problem={problem as Parameters<typeof IDEClient>[0]["problem"]} initialCode={defaultCode} />
 		</div>
 	);
 }
