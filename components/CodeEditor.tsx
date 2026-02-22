@@ -1,6 +1,6 @@
 "use client";
 
-import Editor from "@monaco-editor/react";
+import Editor, { type OnMount } from "@monaco-editor/react";
 import React, { useEffect, useRef } from "react";
 
 interface CodeEditorProps {
@@ -16,17 +16,17 @@ const CodeEditor = ({
 	onChange,
 	theme = "vs-dark",
 }: CodeEditorProps) => {
-	const editorRef = useRef(null);
+	const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
 
 	const handleEditorChange = (value: string | undefined) => {
 		onChange(value);
 	};
 
-	const handleEditorDidMount = (editor: any, monaco: any) => {
+	const handleEditorDidMount: OnMount = (editor, _monaco) => {
 		editorRef.current = editor;
 
 		// Disable copy, cut, and paste commands in Monaco Editor
-		editor.onKeyDown((e: any) => {
+		editor.onKeyDown((e) => {
 			const isCopy = (e.ctrlKey || e.metaKey) && e.code === "KeyC";
 			const isCut = (e.ctrlKey || e.metaKey) && e.code === "KeyX";
 			const isPaste = (e.ctrlKey || e.metaKey) && e.code === "KeyV";
@@ -38,7 +38,7 @@ const CodeEditor = ({
 		});
 
 		// Add context menu interception
-		editor.onContextMenu((e: any) => {
+		editor.onContextMenu((e) => {
 			e.event.preventDefault();
 			e.event.stopPropagation();
 		});

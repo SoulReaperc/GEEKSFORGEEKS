@@ -7,8 +7,13 @@ import GlassyNavbar from "../../components/GlassyNavbar";
 import LightRays from "../../components/LightRays";
 import Squares from "../../components/Squares";
 
+interface EventEntry {
+	sys: { id: string };
+	fields: { date: string };
+}
+
 export default function EventsPage() {
-	const [events, setEvents] = useState([]);
+	const [events, setEvents] = useState<EventEntry[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [activeTab, setActiveTab] = useState("completed");
 
@@ -17,7 +22,7 @@ export default function EventsPage() {
 			try {
 				const response = await contentfulClient.getEntries({
 					content_type: "event",
-					order: "-fields.date", // Changed to descending order for initial fetch
+					order: ["-fields.date"], // Changed to descending order for initial fetch
 				});
 				setEvents(response.items);
 			} catch (error) {
@@ -30,7 +35,7 @@ export default function EventsPage() {
 		fetchEvents();
 	}, []);
 
-	const filterEvents = (tab) => {
+	const filterEvents = (tab: string) => {
 		const now = moment();
 		const filtered = events.filter((event) => {
 			const eventDate = moment(event.fields.date);

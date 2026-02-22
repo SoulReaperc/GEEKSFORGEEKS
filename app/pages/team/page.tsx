@@ -23,7 +23,28 @@ const client = createClient({
 	environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID,
 });
 
-const createSlug = (name) => {
+
+interface MemberSocials {
+	linkedin: string | undefined;
+	github: string | undefined;
+	instagram: string | undefined;
+	email: string | undefined;
+}
+
+interface Member {
+	id: string;
+	slug: string;
+	name: string;
+	role: string | undefined;
+	team: string | undefined;
+	image: string | null;
+	generalMembers: string | undefined;
+	coLead: string | undefined;
+	order: number;
+	socials: MemberSocials;
+}
+
+const createSlug = (name: string): string => {
 	return name
 		.toLowerCase()
 		.trim()
@@ -35,12 +56,12 @@ const createSlug = (name) => {
 export default function TeamPage() {
 	const router = useRouter();
 	const [selectedYear, setSelectedYear] = useState(2025);
-	const [members, setMembers] = useState([]);
-	const [facultyMembers, setFacultyMembers] = useState([]);
+	const [members, setMembers] = useState<Member[]>([]);
+	const [facultyMembers, setFacultyMembers] = useState<Member[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [openTeams, setOpenTeams] = useState({});
+	const [openTeams, setOpenTeams] = useState<Record<string, boolean>>({});
 
-	const toggleTeam = (teamName) => {
+	const toggleTeam = (teamName: string) => {
 		setOpenTeams((prev) => ({
 			...prev,
 			[teamName]: !prev[teamName],
@@ -113,7 +134,7 @@ export default function TeamPage() {
 		fetchFacultyMembers();
 	}, []);
 
-	const [availableYears, setAvailableYears] = useState([2025]);
+	const [availableYears, setAvailableYears] = useState<number[]>([2025]);
 
 	// Fetch available years on mount
 	useEffect(() => {
@@ -283,7 +304,7 @@ export default function TeamPage() {
 	};
 
 	// Convert team members to AnimatedTooltip format
-	const getTooltipItems = (memberList) => {
+	const getTooltipItems = (memberList: string[]) => {
 		return memberList.map((name, index) => ({
 			id: index + 1,
 			name: name,
@@ -658,7 +679,13 @@ export default function TeamPage() {
 }
 
 // Unified Card Component (Design from B, Data from A)
-function MemberCard({ member, router, big = false, year, clickable = true }) {
+function MemberCard({ member, router, big = false, year, clickable = true }: {
+member: Member;
+router: ReturnType<typeof useRouter>;
+big?: boolean;
+year: number;
+clickable?: boolean;
+}) {
 	const useBlackBackground = year === 2023 || year === 2024 || year === 2025;
 	const imageSrc =
 		member.image ||

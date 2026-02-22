@@ -17,6 +17,22 @@ import CustomSelect, {
 } from "@/app/components/CustomSelect";
 import { Logo2 } from "@/app/logo/logo2";
 
+type RecruitmentFormValues = {
+	name: string;
+	email_college: string;
+	email_personal: string;
+	phone: string;
+	reg_no: string;
+	year: string;
+	section: string;
+	branch: string;
+	team_preference: string;
+	resume_link: string;
+	technical_skills?: string;
+	design_skills?: string;
+	description: string;
+};
+
 const springValues = {
 	damping: 30,
 	stiffness: 100,
@@ -32,7 +48,7 @@ export default function RecruitmentForm() {
 		watch,
 		formState: { errors },
 		control,
-	} = useForm();
+	} = useForm<RecruitmentFormValues>();
 	const selectedTeam = watch("team_preference");
 
 	// Tilt Effect Logic
@@ -73,7 +89,7 @@ export default function RecruitmentForm() {
 		rotateY.set(0);
 	}
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: RecruitmentFormValues) => {
 		setSubmitting(true);
 		try {
 			const payload = {
@@ -98,10 +114,11 @@ export default function RecruitmentForm() {
 
 			console.log("Successfully submitted application");
 			setSubmitted(true);
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Error Submitting:", err);
-			console.error("Error message:", err?.message);
-			alert(`Something went wrong: ${err?.message || "Please try again"}`);
+			const message = err instanceof Error ? err.message : "Please try again";
+			console.error("Error message:", message);
+			alert(`Something went wrong: ${message}`);
 		} finally {
 			setSubmitting(false);
 		}

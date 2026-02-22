@@ -13,7 +13,7 @@ async function getProblems() {
 	try {
 		const response = await contentfulClient.getEntries({
 			content_type: "codingProblem",
-			order: "-sys.createdAt",
+			order: ["-sys.createdAt"],
 		});
 		return response.items;
 	} catch (error) {
@@ -22,7 +22,7 @@ async function getProblems() {
 	}
 }
 
-async function getSolvedProblems(userId) {
+async function getSolvedProblems(userId: string | undefined): Promise<Set<string>> {
 	if (!userId) return new Set();
 
 	try {
@@ -34,7 +34,7 @@ async function getSolvedProblems(userId) {
 			.eq("status", "Passed");
 
 		if (!data) return new Set();
-		return new Set(data.map((item) => item.problem_slug));
+		return new Set(data.map((item: { problem_slug: string }) => item.problem_slug));
 	} catch (e) {
 		console.error("Supabase Error:", e);
 		return new Set();
@@ -111,7 +111,7 @@ export default async function PracticePage() {
 	const usingMock = problems.length === 0;
 	if (problems.length === 0) {
 		console.log("No problems found, using scenarios.");
-		problems = MOCK_PROBLEMS;
+		problems = MOCK_PROBLEMS as typeof problems;
 	}
 
 	// Calculate stats
@@ -121,7 +121,7 @@ export default async function PracticePage() {
 		totalProblems > 0 ? Math.round((solvedCount / totalProblems) * 100) : 0;
 	const userRank =
 		user && leaderboard.length > 0
-			? leaderboard.findIndex((u) => u.id === user.id) + 1 || "N/A"
+			? leaderboard.findIndex((u: { id: string }) => u.id === user.id) + 1 || "N/A"
 			: "N/A";
 
 	const easyProblems = problems.filter((p) => p.fields.difficulty === "Easy");
@@ -262,7 +262,7 @@ export default async function PracticePage() {
 								<div key={problem.sys.id}>
 									<ProblemCard
 										problem={problem}
-										isSolved={solvedProblems.has(problem.fields.slug)}
+										isSolved={solvedProblems.has(problem.fields.slug as string)}
 										index={index}
 									/>
 								</div>
