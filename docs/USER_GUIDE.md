@@ -16,6 +16,9 @@
 3. [Public Features](#public-features)
    - [Team "Time Machine"](#team-time-machine)
    - [Events Page](#events-page)
+4. [Environment Variables](#environment-variables)
+5. [Rate Limiting](#rate-limiting)
+6. [Need Help?](#need-help)
 
 ---
 
@@ -222,13 +225,47 @@ Each event card shows:
 
 ---
 
+## Environment Variables
+
+The following environment variables must be set for the system to function correctly. Contact the Technical Lead if any are missing.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Supabase public anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Server-only key; bypasses RLS |
+| `NEXT_PUBLIC_CONTENTFUL_SPACE_ID` | ✅ | Contentful space identifier |
+| `NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN` | ✅ | Contentful Delivery API (read-only) |
+| `NEXT_PUBLIC_CONTENTFUL_PAT` | ✅ | Contentful Management API (server-only despite prefix) |
+| `ALLOWED_ADMIN_EMAILS` | ✅ | Comma-separated list of authorised admin emails |
+| `SUPER_ADMINS` | ✅ | Comma-separated list of super-admin emails (God Mode) |
+| `RESEND_API_KEY` | ✅ | Resend API key for newsletter emails |
+| `NEXT_PUBLIC_SITE_URL` | ✅ | Public site URL for confirmation email links |
+| `NEWSLETTER_FROM_EMAIL` | ✅ | Sender email address for newsletters |
+| `NEWSLETTER_FROM_NAME` | ✅ | Sender display name |
+| `UPSTASH_REDIS_REST_URL` | ✅ | Upstash Redis URL for rate limiting & caching |
+| `UPSTASH_REDIS_REST_TOKEN` | ✅ | Upstash Redis token |
+
+> **⚠️ Important:** `NEXT_PUBLIC_CONTENTFUL_PAT` is a management token — despite the `NEXT_PUBLIC_` prefix it must **only be used server-side**.
+
+---
+
+## Rate Limiting
+
+Code execution (`/api/code/execute`) and submission (`/api/code/submit`) endpoints are protected by a **sliding-window rate limiter** backed by Upstash Redis.
+
+If you exceed the request limit you will receive a `429 Too Many Requests` response. Wait a short period before retrying — the limit resets automatically on a rolling basis.
+
+---
+
 ## Need Help?
 
 If you encounter any issues:
 
 1. **Login Problems:** Contact the Chair to verify your email is in the allowlist
 2. **Profile Updates Not Saving:** Ensure your login email matches your Contentful profile email exactly
-3. **Technical Issues:** Reach out to the Technical Lead or check the `API_REFERENCE.md` documentation
+3. **Rate Limit Errors (429):** Wait a moment before retrying; limits reset automatically
+4. **Technical Issues:** Reach out to the Technical Lead or check the `API_REFERENCE.md` documentation
 
 ---
 

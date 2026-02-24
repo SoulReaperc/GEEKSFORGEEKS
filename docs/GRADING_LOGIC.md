@@ -1,7 +1,7 @@
-# GeeksforGeeks SRMIST Chapter - Grading Logic Documentation v1
+# GeeksforGeeks SRMIST Chapter - Grading Logic Documentation v2
 
 > **Audience:** Developers & System Maintainers  
-> **Version:** 1.0  
+> **Version:** 2.0  
 > **Last Updated:** January 2026
 
 ---
@@ -9,73 +9,152 @@
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Workflow](#workflow)
-3. [`grade_submission.py`](#grade_submissionpy)
-   - [Purpose](#purpose)
-   - [Input](#input)
-   - [Core Logic](#core-logic)
-   - [Output](#output)
-4. [`grading_algorithm.py`](#grading_algorithmpy)
-   - [Purpose](#purpose-1)
-   - [Input](#input-1)
-   - [Scoring Model](#scoring-model)
-   - [Output](#output-1)
-5. [How to Use](#how-to-use)
+2. [TypeScript Implementation](#typescript-implementation)
+3. [Workflow](#workflow)
+4. [`grade_submission.py`](#grade_submissionpy) *(legacy reference)*
+5. [`grading_algorithm.py`](#grading_algorithmpy) *(legacy reference)*
+6. [How to Use](#how-to-use)
 
 ---
 
 ## Overview
 
-The grading system is designed to automatically evaluate code submissions for practice problems and challenges. It provides a score based on two key metrics: **execution speed** and **lines of code (LOC)**.
+The grading system automatically evaluates code submissions for practice problems and challenges. It provides a score based on two key metrics: **execution speed** and **lines of code (LOC)**.
 
-The logic is split into two Python scripts:
-- `grade_submission.py`: The main entry point that processes the raw submission.
-- `grading_algorithm.py`: A dedicated module that implements the core scoring algorithm.
+> **v2 Update:** The grading logic has been **fully ported to TypeScript** in `lib/services/grading.service.ts`. The Python scripts (`scripts/grade_submission.py`, `scripts/grading_algorithm.py`) are retained for reference but are **no longer called at runtime**.
 
-This decoupled design separates the concerns of submission processing (e.g., parsing code) from the mathematical scoring logic, making the system easier to maintain and test.
+---
+
+## TypeScript Implementation
+
+**File:** `lib/services/grading.service.ts`
+
+The TypeScript port eliminates the Python subprocess overhead, providing faster and more reliable grading.
+
+### Public API
+
+#### `countEffectiveLOC(code: string, language?: string): number`
+
+Counts non-empty, non-comment lines of code. Handles:
+- Python: strips `#` single-line comments
+- JavaScript / Java / C / C++: strips `//` single-line and `/* … */` multi-line blocks
+
+```typescript
+import { countEffectiveLOC } from '@/lib/services/grading.service'
+
+countEffectiveLOC('# comment\nx = 1\n', 'python') // → 1
+countEffectiveLOC('// comment\nconst x = 1;\n/* block */\n', 'javascript') // → 1
+```
+
+#### `calculateScore(input: GradingScriptInput): Promise<GradingScriptOutput>`
+
+Grades a submission. Calls `countEffectiveLOC` internally and computes speed + LOC scores.
+
+```typescript
+import { calculateScore } from '@/lib/services/grading.service'
+
+const result = await calculateScore({
+  difficulty: 'easy',
+  execution_time_ms: 1,
+  code: 'x = 1',
+  optimal_loc: 10,
+})
+// result.total_score  → 10
+// result.max_marks    → 10
+// result.details.execution_speed.score → 6
+// result.details.lines_of_code.score   → 4
+```
+
+### Scoring Algorithm
+
+#### Maximum Marks by Difficulty
+
+| Difficulty | Max Marks |
+|------------|-----------|
+| Easy | 10 |
+| Medium | 20 |
+| Hard | 30 |
+
+#### Parameter Weights
+
+| Component | Weight |
+|-----------|--------|
+| Execution Speed | 60% |
+| Lines of Code | 40% |
+
+#### Speed Score (`calculateSpeedScore`)
+
+| Execution Time | Score |
+|----------------|-------|
+| ≤ 2 ms | 100% of speed marks |
+| ≤ 3 ms | 75% of speed marks |
+| > 3 ms | 50% of speed marks |
+
+#### LOC Score (`calculateLocScore`)
+
+| `actual_loc / optimal_loc` | Score |
+|---------------------------|-------|
+| ≤ 1.25 | 100% of LOC marks |
+| ≤ 1.50 | 80% of LOC marks |
+| ≤ 1.75 | 50% of LOC marks |
+| > 1.75 | 25% of LOC marks |
+
+### Output Shape
+
+```typescript
+interface GradingScriptOutput {
+  total_score: number   // rounded to 2 dp
+  max_marks: number
+  details: {
+    execution_speed: { score: number; max: number }
+    lines_of_code:   { score: number; max: number }
+  }
+}
+```
 
 ---
 
 ## Workflow
 
-The grading process follows a clear, sequential workflow:
-
 ```
 ┌───────────────────────────────────────────┐
 │              1. Submission                │
-│ (JSON with code, language, difficulty)    │
+│   (POST /api/code/submit — withAuth)      │
 └─────────────────────┬─────────────────────┘
                       │
                       ▼
 ┌───────────────────────────────────────────┐
-│         2. `grade_submission.py`          │
-│    - Receives JSON via stdin/base64       │
-│    - Counts actual lines of code (LOC)    │
-│    - Imports and calls the grading algo   │
+│    2. Zod validation (codeRequestSchema)  │
+│    3. ExecutionService: verifyAllTestCases│
 └─────────────────────┬─────────────────────┘
                       │
                       ▼
 ┌───────────────────────────────────────────┐
-│        3. `grading_algorithm.py`          │
-│  - Calculates speed score                 │
-│  - Calculates LOC score                   │
-│  - Applies weights and returns total      │
+│   4. GradingService.calculateScore()      │
+│   (pure TypeScript, no subprocess)        │
 └─────────────────────┬─────────────────────┘
                       │
                       ▼
 ┌───────────────────────────────────────────┐
-│            4. Final Output                │
-│      (JSON with total score and details)  │
+│   5. SubmissionRepository.createSubmission│
+│      / updateSubmission                   │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│   6. Response sent immediately            │
+│   7. after(): handlePointsUpdate()        │
+│      (deferred ranking recalculation)     │
 └───────────────────────────────────────────┘
 ```
 
 ---
 
-## `grade_submission.py`
+## `grade_submission.py` *(legacy — no longer called at runtime)*
 
 ### Purpose
 
-This script acts as the primary interface for the grading system. It takes a raw code submission, extracts necessary information, calculates the lines of code, and orchestrates the final score calculation by invoking `grading_algorithm.py`.
+This script was the original Python entry point for the grading system. The logic has been fully ported to `lib/services/grading.service.ts` and this file is kept for reference only.
 
 ### Input
 
@@ -127,11 +206,11 @@ The script outputs the JSON result from `grading_algorithm.py` directly to `stdo
 
 ---
 
-## `grading_algorithm.py`
+## `grading_algorithm.py` *(legacy — no longer called at runtime)*
 
 ### Purpose
 
-This script is a pure calculation module. It contains the mathematical logic for determining a score based on pre-defined weights and thresholds. It is completely independent of the submission format.
+This script was the original pure-Python scoring module. Its logic is now implemented in `lib/services/grading.service.ts` (`calculateSpeedScore`, `calculateLocScore`, `calculateTotalScore`).
 
 ### Input
 

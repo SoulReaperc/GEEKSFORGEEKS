@@ -111,17 +111,35 @@ A modern, feature-rich community platform built with **Next.js 16** and the **Ap
 
 3. **🔧 Environment Setup**
    
-   Create a `.env.local` file in the root directory:
+   Create a `.env.local` file in the root directory with the following variables (obtain values from a maintainer):
    
    ```env
-   # 🔐 Supabase Configuration
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   
-   # 📝 Contentful Configuration
-   NEXT_PUBLIC_CONTENTFUL_SPACE_ID=your_space_id
-   NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN=your_access_token
+   # ─── Supabase ────────────────────────────────────────────────
+   NEXT_PUBLIC_SUPABASE_URL=             # Supabase project URL
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=        # Supabase public anon key
+   SUPABASE_SERVICE_ROLE_KEY=            # Server-only; bypasses Row Level Security
+
+   # ─── Contentful ──────────────────────────────────────────────
+   NEXT_PUBLIC_CONTENTFUL_SPACE_ID=      # Contentful space ID
+   NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN=  # Delivery API key (read-only)
+   NEXT_PUBLIC_CONTENTFUL_PAT=           # Management API token (write; server-only despite prefix)
+   NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT_ID=master
+
+   # ─── Upstash Redis (optional) ────────────────────────────────
+   UPSTASH_REDIS_REST_URL=               # Upstash Redis REST URL (rate limiting & caching)
+   UPSTASH_REDIS_REST_TOKEN=             # Upstash Redis REST token (rate limiting & caching)
+
+   # ─── Auth & Admin ────────────────────────────────────────────
+   ALLOWED_ADMIN_EMAILS=                 # Comma-separated list of admin emails
+
+   # ─── Newsletter ──────────────────────────────────────────────
+   RESEND_API_KEY=                       # Resend API key for transactional email
+   NEXT_PUBLIC_SITE_URL=                 # Production URL (e.g. https://gfg-srmncr.netlify.app)
+   NEWSLETTER_FROM_EMAIL=                # Sender address for newsletters
+   NEWSLETTER_FROM_NAME=                 # Sender display name
    ```
+   
+   > ⚠️ `NEXT_PUBLIC_CONTENTFUL_PAT` is a **management (write) token** — do not expose it client-side even though it has a `NEXT_PUBLIC_` prefix. It must only be used in server actions and API routes.
 
 4. **🏃‍♂️ Start development server**
    ```bash
@@ -167,19 +185,28 @@ A modern, feature-rich community platform built with **Next.js 16** and the **Ap
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
+### 🔀 Branch & Promotion Workflow
+
+```
+feature/* → dev → staging → main (production)
+```
+
+All new work branches off `dev` and merges back to `dev` via PR. Maintainers promote `dev → staging` for QA and `staging → main` for production releases.
+
 ### 📋 Contribution Workflow
 
 1. **🍴 Fork** the repository
-2. **🌿 Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **💾 Commit** your changes (`git commit -m 'Add amazing feature'`)
-4. **📤 Push** to the branch (`git push origin feature/amazing-feature`)
-5. **🔄 Open** a Pull Request
+2. **🌿 Cut a branch from `dev`** (`git checkout -b feature/amazing-feature`)
+3. **💾 Commit** your changes (`git commit -m 'feat: add amazing feature'`)
+4. **📤 Push** your branch (`git push origin feature/amazing-feature`)
+5. **🔄 Open a PR targeting `dev`** — never target `staging` or `main` directly
 
 ### 📝 Guidelines
 
 - ✅ Keep commits **small and focused**
-- ✅ Run **linting** before submitting
-- ✅ Write **clear commit messages**
+- ✅ Run **linting** before submitting (`npm run lint`)
+- ✅ Write **clear commit messages** (Conventional Commits preferred)
+- ✅ All new files must be **`.tsx` / `.ts`** — no `.jsx` / `.js`
 - ✅ Update **documentation** if needed
 
 ## 📞 Support

@@ -1,92 +1,74 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
-
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL! ,
-    process.env. SUPABASE_SERVICE_ROLE_KEY!
-);
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
+import {
+	handleApiError,
+	ValidationError,
+} from "@/lib/middleware/error.middleware";
+import {
+	applyRateLimit,
+	newsletterRatelimit,
+} from "@/lib/middleware/rate-limit";
+import {
+	createSubscriber,
+	findSubscriberByEmail,
+} from "@/lib/repositories/newsletter.repository";
+import { subscribeSchema } from "@/lib/validation/newsletter.schema";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(request:  Request) {
-    try {
-        const { email } = await request.json();
+export async function POST(request: Request) {
+	try {
+		const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+		const rateLimitResponse = await applyRateLimit(newsletterRatelimit, ip);
+		if (rateLimitResponse) return rateLimitResponse;
 
-        // Validate email
-        if (!email || ! email.includes('@')) {
-            return NextResponse.json(
-                { error: 'Valid email is required' },
-                { status: 400 }
-            );
-        }
+		const body = await request.json();
 
-        // Check if already subscribed
-        const { data:  existing } = await supabase
-            .from('newsletter_subscribers')
-            .select('*')
-            .eq('email', email)
-            .single();
+		const parsed = subscribeSchema.safeParse(body);
+		if (!parsed.success) {
+			throw new ValidationError(
+				parsed.error.issues[0]?.message ?? "Valid email is required",
+			);
+		}
+		const { email } = parsed.data;
 
-        if (existing) {
-            if (existing.is_active && existing.confirmed) {
-                return NextResponse.json(
-                    { error: 'This email is already subscribed!' },
-                    { status: 400 }
-                );
-            } else if (existing.is_active && !existing.confirmed) {
-                // Resend confirmation
-                await sendConfirmationEmail(email, existing.unsubscribe_token);
-                return NextResponse.json({
-                    message: 'Confirmation email resent!  Please check your inbox.',
-                });
-            }
-        }
+		// Check if already subscribed
+		const existing = await findSubscriberByEmail(email);
 
-        // Insert new subscriber
-        const { data: newSubscriber, error } = await supabase
-            .from('newsletter_subscribers')
-            .insert({
-                email,
-                is_active: true,
-                confirmed: false,
-            })
-            .select()
-            .single();
+		if (existing) {
+			if (existing.is_active && existing.confirmed) {
+				return NextResponse.json(
+					{ error: "This email is already subscribed!" },
+					{ status: 400 },
+				);
+			} else if (existing.is_active && !existing.confirmed) {
+				await sendConfirmationEmail(email, existing.unsubscribe_token);
+				return NextResponse.json({
+					message: "Confirmation email resent!  Please check your inbox.",
+				});
+			}
+		}
 
-        if (error) {
-            console.error('Supabase error:', error);
-            return NextResponse.json(
-                { error: 'Failed to subscribe.  Please try again.' },
-                { status: 500 }
-            );
-        }
+		const newSubscriber = await createSubscriber(email);
+		await sendConfirmationEmail(email, newSubscriber.unsubscribe_token);
 
-        // Send confirmation email
-        await sendConfirmationEmail(email, newSubscriber.unsubscribe_token);
-
-        return NextResponse.json({
-            message: 'Success! Please check your email to confirm your subscription.',
-        });
-
-    } catch (error) {
-        console.error('Newsletter subscribe error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
-    }
+		return NextResponse.json({
+			message: "Success! Please check your email to confirm your subscription.",
+		});
+	} catch (error: unknown) {
+		return handleApiError(error);
+	}
 }
 
-async function sendConfirmationEmail(email:  string, token: string) {
-    const confirmUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/newsletter/confirm? token=${token}`;
-    
-    try {
-        await resend.emails.send({
-            from: `${process.env.NEWSLETTER_FROM_NAME || 'GFG SRMIST'} <${process.env.NEWSLETTER_FROM_EMAIL || 'newsletter@gfgsrmist.com'}>`,
-            to: email,
-            subject: 'Confirm Your Newsletter Subscription',
-            html: `
+async function sendConfirmationEmail(email: string, token: string) {
+	const confirmUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/newsletter/confirm? token=${token}`;
+
+	try {
+		await resend.emails.send({
+			from: `${process.env.NEWSLETTER_FROM_NAME || "GFG SRMIST"} <${process.env.NEWSLETTER_FROM_EMAIL || "newsletter@gfgsrmist.com"}>`,
+			to: email,
+			subject: "Confirm Your Newsletter Subscription",
+			html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -123,9 +105,9 @@ async function sendConfirmationEmail(email:  string, token: string) {
                 </body>
                 </html>
             `,
-        });
-    } catch (error) {
-        console.error('Failed to send confirmation email:', error);
-        throw error;
-    }
+		});
+	} catch (error) {
+		console.error("Failed to send confirmation email:", error);
+		throw error;
+	}
 }
